@@ -1,6 +1,6 @@
 # Secure Backend
 
-Can a small open model, fine-tuned on Fireworks, write web backends that both work and survive real attacks?
+Can a small, cheap open model write web backends that both work and survive real attacks, if it gets told which attacks worked?
 
 We give a model a backend spec (an API to build in Python with Flask). [BaxBench](https://github.com/logic-star-ai/baxbench) then runs its functional tests and its expert-written exploits against the app in Docker. An app only counts if it passes every test and no exploit succeeds.
 
@@ -37,17 +37,26 @@ Filled in from `results/results.json` at the end of the build.
 
 Needs Docker and a Fireworks API key in `.env` (`FIREWORKS_API_KEY=...`, never committed).
 
-Steps are added as the harness lands.
+```bash
+git clone --depth 1 https://github.com/logic-star-ai/baxbench vendor/baxbench
+uv venv --python 3.12 .venv-bax
+VIRTUAL_ENV=.venv-bax uv pip install requests docker httpx openai anthropic tabulate simple-parsing tqdm termcolor pdfplumber imageio matplotlib pyyaml pytest
+# private/split.json holds the locked test list ({"test": [...], "train": [...], "framework_test": ["Python-Flask"], "frameworks_train": [...]})
+.venv-bax/bin/python scripts/run_arm.py --arm A1 --set test --runs 1 --jobs 2
+.venv-bax/bin/python scripts/results_table.py --runs results/runs --out results/results.json
+```
+
+Keep `--jobs` low on a 16 GB laptop: some BaxBench resource-exhaustion exploits build multi-GB payloads in the test process.
 
 ## Built with
 
 - [Fireworks AI](https://fireworks.ai): serverless inference for every arm
 - [NVIDIA Nemotron](https://research.nvidia.com/labs/nemotron/): Nemotron Lightning 3.5, the small model under test
-- [BaxBench](https://github.com/logic-star-ai/baxbench) and [AutoBaxBuilder](https://arxiv.org/abs/2512.21132): scenarios, tests and exploits (third-party, used unchanged)
+- [BaxBench](https://github.com/logic-star-ai/baxbench): scenarios, functional tests and exploits (third-party, MIT)
 
 ## Pre-existing code
 
-BaxBench and AutoBaxBuilder are third-party open-source benchmarks, used as published. Everything in this repository was written during the event on November 2, 2026.
+BaxBench is a third-party open-source benchmark (MIT), cloned into the gitignored `vendor/` folder and used as published. Our harness works around two environment issues without changing its tests or exploits: Debian bullseye's security mirror no longer serves `sqlite3`, and host Docker credential helpers broke unattended builds. Everything in this repository was written during the event on November 2, 2026.
 
 ## Team
 
