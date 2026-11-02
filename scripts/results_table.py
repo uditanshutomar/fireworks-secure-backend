@@ -19,8 +19,9 @@ from typing import Dict, List, Optional
 # Arm order, default label and loop. --label overrides a label (e.g. the Qwen fallback).
 ARMS = [
     ("A1", "DeepSeek V4.1 Flash, one-shot", "one-shot"),
-    ("A2", "Nemotron Nano 3, one-shot", "one-shot"),
-    ("A3", "Nemotron Nano 3 + repair", "repair"),
+    ("A6", "DeepSeek V4.1 Flash + repair", "repair"),
+    ("A2", "Nemotron Lightning 3.5, one-shot", "one-shot"),
+    ("A3", "Nemotron Lightning 3.5 + repair", "repair"),
     ("A4", "Nemotron Nano 3 tuned, one-shot", "one-shot"),
     ("A5", "Nemotron Nano 3 tuned + repair", "repair"),
 ]
