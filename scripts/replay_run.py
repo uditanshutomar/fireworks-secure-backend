@@ -1,6 +1,6 @@
 """Replays one repair run record in the terminal, round by round, for the demo video.
 
-python scripts/replay_run.py ui/sample/runs/A5__FakeLogin__Python-Flask__r1.json --delay 1.0
+python3 scripts/replay_run.py ui/sample/runs/A5__FakeLogin__Python-Flask__r1.json --delay 1.0
 
 Reads one run record (CONTRACTS.md section 1). For each round it prints the first
 25 lines of code, the test result, any exploits, and the repair message that went

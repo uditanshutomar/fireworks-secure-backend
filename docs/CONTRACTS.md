@@ -121,4 +121,4 @@ def repair_loop(client, task_prompt, run_tests, max_rounds=3, framework="Python-
 
 ## 4. Split check: `scripts/check_split.py`
 
-`python scripts/check_split.py --split private/split.json --sft data/sft.jsonl` exits 1 if any SFT example's `metadata.scenario` is in the split's `test` list, and prints the offending lines. Split shape: `{"test": ["Login", ...], "dev": [...], "train": [...]}`. SFT lines: `{"messages": [...], "metadata": {"scenario": "...", "framework": "..."}}`.
+`python3 scripts/check_split.py --split private/split.json --sft data/sft.jsonl` exits 1 if any SFT example's `metadata.scenario` is in the split's `test` list, and prints the offending lines. Split shape: `{"test": ["Login", ...], "dev": [...], "train": [...]}`. SFT lines: `{"messages": [...], "metadata": {"scenario": "...", "framework": "..."}}`.
