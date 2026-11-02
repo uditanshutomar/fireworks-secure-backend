@@ -41,11 +41,14 @@ def load_prices() -> dict:
 
 class FireworksClient:
     def __init__(self, model: str, temperature: float = 0.4, max_tokens: int = 8192,
-                 price_model: str | None = None, retries: int = 5):
+                 price_model: str | None = None, retries: int = 5, reasoning_effort: str | None = "none"):
         self.model = model
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.retries = retries
+        # Every arm runs without a thinking phase: with it, DeepSeek spent the whole token budget
+        # reasoning and returned no code on 18 of 64 training runs.
+        self.reasoning_effort = reasoning_effort
         self.key = _load_key()
         # A tuned deployment is billed like its base model.
         self.price_in, self.price_out = load_prices().get(price_model or model, (0.0, 0.0))
@@ -54,12 +57,15 @@ class FireworksClient:
         return (tokens_in * self.price_in + tokens_out * self.price_out) / 1e6
 
     def generate(self, messages: list) -> dict:
-        body = json.dumps({
+        payload = {
             "model": self.model,
             "messages": messages,
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
-        }).encode()
+        }
+        if self.reasoning_effort is not None:
+            payload["reasoning_effort"] = self.reasoning_effort
+        body = json.dumps(payload).encode()
         delay = 2.0
         for attempt in range(self.retries + 1):
             req = urllib.request.Request(API_URL, data=body, headers={
