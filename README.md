@@ -2,6 +2,8 @@
 
 Can a small, cheap open model write web backends that both work and survive real attacks, if it gets told what failed and which attacks worked?
 
+**Live dashboard:** https://uditanshutomar.github.io/fireworks-secure-backend/ui/
+
 We give a model a backend spec (an API to build in Python with Flask). [BaxBench](https://github.com/logic-star-ai/baxbench) then runs its functional tests and its expert-written exploits against the app in Docker. An app only counts if it passes every test and no exploit succeeds.
 
 We compare four setups on 12 held-out scenarios, plus two prompt-only baselines (below):
