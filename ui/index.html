@@ -99,11 +99,11 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
 .empty { color: var(--muted); font-size: 12px; padding: 8px 12px; }
 
 /* Explainer popup */
-.modal { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: rgba(5, 6, 9, 0.72); backdrop-filter: blur(8px); animation: fade .2s ease; }
+.modal { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: rgba(5, 6, 9, 0.72); backdrop-filter: blur(8px); animation: fade .12s ease; }
 .modal[hidden] { display: none; }
 @keyframes fade { from { opacity: 0; } }
 @keyframes rise { from { opacity: 0; transform: translateY(12px) scale(0.98); } }
-.m-card { width: min(980px, 100%); max-height: calc(100vh - 40px); overflow: auto; background: var(--panel); border: 1px solid var(--line-2); border-radius: 18px; box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8); animation: rise .28s cubic-bezier(.2, .8, .2, 1); display: flex; flex-direction: column; }
+.m-card { width: min(980px, 100%); max-height: calc(100vh - 40px); overflow: auto; background: var(--panel); border: 1px solid var(--line-2); border-radius: 18px; box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8); animation: rise .16s cubic-bezier(.2, .8, .2, 1); display: flex; flex-direction: column; }
 .m-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px 6px; }
 .m-head h2 { margin: 0; font-size: 16px; font-weight: 600; }
 .m-x { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line-2); background: transparent; color: var(--text-2); cursor: pointer; display: grid; place-items: center; }
@@ -116,7 +116,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
 .m-stage.instant * { transition: none !important; }
 .m-cap { display: flex; gap: 14px; align-items: flex-start; padding: 6px 22px 4px; min-height: 76px; }
 .m-num { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--panel-2); color: var(--text); display: grid; place-items: center; font-weight: 600; font-size: 13px; margin-top: 2px; }
-.m-text { margin: 0; font-size: 18px; line-height: 1.45; font-weight: 500; animation: rise .35s ease; }
+.m-text { margin: 0; font-size: 18px; line-height: 1.45; font-weight: 500; animation: rise .2s ease; }
 .m-text b { color: var(--safe); font-weight: 600; }
 .m-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px 18px; flex-wrap: wrap; }
 .m-ctrl { display: flex; gap: 6px; }
@@ -125,7 +125,11 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
 .m-dots { display: flex; gap: 6px; align-items: center; }
 .m-dots button { width: 26px; height: 26px; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; padding: 0; }
 .m-dots button i { width: 8px; height: 8px; border-radius: 999px; background: var(--line-2); transition: all .3s; display: block; }
-.m-dots button[aria-current="step"] i { width: 22px; background: var(--accent); }
+.m-dots button[aria-current="step"] i { width: 30px; background: var(--accent); position: relative; overflow: hidden; }
+.m-dots button[aria-current="step"] i.run { background: #4A4A4A; }
+.m-dots button[aria-current="step"] i.run::after { content: ""; position: absolute; inset: 0; background: var(--accent); transform-origin: left; animation: fillbar var(--d) linear forwards; }
+@keyframes fillbar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.m-dots { min-width: 0; }
 .m-dots button.done i { background: #77736D; }
 </style>
 </head>
@@ -319,7 +323,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
   const ease = 'cubic-bezier(.2,.8,.2,1)';
   const stageEl = $('m-stage');
   let scene = null, ctx = null, idx = 0, timer = null, playing = true, lastFocus = null;
-  const STEP_MS = 4200;
+  const stepMs = i => Math.max(3500, Math.min(6000, ctx.steps[i].text.replace(/<[^>]+>/g, '').split(/\s+/).length * 300));
 
   function later(ms, fn) { if (ctx.instant) fn(); else ctx.timers.push(setTimeout(fn, ms)); }
   function tween(el, from, to, ms, fmt) {
@@ -350,17 +354,17 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
       ctx.instant = false; stageEl.classList.remove('instant');
     }
     idx = i;
-    requestAnimationFrame(() => requestAnimationFrame(() => ctx.steps[i].run(ctx)));
+    requestAnimationFrame(() => ctx.steps[i].run(ctx));
     $('m-num').textContent = i + 1;
     const t = $('m-text'); t.innerHTML = ctx.steps[i].text; t.style.animation = 'none'; void t.offsetWidth; t.style.animation = '';
-    $('m-dots').innerHTML = ctx.steps.map((_, k) => `<button type="button" data-k="${k}" class="${k < i ? 'done' : ''}" ${k === i ? 'aria-current="step"' : ''} aria-label="Step ${k + 1}"><i></i></button>`).join('');
+    $('m-dots').innerHTML = ctx.steps.map((_, k) => `<button type="button" data-k="${k}" class="${k < i ? 'done' : ''}" ${k === i ? `aria-current="step" style="--d:${stepMs(i)}ms"` : ''} aria-label="Step ${k + 1}"><i class="${k === i && playing && i < ctx.steps.length - 1 ? 'run' : ''}"></i></button>`).join('');
     $('m-dots').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { playing = false; go(+b.dataset.k); }));
     $('m-prev').disabled = i === 0;
     $('m-next').disabled = i === ctx.steps.length - 1;
     const end = i === ctx.steps.length - 1;
     if (end) playing = false;
     $('m-play').innerHTML = end ? '↻ Replay' : playing ? '❚❚ Pause' : '▶ Play';
-    if (playing && !end) timer = setTimeout(() => go(idx + 1), STEP_MS);
+    if (playing && !end) timer = setTimeout(() => go(idx + 1), stepMs(i));
   }
   function open(key, opt) {
     scene = SCENES[key];
@@ -418,15 +422,15 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
         c.rows = ['A3', 'A4', 'A5'].filter(id => A[id]).map((id, i) => {
           const v = P(A[id].secure_pass_rate), y = 110 + i * 80;
           const lab = txt(svg, 240, y + 5, nm(id), { a: 'end', s: 15, c: '#F2EFEA', w: 500 }); lab.style.cssText = 'opacity:.25;transition:opacity .4s';
-          const bar = S('line', { x1: X(c.b0), x2: X(c.b0), y1: y, y2: y, stroke: SAFE, 'stroke-width': 6, 'stroke-linecap': 'round', opacity: 0.5 }, svg); bar.style.transition = `x2 1s ${ease}`;
-          const dot = S('circle', { cx: 0, cy: 0, r: 11, fill: SAFE }, svg); dot.style.cssText = `transform:translate(${X(c.b0)}px,${y}px);opacity:0;transition:transform 1s ${ease}, opacity .3s`;
-          const d = txt(svg, X(v) + 22, y + 6, `${v}  (${v - c.b0 >= 0 ? '+' : ''}${v - c.b0})`, { s: 16, w: 600, c: SAFE, mono: 1 }); d.style.cssText = 'opacity:0;transition:opacity .4s .7s';
+          const bar = S('line', { x1: X(c.b0), x2: X(c.b0), y1: y, y2: y, stroke: SAFE, 'stroke-width': 6, 'stroke-linecap': 'round', opacity: 0.5 }, svg); bar.style.transition = `x2 .7s ${ease}`;
+          const dot = S('circle', { cx: 0, cy: 0, r: 11, fill: SAFE }, svg); dot.style.cssText = `transform:translate(${X(c.b0)}px,${y}px);opacity:0;transition:transform .7s ${ease}, opacity .2s`;
+          const d = txt(svg, X(v) + 22, y + 6, `${v}  (${v - c.b0 >= 0 ? '+' : ''}${v - c.b0})`, { s: 16, w: 600, c: SAFE, mono: 1 }); d.style.cssText = 'opacity:0;transition:opacity .3s .4s';
           return { id, v, y, lab, bar, dot, d };
         });
         if (big) { const g = P(big.secure_pass_rate); c.bigLine = S('line', { x1: X(g), x2: X(g), y1: 50, y2: 370, stroke: BIG_C, 'stroke-width': 2, 'stroke-dasharray': '4 5', opacity: 0 }, svg); c.bigLine.style.transition = 'opacity .5s'; c.bigLab = txt(svg, X(g), 370 - 6, `Big model: ${g}`, { a: 'middle', s: 13, c: BIG_C, w: 500 }); c.bigLab.style.cssText = 'opacity:0;transition:opacity .5s'; c.g = g; }
       },
       steps(c) {
-        const slide = r => { r.lab.style.opacity = 1; r.dot.style.opacity = 1; r.dot.style.transform = `translate(${c.X(r.v)}px,${r.y}px)`; r.bar.style.transition = `all 1s ${ease}`; r.bar.setAttribute('x2', c.X(r.v)); r.d.style.opacity = 1; };
+        const slide = r => { r.lab.style.opacity = 1; r.dot.style.opacity = 1; r.dot.style.transform = `translate(${c.X(r.v)}px,${r.y}px)`; r.bar.style.transition = `all .7s ${ease}`; r.bar.setAttribute('x2', c.X(r.v)); r.d.style.opacity = 1; };
         const st = [{ text: `Start from the small model as it ships: <b>${c.b0}</b> safe apps out of 100. Everything is measured from this line.`, run: () => { c.baseLine.setAttribute('opacity', 1); c.baseLab.style.opacity = 1; } }];
         const say = { A3: 'Let it <b>retry</b> with feedback', A4: '<b>Train</b> it on safe examples', A5: 'Do <b>both</b>' };
         c.rows.forEach(r => st.push({ text: `${say[r.id] || esc(nm(r.id))}: ${r.v} safe apps, <b>${r.v - c.b0 >= 0 ? '+' : ''}${r.v - c.b0}</b> over the small model.`, run: () => slide(r) }));
@@ -463,7 +467,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
         c.dots = perm.map((p, k) => {
           const x = 186 + (k % 25) * 22, y = 62 + Math.floor(k / 25) * 22;
           const d = S('circle', { r: 7, cx: 0, cy: 0 }, svg);
-          d.style.cssText = `transform:translate(${x}px,${y}px);fill:#8A857E;opacity:0;transition:transform 1s ${ease} ${k * 7}ms, fill .5s ${k * 7}ms, opacity .4s ${k * 6}ms`;
+          d.style.cssText = `transform:translate(${x}px,${y}px);fill:#8A857E;opacity:0;transition:transform .7s ${ease} ${k * 4}ms, fill .4s ${k * 4}ms, opacity .25s ${k * 3}ms`;
           return { el: d, cat: cat[p] };
         });
       },
@@ -476,7 +480,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
             if (k === 'safe') d.el.setAttribute('filter', 'url(#glow)');
           });
           bin.rect.style.stroke = bin.col + '88'; bin.rect.style.fill = bin.col + '10';
-          tween(bin.n, 0, c.dots.filter(d => d.cat === k).length, 1100);
+          tween(bin.n, 0, c.dots.filter(d => d.cat === k).length, 700);
         };
         const st = [
           { text: `We ask <b>${esc(nm(c.id))}</b> to write 100 backend apps.`, run: () => c.dots.forEach(d => { d.el.style.opacity = 1; }) },
@@ -506,7 +510,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
         c.bars = [[base, 'A2', 170, '#A39E96'], [big, 'A1', 400, '#86B3E0'], [best, best && best.arm, 630, SAFE]].filter(b => b[0]).map(([a, id, x, col]) => {
           const v = P(a.secure_pass_rate), h = v * sc;
           const r = S('rect', { x, y: y0 - h, width: 150, height: h, rx: 10, fill: col }, svg);
-          r.style.cssText = `transform-box:fill-box;transform-origin:bottom;transform:scaleY(0);transition:transform 1.1s ${ease}`;
+          r.style.cssText = `transform-box:fill-box;transform-origin:bottom;transform:scaleY(0);transition:transform .7s ${ease}`;
           const n = txt(svg, x + 75, y0 - h - 14, '0', { a: 'middle', s: 30, w: 700, c: col, mono: 1 }); n.style.cssText = 'opacity:0;transition:opacity .4s';
           txt(svg, x + 75, y0 + 26, nm(id), { a: 'middle', s: 13, c: '#C9C4BC' });
           const cost = txt(svg, x + 75, y0 + 48, a.cost_per_secure_app_usd ? money(a.cost_per_secure_app_usd) + ' per safe app' : '', { a: 'middle', s: 12, c: '#86B3E0', mono: 1 }); cost.style.cssText = 'opacity:0;transition:opacity .6s';
@@ -515,16 +519,15 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
         c.svg = svg;
       },
       steps(c) {
-        const grow = i => { const b = c.bars[i]; if (!b) return; b.r.style.transform = 'scaleY(1)'; b.n.style.opacity = 1; tween(b.n, 0, b.v, 1100); };
-        const st = [{ text: 'Out of 100 apps, how many are <b>safe to ship</b>? Higher is better.', run: () => {} }];
-        if (base) st.push({ text: `The small model, as is: <b>${P(base.secure_pass_rate)}</b>.`, run: () => grow(0) });
+        const grow = i => { const b = c.bars[i]; if (!b) return; b.r.style.transform = 'scaleY(1)'; b.n.style.opacity = 1; tween(b.n, 0, b.v, 700); };
+        const st = [base ? { text: `Out of 100 apps, how many are safe to ship? The small model, as is: <b>${P(base.secure_pass_rate)}</b>.`, run: () => grow(0) } : { text: 'Out of 100 apps, how many are <b>safe to ship</b>?', run: () => {} }];
         if (big) st.push({ text: `A much bigger model, for scale: <b>${P(big.secure_pass_rate)}</b>.`, run: () => grow(1) });
         if (best && base && best !== base) st.push({ text: `Our small model, trained and allowed to retry: <b>${P(best.secure_pass_rate)}</b>. That's ${P(best.secure_pass_rate) - P(base.secure_pass_rate)} more than where it started${big && best.secure_pass_rate > big.secure_pass_rate ? `, and ${P(best.secure_pass_rate) - P(big.secure_pass_rate)} more than the big model` : ''}.`, run: () => {
           grow(2);
           const a = c.bars[0], b = c.bars[2];
           const p = S('path', { d: `M${a.x + 75} ${a.y - 40} C ${a.x + 75} ${b.y - 80}, ${b.x + 75} ${b.y - 90}, ${b.x + 75} ${b.y - 48}`, fill: 'none', stroke: SAFE, 'stroke-width': 2, 'stroke-dasharray': '600', 'stroke-dashoffset': '600' }, c.svg);
-          p.style.transition = `stroke-dashoffset 1.2s ${ease} .5s`;
-          const lab = txt(c.svg, (a.x + b.x) / 2 + 75, Math.min(a.y, b.y) - 92, `+${P(best.secure_pass_rate) - P(base.secure_pass_rate)}`, { a: 'middle', s: 22, w: 700, c: SAFE }); lab.style.cssText = 'opacity:0;transition:opacity .5s 1.2s';
+          p.style.transition = `stroke-dashoffset .8s ${ease} .3s`;
+          const lab = txt(c.svg, (a.x + b.x) / 2 + 75, Math.min(a.y, b.y) - 92, `+${P(best.secure_pass_rate) - P(base.secure_pass_rate)}`, { a: 'middle', s: 22, w: 700, c: SAFE }); lab.style.cssText = 'opacity:0;transition:opacity .4s .8s';
           later(30, () => { p.setAttribute('stroke-dashoffset', '0'); lab.style.opacity = 1; });
         } });
         if (best && big && best.cost_per_secure_app_usd && big.cost_per_secure_app_usd) {
@@ -546,7 +549,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
           const lab = txt(svg, 236, y + 22, nm(id), { a: 'end', s: 14, c: '#C9C4BC' });
           S('rect', { x: 250, y, width: 560, height: 32, rx: 10, fill: '#262626' }, svg);
           const r = S('rect', { x: 250, y, width: v * 5.6, height: 32, rx: 10, fill: col }, svg);
-          r.style.cssText = `transform-box:fill-box;transform-origin:left;transform:scaleX(0);transition:transform 1.2s ${ease}`;
+          r.style.cssText = `transform-box:fill-box;transform-origin:left;transform:scaleX(0);transition:transform .75s ${ease}`;
           const n = txt(svg, 250 + v * 5.6 + 12, y + 23, '0', { s: 18, w: 700, c: col, mono: 1 }); n.style.cssText = 'opacity:0;transition:opacity .3s';
           return { id, v, r, n, lab };
         });
@@ -554,7 +557,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
       steps(c) {
         const st = c.rows.map((row, i) => ({
           text: i === 0 ? `<b>${esc(nm(row.id))}</b> comes last: ${row.v} safe apps out of 100.` : i === c.rows.length - 1 ? `<b>${esc(nm(row.id))}</b> wins with ${row.v}.` : `${esc(nm(row.id))}: <b>${row.v}</b>.`,
-          run: () => { row.r.style.transform = 'scaleX(1)'; row.n.style.opacity = 1; row.lab.setAttribute('fill', '#F2EFEA'); tween(row.n, 0, row.v, 1200); },
+          run: () => { row.r.style.transform = 'scaleX(1)'; row.n.style.opacity = 1; row.lab.setAttribute('fill', '#F2EFEA'); tween(row.n, 0, row.v, 700); },
         }));
         return st;
       },
@@ -582,11 +585,11 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
       },
       steps(c) {
         if (!EFF) return [{ text: 'This needs all four small-model setups.', run: () => {} }];
-        const lit = id => { const t = c.tiles[id]; t.g.style.opacity = 1; tween(t.n, 0, t.v, 900); };
+        const lit = id => { const t = c.tiles[id]; t.g.style.opacity = 1; tween(t.n, 0, t.v, 600); };
         const arrow = (d, label, lx, ly) => {
           const p = S('path', { d, fill: 'none', stroke: ACC, 'stroke-width': 2.5, 'stroke-linecap': 'round', 'stroke-dasharray': '400', 'stroke-dashoffset': '400', 'marker-end': 'url(#ah)' }, c.svg);
-          p.style.transition = `stroke-dashoffset .9s ${ease}`;
-          const t = txt(c.svg, lx, ly, label, { a: 'middle', s: 16, w: 700, c: '#F2EFEA' }); t.style.cssText = 'opacity:0;transition:opacity .4s .5s';
+          p.style.transition = `stroke-dashoffset .6s ${ease}`;
+          const t = txt(c.svg, lx, ly, label, { a: 'middle', s: 16, w: 700, c: '#F2EFEA' }); t.style.cssText = 'opacity:0;transition:opacity .3s .3s';
           later(30, () => { p.setAttribute('stroke-dashoffset', '0'); t.style.opacity = 1; });
         };
         const defs = S('defs', {}, c.svg), mk = S('marker', { id: 'ah', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto' }, defs); S('path', { d: 'M0 0L10 5L0 10z', fill: ACC }, mk);
@@ -660,10 +663,10 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
         c.badgeRect = S('rect', { x: 560, y: 72, width: 110, height: 30, rx: 15, fill: HACK }, c.badge); c.badgeTxt = txt(c.badge, 615, 92, 'HACKED', { a: 'middle', s: 12.5, w: 700, c: '#141414' });
         const cwe = s0.exploits_triggered[0] ? s0.exploits_triggered[0].cwe : null;
         c.cwe = cwe;
-        c.packet = S('g', {}, svg); c.packet.style.cssText = `transform:translate(100px,215px);opacity:0;transition:transform 1.1s ${ease}, opacity .3s`;
+        c.packet = S('g', {}, svg); c.packet.style.cssText = `transform:translate(100px,215px);opacity:0;transition:transform .7s ${ease}, opacity .3s`;
         S('rect', { x: -78, y: -16, width: 156, height: 32, rx: 16, fill: '#E07A6B' }, c.packet);
         txt(c.packet, 0, 5, PAYLOAD[cwe] || 'crafted input', { a: 'middle', s: 12, mono: 1, w: 500, c: '#141414' });
-        c.msg = S('g', {}, svg); c.msg.style.cssText = `transform:translate(450px,${c.badY}px);opacity:0;transition:transform 1.2s ${ease}, opacity .3s`;
+        c.msg = S('g', {}, svg); c.msg.style.cssText = `transform:translate(450px,${c.badY}px);opacity:0;transition:transform .75s ${ease}, opacity .3s`;
         S('rect', { x: -96, y: -16, width: 192, height: 32, rx: 16, fill: ACC }, c.msg);
         txt(c.msg, 0, 5, 'what failed: ' + (cwe ? 'CWE-' + cwe : 'tests'), { a: 'middle', s: 12, mono: 1, c: '#FFFFFF' });
       },
@@ -672,9 +675,8 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
         if (!r) return [{ text: 'No app records yet.', run: () => {} }];
         const s0 = r.steps[0], last = r.steps[r.steps.length - 1];
         const what = c.cwe ? (ATTACK[c.cwe] || 'gets in') : 'breaks it';
-        const st = [{ text: `<b>${esc(nm(r.arm))}</b> wrote this app on its first try. It passes the tests.`, run: () => {} }];
-        if (!s0.exploits_triggered.length) { st.push({ text: s0.secure_pass ? 'No attack got in. Safe on the first try.' : `It failed ${s0.failed_tests.length} test(s).`, run: () => {} }); return st; }
-        st.push({ text: 'An attacker sends a booby-trapped input.', run: () => { c.packet.style.opacity = 1; later(40, () => { c.packet.style.transform = `translate(450px,${c.badY - 5}px)`; }); } });
+        if (!s0.exploits_triggered.length) return [{ text: `<b>${esc(nm(r.arm))}</b> wrote this app. ${s0.secure_pass ? 'No attack got in. Safe on the first try.' : `It failed ${s0.failed_tests.length} test(s).`}`, run: () => {} }];
+        const st = [{ text: `<b>${esc(nm(r.arm))}</b> wrote this app on its first try, and it passes the tests. An attacker sends a booby-trapped input.`, run: () => { c.packet.style.opacity = 1; later(30, () => { c.packet.style.transform = `translate(450px,${c.badY - 5}px)`; }); } }];
         st.push({ text: `It slips through this line, and the attacker <b>${esc(what)}</b>. Hacked.`, run: () => { c.packet.style.transform = `translate(450px,${c.badY - 5}px)`; c.packet.style.opacity = 0; c.hlRect.setAttribute('opacity', 0.35); c.badge.style.opacity = 1; c.badge.style.transform = 'translateY(0)'; } });
         if (r.steps.length < 2) return st;
         st.push({ text: 'We tell the model only <b>what failed</b>. It never sees the attack itself.', run: () => { c.msg.style.opacity = 1; later(40, () => { c.msg.style.transform = 'translate(801px,215px)'; }); } });
@@ -686,8 +688,8 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
           c.badgeRect.setAttribute('fill', SAFE); c.badgeTxt.textContent = 'SAFE';
           c.packet.style.transition = 'none'; c.packet.style.transform = 'translate(100px,215px)'; c.packet.style.opacity = 1;
           later(60, () => { c.packet.style.transition = `transform .9s ${ease}, opacity .3s`; c.packet.style.transform = `translate(330px,${c.badY - 5}px)`; });
-          later(1000, () => { c.packet.style.transform = 'translate(100px,215px)'; c.badge.style.opacity = 1; c.badge.style.transform = 'translateY(0)'; });
-          later(1900, () => { c.packet.style.opacity = 0; });
+          later(800, () => { c.packet.style.transform = 'translate(100px,215px)'; c.badge.style.opacity = 1; c.badge.style.transform = 'translateY(0)'; });
+          later(1500, () => { c.packet.style.opacity = 0; });
         } });
         return st;
       },
