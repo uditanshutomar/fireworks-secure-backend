@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Secure Backend: dashboard</title>
+<title>Teach'O'tron: dashboard</title>
 <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,6 +43,11 @@ button { font-family: inherit; }
 
 .grid { max-width: 1520px; margin: 0 auto; padding: 16px 20px 32px; display: grid; grid-template-columns: repeat(24, minmax(0, 1fr)); gap: 12px; }
 @media (max-width: 1000px) { .grid > * { grid-column: 1 / -1 !important; } }
+.more { grid-column: 1 / -1; }
+.more > summary { cursor: pointer; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 12px 2px; list-style: none; }
+.more > summary::before { content: "▸ "; } .more[open] > summary::before { content: "▾ "; }
+.more > .grid2 { display: grid; grid-template-columns: repeat(24, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 1000px) { .grid2 > * { grid-column: 1 / -1 !important; } }
 .row { grid-column: 1 / -1; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 12px 2px 0; }
 .panel { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; display: flex; flex-direction: column; min-width: 0; cursor: pointer; transition: border-color .2s, transform .2s, box-shadow .2s; }
 .panel:hover { border-color: #5A5A5A; }
@@ -141,7 +146,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
 </head>
 <body>
 <header class="topbar">
-  <div class="crumbs"><img src="assets/logo-mark.svg" width="22" height="22" alt=""><span class="dim">Dashboards /</span><b>Secure Backend</b></div>
+  <div class="crumbs"><img src="assets/logo-mark.svg" width="22" height="22" alt=""><span class="dim">Dashboards /</span><b>Teach'O'tron</b></div>
   <div class="tb-r">
     <span class="hint"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 9l6 3-6 3z"></path><circle cx="12" cy="12" r="9"></circle></svg>Click any panel for an animated explanation</span>
     <span class="pill" id="scope"></span>
@@ -162,7 +167,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
   <section class="panel w12" data-explain="journey"><div class="p-head"><span class="p-title">Where 100 apps end up</span><button class="explain" type="button">▶ Explain</button></div><div class="p-body"><div id="stack"></div>
     <div class="legend"><span><i style="background:var(--safe)"></i>Safe</span><span><i style="background:var(--hack)"></i>Works, but hacked</span><span><i style="background:var(--broken)"></i>Doesn't work</span></div></div></section>
 
-  <div class="row">Breakdown</div>
+  <details class="more"><summary>All setups, retries and example runs</summary><div class="grid2">
   <section class="panel w12" data-explain="effects"><div class="p-head"><span class="p-title">What retries change</span><button class="explain" type="button">▶ Explain</button></div><div class="p-body"><div id="slope"></div></div></section>
   <section class="panel w12" data-explain="effects"><div class="p-head"><span class="p-title">What each change adds</span><button class="explain" type="button">▶ Explain</button></div><div class="p-body"><div class="g22" id="g22"></div><div class="eff" id="eff"></div></div></section>
   <section class="panel w24" data-explain="table"><div class="p-head"><span class="p-title">All setups</span><button class="explain" type="button">▶ Explain</button></div><div class="p-body tbox"><table class="tbl"><thead><tr><th>Setup</th><th class="r">Safe / 100</th><th class="r">Work / 100</th><th class="r">Hacked / 100</th><th class="r">Cost per safe app</th><th class="r">Safe apps per $1</th><th class="r">Wait per app</th></tr></thead><tbody id="tbl"></tbody></table></div></section>
@@ -171,7 +176,8 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
   <section class="panel w24" data-explain="attack"><div class="p-head"><span class="p-title">One app, first try vs retry</span><button class="explain" type="button">▶ Explain</button></div>
     <div class="p-body"><div class="rv-top"><select id="run-pick" aria-label="Choose an app"></select><span id="steps" style="display:inline-flex;gap:6px;flex-wrap:wrap"></span></div><div class="logs" id="code" aria-label="App code"></div><div class="verdict" id="verdict"></div></div></section>
   <div class="row">Live: attack, then fix</div>
-  <section class="panel w24 still" aria-labelledby="loop-t"><div class="p-head"><span class="p-title" id="loop-t">An attack gets in, then the agent fixes it</span><span class="p-info">loops continuously</span></div><div class="p-body"><div id="loop"></div></div></section>
+  <section class="panel w24 still" aria-labelledby="loop-t"><div class="p-head"><span class="p-title" id="loop-t">How the repair loop works (illustration)</span><span class="p-info">loops continuously</span></div><div class="p-body"><div id="loop"></div></div></section>
+  </div></details>
 </main>
 
 <div class="modal" id="modal" hidden>
@@ -196,12 +202,13 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
   const SMALLSET = ['C1', 'C3', 'A3', 'C2'];
   const ARMS = (R.arms || []).filter(a => IDS.includes(a.arm));
   const A = {}; ARMS.forEach(a => { A[a.arm] = a; });
-  const ORDER = ['A2', 'C1', 'C3', 'A3', 'C2', 'A1', 'A6'].filter(id => A[id]);
+  const ORDER = ['A2', 'C3', 'A1'].filter(id => A[id]);
+  const ALL = ['A2', 'C1', 'C3', 'A3', 'C2', 'A1', 'A6'].filter(id => A[id]);
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const P = x => Math.round(x * 100);
   const money = x => x == null ? '–' : (x >= 0.1 ? '$' + x.toFixed(2) : '$' + x.toFixed(4));
-  const NAME = { A1: 'Big model', A2: 'Small model', A3: 'Small + retries', A6: 'Big + retries', C1: 'Small + examples', C2: 'Small + examples + retries', C3: 'Small + examples, short answers' };
+  const NAME = { A1: 'Big model', A2: 'Small model', A3: 'Small + retries', A6: 'Big + retries', C1: 'Small + examples', C2: 'Small + examples + retries', C3: "Teach'O'tron" };
   const nm = id => NAME[id] || id;
   const SAFE = '#7BC89A', HACK = '#E8A14A', BROKEN = '#474747', ACC = '#F2EFEA', BASE_C = '#A39E96', BIG_C = '#86B3E0';
   // Safe-rate color: red to amber to green, softened.
@@ -229,18 +236,17 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
   const stat = (id, title, val, unit, sub, color) => {
     $(id).innerHTML = `<div class="p-head"><span class="p-title">${title}</span><button class="explain" type="button">▶ Explain</button></div><div class="big num" style="color:${color};letter-spacing:-0.03em">${val}<small>${unit}</small></div><div class="sub">${sub}</div>`;
   };
-  if (base) stat('s1', 'Small model (Nemotron), one try', P(base.secure_pass_rate), 'safe / 100', 'Starting point', thr(P(base.secure_pass_rate)));
-  if (smallBest) stat('s2', 'Best small setup: ' + esc(nm(smallBest.arm)), P(smallBest.secure_pass_rate), 'safe / 100', base ? `${P(smallBest.secure_pass_rate) - P(base.secure_pass_rate) >= 0 ? '+' : ''}${P(smallBest.secure_pass_rate) - P(base.secure_pass_rate)} over one try` : '', thr(P(smallBest.secure_pass_rate)));
-  if (big) stat('s3', 'Big model (DeepSeek), one try', P(big.secure_pass_rate), 'safe / 100', smallBest ? (smallBest.secure_pass_rate >= big.secure_pass_rate ? `${nm(smallBest.arm)} is ${P(smallBest.secure_pass_rate) - P(big.secure_pass_rate)} ahead` : `${nm(smallBest.arm)} is ${P(big.secure_pass_rate) - P(smallBest.secure_pass_rate)} behind`) : '', '#86B3E0');
-  if (smallCheap) {
-    const r = big && big.cost_per_secure_app_usd ? big.cost_per_secure_app_usd / smallCheap.cost_per_secure_app_usd : null;
-    stat('s4', 'Cost per safe app: ' + esc(nm(smallCheap.arm)), money(smallCheap.cost_per_secure_app_usd), '', r ? (r >= 1 ? `${r.toFixed(1)}× cheaper than the big model` : `${(1 / r).toFixed(1)}× the big model's cost`) : '', r && r >= 1 ? '#7BC89A' : '#86B3E0');
-  }
+  const tot = A.C3;
+  if (base && tot) stat('s1', "Same Nemotron, taught by the sandbox", `${P(base.secure_pass_rate)} → ${P(tot.secure_pass_rate)}`, 'safe / 100', 'Before → after. No fine-tuning.', '#7BC89A');
+  const per$ = a => a && a.cost_per_secure_app_usd ? Math.round(1 / a.cost_per_secure_app_usd) : 0;
+  if (tot && big) stat('s2', 'Safe apps per $1', per$(tot), '', `Big model (DeepSeek): ${per$(big)}. ${(per$(tot) / per$(big)).toFixed(1)}× more`, '#7BC89A');
+  if (tot && big) stat('s3', 'Wait per app', `${tot.median_latency_s.toFixed(1)} s`, '', `Big model: ${big.median_latency_s.toFixed(1)} s`, '#7BC89A');
+  stat('s4', 'How', '3', 'examples', 'Big-model apps that survived every attack in the sandbox, shown to the small model', '#86B3E0');
 
   // Comparison: every setup against the small model's score, big model as a reference line.
   (function () {
     if (!base) { $('gauge').innerHTML = '<div class="empty">Needs the small model results.</div>'; return; }
-    const rows = ['C1', 'C3', 'A3', 'C2', 'A1', 'A6'].filter(id => A[id]);
+    const rows = ['C3', 'A1'].filter(id => A[id]);
     const W = 600, rowH = 46, left = 160, right = 56, top = 30, H = top + rows.length * rowH + 8;
     const vmax = Math.max(60, ...ARMS.map(a => P(a.secure_pass_rate))) + 5;
     const X = v => left + v / vmax * (W - left - right), b0 = P(base.secure_pass_rate);
@@ -285,7 +291,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
     $('eff').innerHTML = `<div>Retries, small<b>${sg(EFF.rs)}</b></div><div>Retries, big<b>${sg(EFF.rb)}</b></div><div>Small + retries vs big<b style="color:${EFF.vs >= 0 ? '#7BC89A' : '#E8A14A'}">${sg(EFF.vs)}</b></div>`;
   })();
 
-  $('tbl').innerHTML = ORDER.map(id => {
+  $('tbl').innerHTML = ALL.map(id => {
     const a = A[id], sv = P(a.secure_pass_rate);
     return `<tr><td>${esc(nm(id))}</td><td class="r m"><span class="chipv" style="background:${thr(sv)}">${sv}</span></td><td class="r m">${P(a.functional_pass_rate)}</td><td class="r m" style="color:${HACK}">${P(a.functional_pass_rate - a.secure_pass_rate)}</td><td class="r m">${money(a.cost_per_secure_app_usd)}</td><td class="r m">${a.cost_per_secure_app_usd ? Math.round(1 / a.cost_per_secure_app_usd) : '–'}</td><td class="r m">${a.median_latency_s.toFixed(1)} s</td></tr>`;
   }).join('');
