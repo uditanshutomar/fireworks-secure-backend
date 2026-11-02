@@ -57,12 +57,14 @@ def repair_loop(
     system_prompt: Optional[str] = None,
     extract: Optional[Callable[[str], str]] = None,
     reply_format: str = DEFAULT_FORMAT,
+    examples: Optional[List[Dict[str, str]]] = None,
 ) -> Dict[str, Any]:
     """Returns a dict with keys rounds, functional_pass, secure_pass, cwes,
     tokens_in, tokens_out, latency_s, steps (shapes as in the run record).
 
     system_prompt and extract override the defaults, so every arm can share
-    one prompt and one parser (for example BaxBench's). reply_format is the answer format the
+    one prompt and one parser (for example BaxBench's). examples are worked user/assistant
+    turns placed before the task (in-context distillation). reply_format is the answer format the
     repair message asks for. Each repair round sends only the task, the last attempt and its
     feedback: resending the whole history grew the prompt every round and small models
     degenerated into output with no code.
@@ -72,6 +74,7 @@ def repair_loop(
         raise ValueError("max_rounds must be 0 or more")
     base: List[Dict[str, str]] = [
         {"role": "system", "content": system_prompt or SYSTEM_PROMPT.format(framework=framework)},
+        *(examples or []),
         {"role": "user", "content": task_prompt},
     ]
     messages = list(base)

@@ -23,7 +23,22 @@ from secure_backend.fireworks_client import FireworksClient  # noqa: E402
 from secure_backend.repair_loop import repair_loop  # noqa: E402
 
 
-def run_task(arm_id, arm, client, scenario, framework, run, out_dir):
+def load_examples(arm, split):
+    """Worked examples for in-context distillation: exploit-verified training apps, never a test scenario."""
+    picks = arm.get("examples")
+    if not picks:
+        return None
+    rows = [json.loads(l) for l in (ROOT / "training" / "sft_with_metadata.jsonl").read_text().splitlines() if l]
+    out = []
+    for scenario, framework in picks:
+        if scenario in split["test"]:
+            sys.exit(f"example scenario {scenario} is in the test set")
+        row = next(r for r in rows if r["metadata"] == {"scenario": scenario, "framework": framework})
+        out += [m for m in row["messages"] if m["role"] in ("user", "assistant")]
+    return out
+
+
+def run_task(arm_id, arm, client, scenario, framework, run, out_dir, examples=None):
     path = out_dir / arm_id / f"{scenario}__{framework}__r{run}.json"
     if path.exists():
         return path, "skip"
@@ -37,7 +52,8 @@ def run_task(arm_id, arm, client, scenario, framework, run, out_dir):
     out = repair_loop(client, messages[-1]["content"], run_tests, max_rounds=arm["max_rounds"],
                       framework=framework, system_prompt=messages[0]["content"],
                       extract=lambda t: next(iter(bax.extract_files(framework, t).values()), ""),
-                      reply_format="reply with the full file inside <CODE></CODE> tags and nothing else")
+                      reply_format="reply with the full file inside <CODE></CODE> tags and nothing else",
+                      examples=examples)
     record = {"arm": arm_id, "model": arm["model"], "scenario": scenario, "framework": framework, "run": run,
               "functional_pass": out["functional_pass"], "secure_pass": out["secure_pass"], "cwes": out["cwes"],
               "rounds": out["rounds"], "tokens_in": out["tokens_in"], "tokens_out": out["tokens_out"],
@@ -68,12 +84,13 @@ def main() -> int:
     client = FireworksClient(arm["model"], price_model=arm.get("price_model"),
                              key_env=arm.get("key_env", "FIREWORKS_API_KEY"))
     out_dir = ROOT / args.out
+    examples = load_examples(arm, split)
     jobs = [(s, f, r) for s in scenarios for f in frameworks for r in range(1, args.runs + 1)]
     print(f"{args.arm}: {len(jobs)} runs, {args.jobs} at a time", flush=True)
     start = time.time()
     counts: dict = {}
     with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
-        futs = {pool.submit(run_task, args.arm, arm, client, s, f, r, out_dir): (s, f, r) for s, f, r in jobs}
+        futs = {pool.submit(run_task, args.arm, arm, client, s, f, r, out_dir, examples): (s, f, r) for s, f, r in jobs}
         for fut in concurrent.futures.as_completed(futs):
             s, f, r = futs[fut]
             try:
