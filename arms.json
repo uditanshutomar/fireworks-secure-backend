@@ -22,14 +22,16 @@
     "model": "SET_AFTER_DEPLOY",
     "price_model": "accounts/fireworks/models/nemotron-nano-3-30b-a3b",
     "loop": "one-shot",
-    "max_rounds": 0
+    "max_rounds": 0,
+    "key_env": "FIREWORKS_API_KEY_FT"
   },
   "A5": {
     "label": "Nemotron Nano 3 tuned + repair",
     "model": "SET_AFTER_DEPLOY",
     "price_model": "accounts/fireworks/models/nemotron-nano-3-30b-a3b",
     "loop": "repair",
-    "max_rounds": 3
+    "max_rounds": 3,
+    "key_env": "FIREWORKS_API_KEY_FT"
   },
   "G1": {
     "label": "DeepSeek V4.1 Flash + repair (training data only)",

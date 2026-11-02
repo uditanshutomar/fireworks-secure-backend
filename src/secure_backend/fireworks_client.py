@@ -19,16 +19,16 @@ DEFAULT_PRICES = {
 }
 
 
-def _load_key() -> str:
-    key = os.environ.get("FIREWORKS_API_KEY")
+def _load_key(name: str = "FIREWORKS_API_KEY") -> str:
+    key = os.environ.get(name)
     if key:
         return key
     env_file = REPO_ROOT / ".env"
     if env_file.exists():
         for line in env_file.read_text().splitlines():
-            if line.startswith("FIREWORKS_API_KEY="):
+            if line.startswith(name + "="):
                 return line.split("=", 1)[1].strip().strip('"')
-    raise RuntimeError("FIREWORKS_API_KEY not set (environment or .env)")
+    raise RuntimeError(f"{name} not set (environment or .env)")
 
 
 def load_prices() -> dict:
@@ -41,7 +41,8 @@ def load_prices() -> dict:
 
 class FireworksClient:
     def __init__(self, model: str, temperature: float = 0.4, max_tokens: int = 8192,
-                 price_model: str | None = None, retries: int = 5, reasoning_effort: str | None = "none"):
+                 price_model: str | None = None, retries: int = 5, reasoning_effort: str | None = "none",
+                 key_env: str = "FIREWORKS_API_KEY"):
         self.model = model
         self.temperature = temperature
         self.max_tokens = max_tokens
@@ -49,7 +50,7 @@ class FireworksClient:
         # Every arm runs without a thinking phase: with it, DeepSeek spent the whole token budget
         # reasoning and returned no code on 18 of 64 training runs.
         self.reasoning_effort = reasoning_effort
-        self.key = _load_key()
+        self.key = _load_key(key_env)
         # A tuned deployment is billed like its base model.
         self.price_in, self.price_out = load_prices().get(price_model or model, (0.0, 0.0))
 

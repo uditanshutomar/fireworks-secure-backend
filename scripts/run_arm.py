@@ -65,7 +65,8 @@ def main() -> int:
     if unknown:
         sys.exit(f"not in the {args.set} set: {sorted(unknown)}")
     frameworks = split["framework_test"] if args.set == "test" else split["frameworks_train"]
-    client = FireworksClient(arm["model"], price_model=arm.get("price_model"))
+    client = FireworksClient(arm["model"], price_model=arm.get("price_model"),
+                             key_env=arm.get("key_env", "FIREWORKS_API_KEY"))
     out_dir = ROOT / args.out
     jobs = [(s, f, r) for s in scenarios for f in frameworks for r in range(1, args.runs + 1)]
     print(f"{args.arm}: {len(jobs)} runs, {args.jobs} at a time", flush=True)
