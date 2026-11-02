@@ -11,139 +11,99 @@
 <style>
 :root {
   --paper: #F9F7F5;
-  --soft: #F4F0EC;
   --card: #FFFFFF;
-  --line: #E2DDD8;
+  --line: #ECE7E2;
   --ink: #280016;
   --ink-2: #5E5257;
-  --muted: #706666;
+  --muted: #8A7F84;
   --safe: #610A45;
   --hack: #F98461;
-  --hack-ink: #A63A1F;
-  --broken: #E2DDD8;
+  --broken: #E6E0DB;
   --serif: 'Instrument Serif', Georgia, serif;
   --sans: 'Geist', 'Helvetica Neue', Arial, sans-serif;
   --mono: 'Geist Mono', ui-monospace, Menlo, monospace;
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
-.dash { max-width: 1480px; margin: 0 auto; padding: 18px clamp(12px, 2vw, 28px) 28px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
-@media (max-width: 1000px) { .dash > * { grid-column: 1 / -1 !important; } }
+.dash { max-width: 1280px; margin: 0 auto; padding: 28px clamp(14px, 3vw, 40px) 36px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 960px) { .dash > * { grid-column: 1 / -1 !important; } }
 .num { font-variant-numeric: tabular-nums; }
 
-/* Title bar */
-.bar { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; padding: 4px 2px 6px; }
+.bar { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
 .bar-l { display: flex; align-items: center; gap: 12px; }
-.bar h1 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+.bar h1 { margin: 0; font-size: 19px; font-weight: 600; }
 .bar .sub { color: var(--muted); font-size: 13px; }
-.badge { display: inline-flex; align-items: center; gap: 8px; padding: 5px 11px; border-radius: 999px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; background: #FDE7DF; color: var(--hack-ink); border: 1px solid #F6C4B2; }
-.badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--hack); }
-.key { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); }
-.key span { display: inline-flex; align-items: center; gap: 6px; }
-.sw { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+.badge { padding: 4px 10px; border-radius: 999px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; background: #FDE7DF; color: #A63A1F; }
 
-/* Tiles */
-.tile { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.t-title { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-.t-take { font-size: 17px; font-weight: 600; line-height: 1.3; text-wrap: pretty; }
+.tile { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.t-title { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.t-take { font-size: 17px; font-weight: 600; line-height: 1.3; margin-top: -8px; }
 .t-take em { font-style: normal; color: var(--safe); }
-.t-note { font-size: 12px; color: var(--muted); margin-top: auto; }
 .tile svg[role="img"] { display: block; width: 100%; height: auto; }
-.s3 { grid-column: span 3; } .s4 { grid-column: span 4; } .s5 { grid-column: span 5; } .s6 { grid-column: span 6; } .s7 { grid-column: span 7; } .s8 { grid-column: span 8; } .s12 { grid-column: 1 / -1; }
+.s4 { grid-column: span 4; } .s5 { grid-column: span 5; } .s7 { grid-column: span 7; } .s8 { grid-column: span 8; }
 
-/* KPI tiles */
-.kpi .v { font-family: var(--serif); font-size: 52px; line-height: 0.95; }
-.kpi .v small { font-family: var(--sans); font-size: 15px; color: var(--muted); margin-left: 4px; }
-.kpi .d { font-size: 13px; color: var(--ink-2); }
+.kpi .v { font-family: var(--serif); font-size: 64px; line-height: 0.9; }
+.kpi .v small { font-family: var(--sans); font-size: 15px; color: var(--muted); margin-left: 6px; }
+.kpi .d { font-size: 13.5px; color: var(--ink-2); }
 .kpi.hl { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-.kpi.hl .t-title, .kpi.hl .d, .kpi.hl .v small { color: rgba(249, 247, 245, 0.75); }
+.kpi.hl .t-title, .kpi.hl .d, .kpi.hl .v small { color: rgba(249, 247, 245, 0.72); }
 .up { color: var(--safe); font-weight: 600; }
 .kpi.hl .up { color: #FFB59C; }
 
-/* Waffles */
-.waffles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-@media (max-width: 640px) { .waffles { grid-template-columns: 1fr; } }
-.wf h3 { margin: 0 0 8px; font-size: 13.5px; font-weight: 600; }
-.wf .grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; }
-.wf .grid i { aspect-ratio: 1; border-radius: 2px; display: block; }
-.wf .tally { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--ink-2); }
-.wf .tally b { font-family: var(--serif); font-weight: 400; font-size: 24px; color: var(--ink); display: block; line-height: 1; }
+.key { display: flex; gap: 16px; font-size: 12.5px; color: var(--ink-2); }
+.key span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 
-/* 2x2 */
-.g22 { display: grid; grid-template-columns: 74px repeat(2, minmax(0, 1fr)); gap: 6px; }
-.g22 .h { font-size: 11.5px; color: var(--muted); display: flex; align-items: center; }
+.g22 { display: grid; grid-template-columns: 64px repeat(2, minmax(0, 1fr)); gap: 8px; }
+.g22 .h { font-size: 12px; color: var(--muted); display: flex; align-items: center; }
 .g22 .h.c { justify-content: center; }
-.c22 { border-radius: 10px; padding: 10px 12px; min-height: 86px; display: flex; flex-direction: column; justify-content: space-between; }
-.c22 .p { font-family: var(--serif); font-size: 38px; line-height: 1; }
-.c22 .l { font-size: 11.5px; }
+.c22 { border-radius: 12px; padding: 12px 14px; min-height: 92px; display: flex; flex-direction: column; justify-content: space-between; }
+.c22 .p { font-family: var(--serif); font-size: 42px; line-height: 1; }
+.c22 .l { font-size: 12px; }
 .c22.dark { color: var(--paper); }
 
-/* Heatmap */
-.hm { width: 100%; border-collapse: separate; border-spacing: 3px; }
-.hm th { font-size: 11px; font-weight: 500; color: var(--muted); padding: 0 2px 4px; text-align: center; }
-.hm th:first-child { text-align: left; }
-.hm td.w { font-size: 12.5px; padding-right: 8px; white-space: nowrap; }
-.hm td.w svg { vertical-align: -4px; margin-right: 6px; color: var(--ink-2); }
-.hm td.v { height: 30px; text-align: center; border-radius: 6px; font-family: var(--mono); font-size: 12.5px; }
-
-/* Fix in action */
-.fix { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); gap: 14px; }
-.fix-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
-select { min-height: 40px; padding: 0 12px; font-family: var(--sans); font-size: 13px; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 9px; max-width: 100%; }
+.fix-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; }
 .steps { display: flex; gap: 6px; flex-wrap: wrap; }
-.step { min-height: 40px; padding: 0 14px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-family: var(--sans); font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.step { min-height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-family: var(--sans); font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
 .step[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-.code { background: #1A0710; color: #EFE9EC; font-family: var(--mono); font-size: 12.5px; line-height: 1.7; padding: 10px 0; border-radius: 10px; overflow-x: auto; }
+select { min-height: 38px; padding: 0 12px; font-family: var(--sans); font-size: 13px; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 999px; max-width: 100%; }
+.code { background: #1A0710; color: #EFE9EC; font-family: var(--mono); font-size: 12.5px; line-height: 1.75; padding: 12px 0; border-radius: 12px; overflow-x: auto; }
 .ln { display: flex; padding-right: 16px; min-width: max-content; }
-.ln .n { width: 36px; flex: none; text-align: right; padding-right: 10px; color: #8E7D85; user-select: none; }
+.ln .n { width: 34px; flex: none; text-align: right; padding-right: 12px; color: #8E7D85; user-select: none; }
 .ln .t { white-space: pre; }
-.ln.bad { background: rgba(249, 132, 97, 0.25); }
-.ln.new { background: rgba(214, 120, 180, 0.25); }
-.tk-k { color: #F0A6D2; } .tk-s { color: #FFC2A8; } .tk-c { color: #8E7D85; }
-.verdict { display: flex; flex-direction: column; gap: 10px; }
-.vbox { border-radius: 10px; padding: 12px 14px; font-size: 13.5px; }
-.vbox.bad { background: #FEF0EA; }
-.vbox.good { background: #F6EAF1; }
-.vbox b { display: block; font-size: 15px; margin-bottom: 2px; }
-.said { margin: 0; padding: 10px 12px; background: var(--soft); border-radius: 10px; font-family: var(--mono); font-size: 12px; line-height: 1.55; white-space: pre-wrap; }
-.empty { padding: 16px; font-size: 13px; color: var(--muted); }
-.foot { grid-column: 1 / -1; font-size: 11.5px; color: var(--muted); padding: 2px; }
+.ln.bad { background: rgba(249, 132, 97, 0.28); }
+.ln.new { background: rgba(214, 120, 180, 0.28); }
+.tk-k { color: #F0A6D2; } .tk-s { color: #FFC2A8; }
+.verdict { font-size: 14px; color: var(--ink-2); }
+.verdict b { color: var(--ink); }
+.empty { font-size: 13px; color: var(--muted); }
+.foot { grid-column: 1 / -1; font-size: 12px; color: var(--muted); text-align: center; margin-top: 6px; }
 </style>
 </head>
 <body>
 <main class="dash">
   <div class="bar">
-    <div class="bar-l">
-      <img src="assets/logo-mark.svg" width="28" height="28" alt="">
-      <div><h1>Secure Backend</h1><div class="sub" id="sub"></div></div>
-      <span class="badge" id="sample" hidden><i></i>Sample data</span>
-    </div>
-    <div class="key"><span><i class="sw" style="background:var(--safe)"></i>Safe: works and couldn't be hacked</span><span><i class="sw" style="background:var(--hack)"></i>Hacked: works, but an attack got in</span><span><i class="sw" style="background:var(--broken)"></i>Doesn't work</span></div>
+    <div class="bar-l"><img src="assets/logo-mark.svg" width="26" height="26" alt=""><div><h1>Secure Backend</h1><div class="sub" id="sub"></div></div></div>
+    <span class="badge" id="sample" hidden>Sample data</span>
   </div>
 
-  <div class="tile kpi s3" id="k1"></div>
-  <div class="tile kpi hl s3" id="k2"></div>
-  <div class="tile kpi s3" id="k3"></div>
-  <div class="tile kpi s3" id="k4"></div>
+  <div class="tile kpi s4" id="k1"></div>
+  <div class="tile kpi hl s4" id="k2"></div>
+  <div class="tile kpi s4" id="k3"></div>
 
-  <section class="tile s7" aria-labelledby="wf-t"><div class="t-title">Out of 100 apps</div><div class="t-take" id="wf-t"></div><div class="waffles" id="waffles"></div></section>
-  <section class="tile s5" aria-labelledby="g-t"><div class="t-title">What each change adds</div><div class="t-take" id="g-t"></div><div class="g22" id="g22"></div><div class="t-note" id="g-note"></div></section>
+  <section class="tile s7"><div class="t-title">Out of 100 apps</div><div class="t-take" id="o-t"></div>
+    <div class="key"><span><i class="sw" style="background:var(--safe)"></i>Safe</span><span><i class="sw" style="background:var(--hack)"></i>Works, but hacked</span><span><i class="sw" style="background:var(--broken)"></i>Doesn't work</span></div>
+    <div id="outcomes"></div></section>
+  <section class="tile s5"><div class="t-title">What each change adds</div><div class="t-take" id="g-t"></div><div class="g22" id="g22"></div></section>
 
-  <section class="tile s7" aria-labelledby="o-t"><div class="t-title">Where every app ends up</div><div class="t-take" id="o-t"></div><div id="outcomes"></div></section>
-  <section class="tile s5" aria-labelledby="l-t"><div class="t-title">Gain over the small model, out of 100</div><div class="t-take" id="l-t"></div><div id="lift"></div><div class="t-note">The line shows the range the true gain likely falls in. If it reaches 0, the gain could be luck.</div></section>
-
-  <section class="tile s4" aria-labelledby="c-t"><div class="t-title">Safe apps per $1</div><div class="t-take" id="c-t"></div><div id="dollar"></div></section>
-  <section class="tile s4" aria-labelledby="w-t"><div class="t-title">Wait per app</div><div class="t-take" id="w-t"></div><div id="wait"></div></section>
-  <section class="tile s4" aria-labelledby="a-t"><div class="t-title">Attacks that still get in</div><div class="t-take" id="a-t"></div><table class="hm"><thead id="hm-h"></thead><tbody id="hm-b"></tbody></table></section>
-
-  <section class="tile s8" aria-labelledby="f-t">
-    <div class="fix-top"><div><div class="t-title">Fix in action</div><div class="t-take" id="f-t">One app, before and after feedback</div></div>
-      <div class="steps"><label class="t-title" for="run-pick" style="align-self:center">App</label><select id="run-pick"></select></div></div>
+  <section class="tile s8">
+    <div class="fix-top"><div><div class="t-title">One app, before and after</div><div class="t-take" style="margin-top:6px" id="f-t"></div></div><select id="run-pick" aria-label="Choose an app"></select></div>
     <div class="steps" id="steps"></div>
-    <div class="fix" id="fix"></div>
+    <div class="code" id="code" aria-label="App code"></div>
+    <div class="verdict" id="verdict"></div>
   </section>
-  <section class="tile s4" aria-labelledby="r-t"><div class="t-title">When retries make it safe</div><div class="t-take" id="r-t"></div><div id="rounds"></div><div class="t-note" id="r-note"></div></section>
+  <section class="tile s4"><div class="t-title">Safe apps per $1</div><div class="t-take" id="c-t"></div><div id="dollar"></div></section>
 
   <div class="foot" id="foot"></div>
 </main>
@@ -156,275 +116,109 @@ select { min-height: 40px; padding: 0 12px; font-family: var(--sans); font-size:
   const IDS = ['A1', 'A2', 'A3', 'A4', 'A5'];
   const ARMS = (R.arms || []).filter(a => IDS.includes(a.arm));
   const A = {}; ARMS.forEach(a => { A[a.arm] = a; });
-  const BASE = 'A2', BIG = 'A1';
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const P = x => Math.round(x * 100);
-  const signed = n => (n >= 0 ? '+' : '−') + Math.abs(n);
-  const money = x => x == null ? 'n/a' : (x >= 0.1 ? '$' + x.toFixed(2) : '$' + x.toFixed(4));
-
-  // Plain names for each setup.
   const NAME = { A1: 'Big model (DeepSeek)', A2: 'Small model', A3: 'Small + retries', A4: 'Trained small', A5: 'Trained small + retries' };
-  const COLOR = { A1: '#280016', A2: '#A39A9A', A3: '#706666', A4: '#C24382', A5: '#610A45' };
   const nm = id => NAME[id] || id;
-  // Marks: diamond = big model, circle = small model, square = trained; an outer ring = retries.
-  function mark(id, size) {
-    const c = COLOR[id] || '#706666';
-    const m = {
-      A1: `<polygon points="20,6 34,20 20,34 6,20" fill="none" stroke="${c}" stroke-width="3"></polygon>`,
-      A2: `<circle cx="20" cy="20" r="10" fill="${c}"></circle>`,
-      A3: `<circle cx="20" cy="20" r="7.5" fill="${c}"></circle><circle cx="20" cy="20" r="15" fill="none" stroke="${c}" stroke-width="2.5"></circle>`,
-      A4: `<rect x="10.5" y="10.5" width="19" height="19" rx="2" fill="${c}"></rect>`,
-      A5: `<rect x="13" y="13" width="14" height="14" rx="1.5" fill="${c}"></rect><rect x="5" y="5" width="30" height="30" rx="4" fill="none" stroke="${c}" stroke-width="2.5"></rect>`,
-    }[id] || '';
-    return `<svg width="${size}" height="${size}" viewBox="0 0 40 40" aria-hidden="true">${m}</svg>`;
-  }
-  const svgMark = (id, x, y, size) => `<g transform="translate(${x} ${y})">${mark(id, size).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
-  const T = (x, y, txt, o = {}) => `<text x="${x}" y="${y}" text-anchor="${o.a || 'start'}" font-family="${o.mono ? 'Geist Mono, monospace' : 'Geist, sans-serif'}" font-size="${o.s || 12.5}" font-weight="${o.w || 400}" fill="${o.c || '#280016'}">${txt}</text>`;
+  const T = (x, y, txt, o = {}) => `<text x="${x}" y="${y}" text-anchor="${o.a || 'start'}" font-family="${o.mono ? 'Geist Mono, monospace' : 'Geist, sans-serif'}" font-size="${o.s || 13}" font-weight="${o.w || 400}" fill="${o.c || '#280016'}">${txt}</text>`;
 
-  // Uncertainty: Wilson range for one rate, Newcombe range for a difference.
-  function wilson(p, n) {
-    if (!n) return [0, 1];
-    const z = 1.96, ph = Math.round(p * n) / n, d = 1 + z * z / n;
-    const c = (ph + z * z / (2 * n)) / d, h = z * Math.sqrt(ph * (1 - ph) / n + z * z / (4 * n * n)) / d;
-    return [Math.max(0, c - h), Math.min(1, c + h)];
-  }
-  function diffRange(p1, n1, p2, n2) {
-    const [l1, u1] = wilson(p1, n1), [l2, u2] = wilson(p2, n2), d = p1 - p2;
-    return [d - Math.sqrt((p1 - l1) ** 2 + (u2 - p2) ** 2), d + Math.sqrt((u1 - p1) ** 2 + (p2 - l2) ** 2)];
-  }
-
-  const ranked = ARMS.slice().sort((a, b) => b.secure_pass_rate - a.secure_pass_rate);
-  const best = ranked[0], base = A[BASE], big = A[BIG];
-  $('sub').textContent = `${R.scenarios || '?'} backend tasks × ${R.runs_per_scenario || '?'} tries each, attacked with real exploits`;
+  const best = ARMS.slice().sort((a, b) => b.secure_pass_rate - a.secure_pass_rate)[0], base = A.A2, big = A.A1;
+  $('sub').textContent = `${R.scenarios || '?'} backend tasks, ${R.runs_per_scenario || '?'} tries each, attacked with real exploits`;
   if (R.FAKE) $('sample').hidden = false;
-  $('foot').textContent = `Safe = every test passed and no attack got in. Cost counts every model call, retries included. Wait counts model time only.${R.FAKE ? ' All numbers are sample data until the real runs land.' : ''}`;
+  $('foot').textContent = 'Safe means every test passed and no attack got in. Cost counts every model call, retries included.';
 
-  // KPIs
-  const kpi = (id, title, v, d) => { $(id).innerHTML = `<div class="t-title">${title}</div><div class="v num">${v}</div><div class="d">${d}</div>`; };
-  if (base) kpi('k1', 'Small model, as is', `${P(base.secure_pass_rate)}<small>safe / 100</small>`, `${P(base.functional_pass_rate)} of 100 work at all`);
-  if (best) kpi('k2', `Best: ${esc(nm(best.arm))}`, `${P(best.secure_pass_rate)}<small>safe / 100</small>`, base && best.arm !== BASE ? `<span class="up">${signed(P(best.secure_pass_rate) - P(base.secure_pass_rate))} safe apps</span> vs the small model` : '');
-  if (big) kpi('k3', 'Big model, for scale', `${P(big.secure_pass_rate)}<small>safe / 100</small>`, best && best.arm !== BIG ? (best.secure_pass_rate > big.secure_pass_rate ? `Our best beats it by <span class="up">${P(best.secure_pass_rate) - P(big.secure_pass_rate)}</span>` : 'Our best has not caught up yet') : '');
-  if (best && big && best.cost_per_secure_app_usd && big.cost_per_secure_app_usd) {
-    const r = big.cost_per_secure_app_usd / best.cost_per_secure_app_usd;
-    kpi('k4', 'Cost per safe app', `${money(best.cost_per_secure_app_usd)}`, r >= 1 ? `<span class="up">${r.toFixed(1)}× cheaper</span> than the big model (${money(big.cost_per_secure_app_usd)})` : `${(1 / r).toFixed(1)}× the big model's ${money(big.cost_per_secure_app_usd)}`);
-  }
+  const kpi = (id, title, v, d) => { $(id).innerHTML = `<div class="t-title">${title}</div><div class="v num">${v}<small>safe / 100</small></div><div class="d">${d}</div>`; };
+  if (base) kpi('k1', 'Small model, as is', P(base.secure_pass_rate), 'The starting point.');
+  if (best) kpi('k2', 'Our best: ' + esc(nm(best.arm)), P(best.secure_pass_rate), base && best !== base ? `<span class="up">+${P(best.secure_pass_rate) - P(base.secure_pass_rate)} safe apps</span> over the small model.` : '');
+  if (big) kpi('k3', 'Big model, for scale', P(big.secure_pass_rate), best && best !== big ? (best.secure_pass_rate > big.secure_pass_rate ? `Our small model beats it by <span class="up">${P(best.secure_pass_rate) - P(big.secure_pass_rate)}</span>.` : 'Our small model hasn’t caught up yet.') : '');
 
   // Out of 100 apps
   (function () {
-    const show = [BASE, BIG, best && best.arm].filter((id, i, a) => id && A[id] && a.indexOf(id) === i);
-    $('waffles').innerHTML = show.map(id => {
-      const a = A[id], s = P(a.secure_pass_rate), h = P(a.functional_pass_rate) - s, b = 100 - s - h;
-      const sq = Array.from({ length: 100 }, (_, i) => `<i style="background:${i < s ? '#610A45' : i < s + h ? '#F98461' : '#E2DDD8'}"></i>`).join('');
-      return `<div class="wf"><h3>${mark(id, 13)} ${esc(nm(id))}</h3><div class="grid" role="img" aria-label="${s} safe, ${h} hacked, ${b} not working, out of 100">${sq}</div>
-        <div class="tally"><span><b class="num">${s}</b>safe</span><span><b class="num">${h}</b>hacked</span><span><b class="num">${b}</b>broken</span></div></div>`;
-    }).join('');
-    if (base && best && best.arm !== BASE) {
-      const m = best.secure_pass_rate / Math.max(0.001, base.secure_pass_rate);
-      $('wf-t').innerHTML = `The small model gives ${P(base.secure_pass_rate)} safe apps. Our best gives <em>${P(best.secure_pass_rate)}</em>${m >= 1.5 ? `, about ${m.toFixed(1)}× as many` : ''}.`;
-    }
+    const order = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id]);
+    const W = 700, rowH = 44, left = 180, H = order.length * rowH;
+    const X = v => left + v * (W - left);
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Safe, hacked and broken apps out of 100 for each setup">`;
+    order.forEach((id, i) => {
+      const a = A[id], y = i * rowH + 6, h = 30;
+      s += T(0, y + 20, esc(nm(id)), { w: id === best.arm ? 700 : 500, c: id === best.arm ? '#610A45' : '#280016' });
+      let x0 = 0;
+      [[a.secure_pass_rate, '#610A45', '#F9F7F5'], [a.functional_pass_rate - a.secure_pass_rate, '#F98461', '#280016'], [1 - a.functional_pass_rate, '#E6E0DB', '#8A7F84']].forEach(([v, f, tc], k) => {
+        if (v <= 0) return;
+        s += `<rect x="${X(x0)}" y="${y}" width="${Math.max(0, X(x0 + v) - X(x0) - 2)}" height="${h}" rx="6" fill="${f}"></rect>`;
+        if (v >= 0.07) s += T(X(x0) + 10, y + 20, P(v), { mono: 1, c: tc, w: k === 0 ? 600 : 400 });
+        x0 += v;
+      });
+    });
+    $('outcomes').innerHTML = s + '</svg>';
+    if (base && best !== base) $('o-t').innerHTML = `From <em>${P(base.secure_pass_rate)}</em> to <em>${P(best.secure_pass_rate)}</em> safe apps.`;
   })();
 
-  // What each change adds (2x2)
+  // What each change adds
   (function () {
     const cell = id => {
       const a = A[id];
       if (!a) return '<div class="c22" style="background:#F4F0EC"><div class="l">no data yet</div></div>';
-      const t = Math.max(0, Math.min(1, a.secure_pass_rate / (best ? best.secure_pass_rate : 1)));
-      const mix = (x, y) => Math.round(x + (y - x) * t);
-      return `<div class="c22 ${t > 0.55 ? 'dark' : ''}" style="background:rgb(${mix(244, 97)},${mix(240, 10)},${mix(236, 69)})"><div class="l">${esc(nm(id))}</div><div class="p num">${P(a.secure_pass_rate)}</div><div class="l">safe / 100</div></div>`;
+      const t = Math.max(0, Math.min(1, a.secure_pass_rate / best.secure_pass_rate)), mix = (x, y) => Math.round(x + (y - x) * t);
+      return `<div class="c22 ${t > 0.55 ? 'dark' : ''}" style="background:rgb(${mix(244, 97)},${mix(240, 10)},${mix(236, 69)})"><div class="p num">${P(a.secure_pass_rate)}</div><div class="l">safe / 100</div></div>`;
     };
-    $('g22').innerHTML = `<div></div><div class="h c">One try</div><div class="h c">+ Retries with feedback</div><div class="h">Small model</div>${cell('A2')}${cell('A3')}<div class="h">Trained on safe examples</div>${cell('A4')}${cell('A5')}`;
+    $('g22').innerHTML = `<div></div><div class="h c">One try</div><div class="h c">With retries</div><div class="h">Small</div>${cell('A2')}${cell('A3')}<div class="h">Trained</div>${cell('A4')}${cell('A5')}`;
     if (!['A2', 'A3', 'A4', 'A5'].every(id => A[id])) return;
     const s = id => A[id].secure_pass_rate;
-    const train = Math.round(((s('A4') - s('A2')) + (s('A5') - s('A3'))) / 2 * 100);
-    const retry = Math.round(((s('A3') - s('A2')) + (s('A5') - s('A4'))) / 2 * 100);
-    $('g-t').innerHTML = `Training adds <em>${signed(train)}</em>, retries add <em>${signed(retry)}</em> safe apps per 100.`;
-    const ix = Math.round(((s('A5') - s('A4')) - (s('A3') - s('A2'))) * 100);
-    $('g-note').textContent = Math.abs(ix) < 2 ? 'The two gains add up: doing both gets you both.' : ix > 0 ? `They boost each other: retries help ${ix} more on the trained model.` : `They overlap: retries help ${-ix} less on the trained model.`;
+    const train = Math.round(((s('A4') - s('A2')) + (s('A5') - s('A3'))) / 2 * 100), retry = Math.round(((s('A3') - s('A2')) + (s('A5') - s('A4'))) / 2 * 100);
+    $('g-t').innerHTML = `Training <em>+${train}</em>, retries <em>+${retry}</em>. Together <em>+${P(s('A5')) - P(s('A2'))}</em>.`;
   })();
 
-  // Where every app ends up
-  (function () {
-    const order = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id]);
-    const W = 760, rowH = 40, left = 190, right = 10, top = 4, H = top + order.length * rowH + 18;
-    const X = v => left + v * (W - left - right);
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Safe, hacked and broken apps out of 100 for each setup">`;
-    order.forEach((id, i) => {
-      const a = A[id], y = top + i * rowH, h = 28;
-      const parts = [[a.secure_pass_rate, '#610A45', '#F9F7F5'], [a.functional_pass_rate - a.secure_pass_rate, '#F98461', '#280016'], [1 - a.functional_pass_rate, '#E2DDD8', '#5E5257']];
-      s += svgMark(id, 0, y + 4, 20) + T(28, y + 19, esc(nm(id)), { w: 600, s: 13 });
-      let x0 = 0;
-      parts.forEach(([v, fill, tc]) => {
-        if (v <= 0) return;
-        s += `<rect x="${X(x0)}" y="${y}" width="${Math.max(0, X(x0 + v) - X(x0) - 2)}" height="${h}" rx="4" fill="${fill}"></rect>`;
-        if (v >= 0.06) s += T(X(x0) + 8, y + 19, P(v), { mono: 1, c: tc, w: 500 });
-        x0 += v;
-      });
-    });
-    [0, 50, 100].forEach(v => { s += T(X(v / 100), H - 2, v, { a: 'middle', mono: 1, s: 11, c: '#706666' }); });
-    $('outcomes').innerHTML = s + '</svg>';
-    if (base && best && best.arm !== BASE) {
-      const db = P(1 - base.functional_pass_rate) - P(1 - best.functional_pass_rate);
-      const dh = P(base.functional_pass_rate - base.secure_pass_rate) - P(best.functional_pass_rate - best.secure_pass_rate);
-      $('o-t').innerHTML = `Versus the small model, our best has <em>${db} fewer broken</em> and <em>${dh} fewer hacked</em> apps per 100.`;
-    }
-  })();
-
-  // Gain over the small model, with a likely range
-  (function () {
-    if (!base) { $('lift').innerHTML = '<div class="empty">Needs the small model results.</div>'; return; }
-    const rows = ['A3', 'A4', 'A5', 'A1'].filter(id => A[id]).map(id => {
-      const a = A[id], [lo, hi] = diffRange(a.secure_pass_rate, a.n, base.secure_pass_rate, base.n);
-      return { id, d: a.secure_pass_rate - base.secure_pass_rate, lo, hi, real: lo > 0 || hi < 0 };
-    });
-    const W = 520, rowH = 44, left = 170, right = 70, top = 22, H = top + rows.length * rowH + 20;
-    const lo = Math.min(-0.2, ...rows.map(r => r.lo)) - 0.02, hi = Math.max(0.4, ...rows.map(r => r.hi)) + 0.02;
-    const X = v => left + (v - lo) / (hi - lo) * (W - left - right);
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Extra safe apps per 100 compared with the small model, with likely range">`;
-    for (let t = Math.ceil(lo * 5) / 5; t <= hi + 1e-9; t += 0.2) {
-      const v = Math.round(t * 10) / 10;
-      s += `<line x1="${X(v)}" x2="${X(v)}" y1="${top - 4}" y2="${H - 16}" stroke="${v === 0 ? '#280016' : '#EEE9E4'}" stroke-width="${v === 0 ? 1.5 : 1}"></line>`;
-      s += T(X(v), H - 2, (v > 0 ? '+' : '') + Math.round(v * 100), { a: 'middle', mono: 1, s: 11, c: '#706666' });
-    }
-    s += T(X(0) + 6, 12, 'better →', { s: 11, c: '#706666' }) + T(X(0) - 6, 12, '← worse', { a: 'end', s: 11, c: '#706666' });
-    rows.forEach((r, i) => {
-      const y = top + i * rowH + rowH / 2, c = COLOR[r.id];
-      s += svgMark(r.id, 0, y - 10, 20) + T(28, y + 4, esc(nm(r.id)), { w: 600, s: 12.5 });
-      s += `<line x1="${X(r.lo)}" x2="${X(r.hi)}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="3" stroke-linecap="round" opacity="0.4"></line>`;
-      s += `<circle cx="${X(r.d)}" cy="${y}" r="7" fill="${c}" stroke="#FFFFFF" stroke-width="2"></circle>`;
-      s += T(W - right + 10, y - 1, signed(P(r.d)), { w: 600, s: 13.5 }) + T(W - right + 10, y + 13, r.real ? 'real gain' : 'could be luck', { s: 10.5, c: r.real ? '#610A45' : '#706666' });
-    });
-    $('lift').innerHTML = s + '</svg>';
-    const top1 = rows.filter(r => r.id !== BIG).sort((a, b) => b.d - a.d)[0];
-    if (top1) $('l-t').innerHTML = top1.real ? `${esc(nm(top1.id))}: <em>${signed(P(top1.d))}</em>, and it's not luck.` : `${esc(nm(top1.id))}: ${signed(P(top1.d))}, but it could still be luck.`;
-  })();
-
-  // Simple bars
-  function hbars(rows, fmt, label) {
-    const W = 420, rowH = 36, left = 150, right = 70, H = rows.length * rowH;
-    const max = Math.max(...rows.map(r => r.v)) || 1;
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">`;
-    rows.forEach((r, i) => {
-      const y = i * rowH + 4, w = Math.max(2, (W - left - right) * r.v / max);
-      s += svgMark(r.id, 0, y + 2, 18) + T(24, y + 15, esc(nm(r.id)), { s: 12, w: 600 });
-      s += `<rect x="${left}" y="${y}" width="${w}" height="22" rx="4" fill="${r.hi ? '#610A45' : '#D9CFD3'}"></rect>` + T(left + w + 8, y + 15, fmt(r.v), { mono: 1, s: 12, w: 500 });
-    });
-    return s + '</svg>';
-  }
+  // Safe apps per $1
   (function () {
     const rows = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id] && A[id].cost_per_secure_app_usd).map(id => ({ id, v: 1 / A[id].cost_per_secure_app_usd }));
     if (!rows.length) { $('dollar').innerHTML = '<div class="empty">No safe apps yet.</div>'; return; }
-    const top = rows.slice().sort((a, b) => b.v - a.v)[0]; rows.forEach(r => { r.hi = r.id === top.id; });
-    $('dollar').innerHTML = hbars(rows, v => Math.round(v), 'Safe apps per dollar');
-    $('c-t').innerHTML = `<em>${Math.round(top.v)}</em> safe apps per dollar from ${esc(nm(top.id).toLowerCase())}.`;
-  })();
-  (function () {
-    const rows = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id]).map(id => ({ id, v: A[id].median_latency_s }));
-    if (!rows.length) return;
-    const fast = rows.slice().sort((a, b) => a.v - b.v)[0]; rows.forEach(r => { r.hi = r.id === fast.id; });
-    $('wait').innerHTML = hbars(rows, v => v.toFixed(0) + ' s', 'Typical seconds per app');
-    $('w-t').innerHTML = best ? `Our best takes <em>${A[best.arm].median_latency_s.toFixed(0)} s</em> per app; retries add wait.` : '';
-  })();
-
-  // Attacks that still get in
-  const ATTACK = {
-    20: ['Accepts bad input', '<path d="M3 4h18l-7 8v6l-4 2v-8z"></path>'],
-    22: ['Reads files it shouldn’t', '<path d="M3 6h6l2 2h10v11H3z"></path><path d="M12 17v-5"></path><path d="M9.5 14l2.5-2.5 2.5 2.5"></path>'],
-    78: ['Runs attacker commands', '<rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M7 9l3 3-3 3"></path><path d="M12 15h5"></path>'],
-    79: ['Injects code into pages', '<path d="M8 7l-5 5 5 5"></path><path d="M16 7l5 5-5 5"></path><path d="M13.5 4l-3 16"></path>'],
-    89: ['Tricks the database', '<ellipse cx="11" cy="6" rx="7" ry="2.5"></ellipse><path d="M4 6v11c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6"></path><path d="M4 11.5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"></path>'],
-    284: ['Skips permission checks', '<circle cx="8" cy="12" r="4"></circle><path d="M12 12h9"></path><path d="M17 12v3"></path><path d="M20 12v4"></path>'],
-    400: ['Can be overloaded', '<path d="M3.5 17a8.5 8.5 0 1 1 17 0"></path><path d="M12 17l5-6"></path><path d="M3.5 17h17"></path>'],
-    703: ['Crashes on odd input', '<circle cx="12" cy="12" r="9"></circle><path d="M13 6.5l-3.5 6h5l-3.5 6"></path>'],
-  };
-  const atk = n => (ATTACK[n] || ['Other attack', '<circle cx="12" cy="12" r="9"></circle>']);
-  const atkIcon = n => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${atk(n)[1]}</svg>`;
-  (function () {
-    const order = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id]);
-    const tot = {};
-    ARMS.forEach(a => Object.entries(a.cwe_counts || {}).forEach(([c, n]) => { tot[c] = (tot[c] || 0) + n; }));
-    const rows = Object.keys(tot).filter(c => tot[c] > 0).sort((a, b) => tot[b] - tot[a]).slice(0, 6);
-    const max = Math.max(1, ...ARMS.flatMap(a => Object.values(a.cwe_counts || {})));
-    $('hm-h').innerHTML = `<tr><th></th>${order.map(id => `<th title="${esc(nm(id))}">${mark(id, 14)}</th>`).join('')}</tr>`;
-    if (!rows.length) { $('hm-b').innerHTML = '<tr><td class="empty">No attack got in.</td></tr>'; $('a-t').textContent = 'No attack got in.'; return; }
-    $('hm-b').innerHTML = rows.map(c => `<tr><td class="w">${atkIcon(+c)}${esc(atk(+c)[0])}</td>${order.map(id => {
-      const v = (A[id].cwe_counts || {})[c] || 0;
-      return `<td class="v" style="background:${v ? `rgba(249,132,97,${0.15 + 0.85 * v / max})` : '#F9F7F5'};color:${v ? '#280016' : '#C9C2C2'}">${v || '·'}</td>`;
-    }).join('')}</tr>`).join('');
-    $('a-t').innerHTML = `Most common: <em>${esc(atk(+rows[0])[0].toLowerCase())}</em>.`;
+    const top = rows.slice().sort((a, b) => b.v - a.v)[0], max = top.v;
+    const W = 380, rowH = 40, left = 150, H = rows.length * rowH;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Safe apps per dollar">`;
+    rows.forEach((r, i) => {
+      const y = i * rowH + 6, w = Math.max(2, (W - left - 44) * r.v / max);
+      s += T(0, y + 15, esc(nm(r.id)), { s: 12.5 }) + `<rect x="${left}" y="${y}" width="${w}" height="22" rx="5" fill="${r.id === top.id ? '#610A45' : '#E6E0DB'}"></rect>` + T(left + w + 8, y + 15, Math.round(r.v), { mono: 1, s: 12.5 });
+    });
+    $('dollar').innerHTML = s + '</svg>';
+    $('c-t').innerHTML = `Best value: <em>${esc(nm(top.id).toLowerCase())}</em>.`;
   })();
 
-  // Fix in action
-  const RUNS = (D.runs || []).filter(r => IDS.includes(r.arm)).sort((a, b) =>
-    ((b.rounds > 1 && b.secure_pass) - (a.rounds > 1 && a.secure_pass)) || String(b.arm).localeCompare(String(a.arm)));
+  // One app, before and after
+  const ATTACK = { 20: 'accepts bad input', 22: 'reads files it shouldn’t', 78: 'runs attacker commands', 79: 'injects code into pages', 89: 'tricks the database', 284: 'skips permission checks', 400: 'can be overloaded', 703: 'crashes on odd input' };
+  const atk = n => ATTACK[n] || 'an attack';
+  const RUNS = (D.runs || []).filter(r => IDS.includes(r.arm)).sort((a, b) => ((b.rounds > 1 && b.secure_pass) - (a.rounds > 1 && a.secure_pass)));
   const pick = $('run-pick');
-  pick.innerHTML = RUNS.map((r, i) => `<option value="${i}">${esc(`${nm(r.arm)} · ${r.scenario} · try ${r.run}`)}</option>`).join('');
+  pick.innerHTML = RUNS.map((r, i) => `<option value="${i}">${esc(`${nm(r.arm)} · ${r.scenario}`)}</option>`).join('');
   let cur = { run: 0, step: 0 };
-  const KW = /\b(from|import|def|return|if|else|elif|for|in|not|and|or|with|as|class|try|except|raise|None|True|False)\b/g;
-  function hl(line) {
-    const re = /(#.*$)|([rbfRBF]{0,2}"(?:[^"\\]|\\.)*"|[rbfRBF]{0,2}'(?:[^'\\]|\\.)*')/g, out = [];
+  const KW = /\b(from|import|def|return|if|else|for|in|not|and|or|with|as|class|try|except|None|True|False)\b/g;
+  const hl = line => {
+    const re = /([rbfRBF]{0,2}"(?:[^"\\]|\\.)*"|[rbfRBF]{0,2}'(?:[^'\\]|\\.)*')/g, out = [];
     let last = 0, m;
-    while ((m = re.exec(line))) {
-      out.push(esc(line.slice(last, m.index)).replace(KW, '<span class="tk-k">$1</span>'));
-      out.push(`<span class="${m[1] ? 'tk-c' : 'tk-s'}">${esc(m[0])}</span>`);
-      last = m.index + m[0].length;
-    }
+    while ((m = re.exec(line))) { out.push(esc(line.slice(last, m.index)).replace(KW, '<span class="tk-k">$1</span>'), `<span class="tk-s">${esc(m[0])}</span>`); last = m.index + m[0].length; }
     return out.join('') + esc(line.slice(last)).replace(KW, '<span class="tk-k">$1</span>');
-  }
-  function feedback(st) {
-    // Same message the model gets in src/secure_backend/repair_loop.py.
-    const l = ['Your last app did not pass. Fix it and reply with the full app in one fenced code block.'];
-    if (st.failed_tests.length) l.push('Failing functional tests: ' + st.failed_tests.join(', ') + '.');
-    if (st.exploits_triggered.length) { l.push('Exploits that succeeded:'); st.exploits_triggered.forEach(e => l.push(`- CWE-${e.cwe}: ${e.name}`)); }
-    l.push('Keep everything that already works.');
-    return l.join('\n');
-  }
+  };
   function renderRun() {
     const r = RUNS[cur.run];
-    if (!r) { $('fix').innerHTML = '<div class="empty">No app records yet.</div>'; return; }
+    if (!r) { $('code').innerHTML = '<div class="empty" style="padding:12px 16px">No app records yet.</div>'; return; }
     const steps = r.steps || [], st = steps[cur.step], prev = steps[cur.step - 1], next = steps[cur.step + 1];
-    const label = s => s.secure_pass ? ['#610A45', 'Safe'] : s.exploits_triggered.length ? ['#F98461', 'Hacked'] : ['#C9C2C2', "Doesn't work"];
-    $('steps').innerHTML = steps.map((s, i) => { const [c, t] = label(s); return `<button type="button" class="step" data-i="${i}" aria-pressed="${i === cur.step}"><i class="dot" style="background:${c}"></i>${i === 0 ? 'First try' : 'Retry ' + i}: ${t}</button>`; }).join('');
+    const lab = s => s.secure_pass ? ['#610A45', 'Safe'] : s.exploits_triggered.length ? ['#F98461', 'Hacked'] : ['#C9C2C2', 'Doesn’t work'];
+    $('steps').innerHTML = steps.map((s, i) => { const [c, t] = lab(s); return `<button type="button" class="step" data-i="${i}" aria-pressed="${i === cur.step}"><i class="dot" style="background:${c}"></i>${i === 0 ? 'First try' : 'Retry ' + i}: ${t}</button>`; }).join('');
     const nextSet = new Set(next ? next.code.split('\n') : []), prevSet = new Set(prev ? prev.code.split('\n') : []);
-    const code = st.code.replace(/\n$/, '').split('\n').map((t, i) => {
+    $('code').innerHTML = st.code.replace(/\n$/, '').split('\n').map((t, i) => {
       const cls = next && !st.secure_pass && t.trim() && !nextSet.has(t) ? 'bad' : prev && t.trim() && !prevSet.has(t) ? 'new' : '';
       return `<div class="ln ${cls}"><span class="n">${i + 1}</span><span class="t">${hl(t)}</span></div>`;
     }).join('');
-    let v;
-    if (st.secure_pass) v = `<div class="vbox good"><b>Safe: every attack failed.</b>${prev && prev.exploits_triggered.length ? `The ${esc(prev.exploits_triggered.map(e => atk(e.cwe)[0].toLowerCase()).join(', '))} attack no longer works. Pink lines are the fix.` : 'No attack got in.'}</div>`;
-    else if (st.exploits_triggered.length) v = `<div class="vbox bad"><b>Hacked: ${esc(st.exploits_triggered.map(e => atk(e.cwe)[0].toLowerCase()).join(', '))}.</b>The app works, but an attack got in through the orange line.</div>`;
-    else v = `<div class="vbox"><b>Doesn't work.</b>${st.failed_tests.length} test${st.failed_tests.length === 1 ? '' : 's'} failed.</div>`;
-    const told = next ? `<div><div class="t-title" style="margin-bottom:6px">What we told the model</div><pre class="said">${esc(feedback(st))}</pre><div class="t-note" style="margin-top:6px">Only what failed. Never the attack itself.</div></div>` : '';
-    $('fix').innerHTML = `<div class="code" aria-label="App code">${code}</div><div class="verdict">${v}${told}</div>`;
+    const names = s => s.exploits_triggered.map(e => atk(e.cwe)).join(', ');
+    $('f-t').innerHTML = steps.length > 1 && steps[steps.length - 1].secure_pass ? `Hacked on the first try, <em>safe after feedback</em>.` : esc(nm(r.arm));
+    $('verdict').innerHTML = st.secure_pass
+      ? `<b>Safe.</b> ${prev && prev.exploits_triggered.length ? `The attack that ${esc(names(prev))} no longer works. The pink line is the fix.` : 'No attack got in.'}`
+      : st.exploits_triggered.length ? `<b>Hacked:</b> the attacker ${esc(names(st))} through the orange line. We told the model what failed, never the attack itself.`
+      : `<b>Doesn’t work:</b> ${st.failed_tests.length} test${st.failed_tests.length === 1 ? '' : 's'} failed.`;
     $('steps').querySelectorAll('.step').forEach(b => b.addEventListener('click', () => { cur.step = +b.dataset.i; renderRun(); }));
   }
   pick.addEventListener('change', () => { cur = { run: +pick.value, step: 0 }; renderRun(); });
   renderRun();
-
-  // When retries make it safe
-  (function () {
-    const data = ['A3', 'A5'].map(id => {
-      const runs = (D.runs || []).filter(r => r.arm === id), c = [0, 0, 0, 0, 0];
-      runs.forEach(r => { if (r.secure_pass) c[Math.min(3, (r.steps || []).length - 1)]++; else c[4]++; });
-      return { id, n: runs.length, c };
-    }).filter(d => d.n);
-    if (!data.length) { $('rounds').innerHTML = '<div class="empty">Shows up once app records with retries are loaded.</div>'; $('r-t').textContent = ''; return; }
-    const cats = ['First try', 'Retry 1', 'Retry 2', 'Retry 3', 'Never'], cols = ['#610A45', '#8A3A6E', '#B4236A', '#D9799F', '#E2DDD8'];
-    const W = 420, rowH = 52, left = 0, H = data.length * rowH + 44;
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Which try made the app safe">`;
-    data.forEach((d, i) => {
-      const y = i * rowH;
-      s += svgMark(d.id, 0, y, 16) + T(22, y + 13, esc(nm(d.id)), { s: 12, w: 600 });
-      let x0 = 0;
-      d.c.forEach((v, k) => { if (!v) return; const w = v / d.n * W; s += `<rect x="${x0}" y="${y + 20}" width="${Math.max(0, w - 2)}" height="22" rx="4" fill="${cols[k]}"></rect>`; if (w > 60) s += T(x0 + 8, y + 35, `${cats[k]} ${Math.round(v / d.n * 100)}%`, { s: 11, c: k < 3 ? '#F9F7F5' : '#280016' }); x0 += w; });
-    });
-    cats.forEach((c, k) => { const x = (k % 3) * 140, y = H - 30 + Math.floor(k / 3) * 16; s += `<rect x="${x}" y="${y}" width="10" height="10" rx="2" fill="${cols[k]}"></rect>` + T(x + 15, y + 9, c, { s: 11, c: '#5E5257' }); });
-    $('rounds').innerHTML = s + '</svg>';
-    const all = data.reduce((a, d) => a.map((v, k) => v + d.c[k]), [0, 0, 0, 0, 0]), tot = data.reduce((t, d) => t + d.n, 0), later = all[1] + all[2] + all[3];
-    $('r-t').innerHTML = later ? `<em>${Math.round(later / tot * 100)}%</em> only became safe after feedback.` : 'All safe apps were safe on the first try.';
-    $('r-note').textContent = `From ${tot} app record${tot === 1 ? '' : 's'}${R.FAKE ? ' (sample data has just one)' : ''}.`;
-  })();
 })();
 </script>
 </body>
