@@ -11,11 +11,11 @@ from pathlib import Path
 API_URL = "https://api.fireworks.ai/inference/v1/chat/completions"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-# USD per million tokens (input, output). Check against fireworks.ai/pricing before final numbers;
-# prices.json at the repo root overrides these.
+# USD per million tokens (input, output), Fireworks serverless list prices from the model pages
+# on 2026-11-02. prices.json at the repo root overrides these.
 DEFAULT_PRICES = {
     "accounts/fireworks/models/deepseek-v4p1-flash-1017": (0.30, 1.20),
-    "accounts/fireworks/models/nemotron-nano-3-30b-a3b": (0.10, 0.40),
+    "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b": (0.05, 0.20),
 }
 
 
