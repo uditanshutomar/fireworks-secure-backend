@@ -48,6 +48,8 @@ button { font-family: inherit; }
 .more > summary::before { content: "▸ "; } .more[open] > summary::before { content: "▾ "; }
 .more > .grid2 { display: grid; grid-template-columns: repeat(24, minmax(0, 1fr)); gap: 12px; }
 @media (max-width: 1000px) { .grid2 > * { grid-column: 1 / -1 !important; } }
+#buy .bar { transition: width 1.6s cubic-bezier(.2,.8,.2,1); }
+#buy .cnt { font-variant-numeric: tabular-nums; }
 .row { grid-column: 1 / -1; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 12px 2px 0; }
 .panel { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; display: flex; flex-direction: column; min-width: 0; cursor: pointer; transition: border-color .2s, transform .2s, box-shadow .2s; }
 .panel:hover { border-color: #5A5A5A; }
@@ -161,6 +163,9 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
   <div class="panel stat w6" id="s3" data-explain="headline"></div>
   <div class="panel stat w6" id="s4" data-explain="headline"></div>
 
+  <div class="row">What $1 buys</div>
+  <section class="panel w24" id="buy-panel"><div class="p-head"><span class="p-title">Safe apps you get for $1</span><button class="explain" type="button" id="buy-replay">↻ Replay</button></div><div class="p-body"><div id="buy"></div></div></section>
+
   <div class="row">Comparison</div>
   <section class="panel w12" data-explain="compare"><div class="p-head"><span class="p-title">Compared with the small model, one try</span><button class="explain" type="button">▶ Explain</button></div><div class="p-body"><div id="gauge"></div>
     <div class="legend"><span><i style="background:#A39E96"></i>Small model as is</span><span><i style="background:#7BC89A"></i>Small model, improved</span><span><i style="background:#86B3E0"></i>Big model</span></div></div></section>
@@ -242,6 +247,25 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
   if (tot && big) stat('s2', 'Safe apps per $1', per$(tot), '', `Big model (DeepSeek): ${per$(big)}. ${(per$(tot) / per$(big)).toFixed(1)}× more`, '#7BC89A');
   if (tot && big) stat('s3', 'Wait per app', `${tot.median_latency_s.toFixed(1)} s`, '', `Big model: ${big.median_latency_s.toFixed(1)} s`, '#7BC89A');
   stat('s4', 'How', '3', 'examples', 'Big-model apps that survived every attack in the sandbox, shown to the small model', '#86B3E0');
+
+  // What $1 buys: animated bars, Teach'O'tron last so it overtakes the big model.
+  (function () {
+    const rows = [['A2', 'Nemotron, as is', BASE_C], ['A1', 'DeepSeek V4.1 Flash (6× the token price)', BIG_C], ['C3', "Teach'O'tron (same Nemotron)", SAFE]].filter(r => A[r[0]] && A[r[0]].cost_per_secure_app_usd);
+    if (!rows.length) return;
+    const val = id => Math.round(1 / A[id].cost_per_secure_app_usd), max = Math.max(...rows.map(r => val(r[0])));
+    $('buy').innerHTML = rows.map(([id, label, c]) => `<div style="margin:14px 0 18px"><div style="display:flex;justify-content:space-between;font-size:15px;color:#C9C4BC;margin-bottom:6px"><span>${esc(label)}</span><span class="cnt" data-v="${val(id)}" style="color:${c};font-weight:700;font-size:22px">0</span></div><div style="height:34px;background:#1E1E1E;border-radius:8px;overflow:hidden"><div class="bar" data-w="${(val(id) / max * 100).toFixed(1)}" style="height:100%;width:0;background:${c};border-radius:8px"></div></div></div>`).join('') + `<div class="sub" style="margin-top:4px">Safe = every functional test passes and no BaxBench exploit works. 12 held-out scenarios, Fireworks list prices.</div>`;
+    const play = () => {
+      const bars = $('buy').querySelectorAll('.bar'), cnts = $('buy').querySelectorAll('.cnt');
+      bars.forEach(b => { b.style.transition = 'none'; b.style.width = '0'; }); cnts.forEach(c => { c.textContent = '0'; });
+      void $('buy').offsetWidth;
+      bars.forEach((b, i) => setTimeout(() => { b.style.transition = ''; b.style.width = b.dataset.w + '%'; }, 300 + i * 700));
+      cnts.forEach((c, i) => { const v = +c.dataset.v, t0 = performance.now() + 300 + i * 700;
+        const step = t => { const k = Math.min(1, Math.max(0, (t - t0) / 1600)); c.textContent = Math.round(v * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); };
+        requestAnimationFrame(step); });
+    };
+    $('buy-replay').addEventListener('click', e => { e.stopPropagation(); play(); });
+    if ('IntersectionObserver' in window) { const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { play(); io.disconnect(); } }); io.observe($('buy')); } else play();
+  })();
 
   // Comparison: every setup against the small model's score, big model as a reference line.
   (function () {
