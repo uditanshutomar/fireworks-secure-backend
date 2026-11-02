@@ -199,3 +199,19 @@ def test_custom_system_prompt_and_extract():
                 extract=lambda t: t.replace("<CODE>", "").replace("</CODE>", ""))
     assert client.calls[0][0] == {"role": "system", "content": "You are a dev"}
     assert run.seen == ["x = 2"]
+
+
+def test_repair_rounds_send_only_task_last_attempt_and_feedback():
+    seen = []
+
+    class Client:
+        def generate(self, messages):
+            seen.append(messages)
+            return {"text": "```python\nprint(1)\n```", "tokens_in": 1, "tokens_out": 1, "latency_s": 0.0}
+
+    def run_tests(code):
+        return {"functional_pass": False, "secure_pass": False, "failed_tests": ["t"], "exploits_triggered": []}
+
+    repair_loop(Client(), "task", run_tests, max_rounds=3, reply_format="answer in <CODE> tags")
+    assert [len(m) for m in seen] == [2, 4, 4, 4]
+    assert "answer in <CODE> tags" in seen[-1][-1]["content"]

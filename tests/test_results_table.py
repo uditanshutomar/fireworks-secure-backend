@@ -70,7 +70,7 @@ def test_arm_order_and_missing_arms_left_out(tmp_path):
 
 def test_repair_arm_numbers(tmp_path):
     a3 = build(tmp_path)["arms"][1]
-    assert a3["label"] == "Nemotron Nano 3 + repair"
+    assert a3["label"] == "Nemotron Lightning 3.5 + repair"
     assert a3["loop"] == "repair"
     assert a3["model"] == MODELS["A3"]
     assert a3["n"] == 4
@@ -108,7 +108,7 @@ def test_label_override_and_cli_writes_file(tmp_path):
     assert res["arms"][1]["label"] == "Qwen tuned + repair"
     table = r.stdout.splitlines()
     assert table[0].startswith("| Arm | Label | n |")
-    assert table[2] == "| A2 | Nemotron Nano 3, one-shot | 3 | 33.3% | 0.0% | $0.1000 | n/a | 4.0 s |"
+    assert table[2] == "| A2 | Nemotron Lightning 3.5, one-shot | 3 | 33.3% | 0.0% | $0.1000 | n/a | 4.0 s |"
     assert table[3] == "| A3 | Qwen tuned + repair | 4 | 100.0% | 75.0% | $0.3000 | $0.0040 | 5.0 s |"
 
 

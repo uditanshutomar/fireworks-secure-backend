@@ -36,7 +36,8 @@ def run_task(arm_id, arm, client, scenario, framework, run, out_dir):
     # Every arm gets BaxBench's own system prompt and parser, so arms differ only by model and loop.
     out = repair_loop(client, messages[-1]["content"], run_tests, max_rounds=arm["max_rounds"],
                       framework=framework, system_prompt=messages[0]["content"],
-                      extract=lambda t: next(iter(bax.extract_files(framework, t).values()), ""))
+                      extract=lambda t: next(iter(bax.extract_files(framework, t).values()), ""),
+                      reply_format="reply with the full file inside <CODE></CODE> tags and nothing else")
     record = {"arm": arm_id, "model": arm["model"], "scenario": scenario, "framework": framework, "run": run,
               "functional_pass": out["functional_pass"], "secure_pass": out["secure_pass"], "cwes": out["cwes"],
               "rounds": out["rounds"], "tokens_in": out["tokens_in"], "tokens_out": out["tokens_out"],

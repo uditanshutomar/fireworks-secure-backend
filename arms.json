@@ -1,7 +1,46 @@
 {
-  "A1": {"label": "DeepSeek V4.1 Flash, one-shot", "model": "accounts/fireworks/models/deepseek-v4p1-flash-1017", "loop": "one-shot", "max_rounds": 0},
-  "A2": {"label": "Nemotron Nano 3, one-shot", "model": "accounts/fireworks/models/nemotron-nano-3-30b-a3b", "loop": "one-shot", "max_rounds": 0},
-  "A3": {"label": "Nemotron Nano 3 + repair", "model": "accounts/fireworks/models/nemotron-nano-3-30b-a3b", "loop": "repair", "max_rounds": 3},
-  "A4": {"label": "Nemotron Nano 3 tuned, one-shot", "model": "SET_AFTER_DEPLOY", "price_model": "accounts/fireworks/models/nemotron-nano-3-30b-a3b", "loop": "one-shot", "max_rounds": 0},
-  "A5": {"label": "Nemotron Nano 3 tuned + repair", "model": "SET_AFTER_DEPLOY", "price_model": "accounts/fireworks/models/nemotron-nano-3-30b-a3b", "loop": "repair", "max_rounds": 3}
+  "A1": {
+    "label": "DeepSeek V4.1 Flash, one-shot",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash-1017",
+    "loop": "one-shot",
+    "max_rounds": 0
+  },
+  "A2": {
+    "label": "Nemotron Lightning 3.5, one-shot",
+    "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
+    "loop": "one-shot",
+    "max_rounds": 0
+  },
+  "A3": {
+    "label": "Nemotron Lightning 3.5 + repair",
+    "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
+    "loop": "repair",
+    "max_rounds": 3
+  },
+  "A4": {
+    "label": "Nemotron Nano 3 tuned, one-shot",
+    "model": "SET_AFTER_DEPLOY",
+    "price_model": "accounts/fireworks/models/nemotron-nano-3-30b-a3b",
+    "loop": "one-shot",
+    "max_rounds": 0
+  },
+  "A5": {
+    "label": "Nemotron Nano 3 tuned + repair",
+    "model": "SET_AFTER_DEPLOY",
+    "price_model": "accounts/fireworks/models/nemotron-nano-3-30b-a3b",
+    "loop": "repair",
+    "max_rounds": 3
+  },
+  "G1": {
+    "label": "DeepSeek V4.1 Flash + repair (training data only)",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash-1017",
+    "loop": "repair",
+    "max_rounds": 2
+  },
+  "A6": {
+    "label": "DeepSeek V4.1 Flash + repair",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash-1017",
+    "loop": "repair",
+    "max_rounds": 3
+  }
 }
