@@ -192,16 +192,16 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
 (function () {
   const D = window.DASHBOARD_DATA || { results: { arms: [] }, runs: [] };
   const R = D.results || { arms: [] };
-  const IDS = ['A1', 'A2', 'A3', 'A6', 'C1', 'C2'];
-  const SMALLSET = ['C1', 'A3', 'C2'];
+  const IDS = ['A1', 'A2', 'A3', 'A6', 'C1', 'C2', 'C3'];
+  const SMALLSET = ['C1', 'C3', 'A3', 'C2'];
   const ARMS = (R.arms || []).filter(a => IDS.includes(a.arm));
   const A = {}; ARMS.forEach(a => { A[a.arm] = a; });
-  const ORDER = ['A2', 'C1', 'A3', 'C2', 'A1', 'A6'].filter(id => A[id]);
+  const ORDER = ['A2', 'C1', 'C3', 'A3', 'C2', 'A1', 'A6'].filter(id => A[id]);
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const P = x => Math.round(x * 100);
   const money = x => x == null ? '–' : (x >= 0.1 ? '$' + x.toFixed(2) : '$' + x.toFixed(4));
-  const NAME = { A1: 'Big model', A2: 'Small model', A3: 'Small + retries', A6: 'Big + retries', C1: 'Small + examples', C2: 'Small + examples + retries' };
+  const NAME = { A1: 'Big model', A2: 'Small model', A3: 'Small + retries', A6: 'Big + retries', C1: 'Small + examples', C2: 'Small + examples + retries', C3: 'Small + examples, short answers' };
   const nm = id => NAME[id] || id;
   const SAFE = '#7BC89A', HACK = '#E8A14A', BROKEN = '#474747', ACC = '#F2EFEA', BASE_C = '#A39E96', BIG_C = '#86B3E0';
   // Safe-rate color: red to amber to green, softened.
@@ -240,7 +240,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
   // Comparison: every setup against the small model's score, big model as a reference line.
   (function () {
     if (!base) { $('gauge').innerHTML = '<div class="empty">Needs the small model results.</div>'; return; }
-    const rows = ['C1', 'A3', 'C2', 'A1', 'A6'].filter(id => A[id]);
+    const rows = ['C1', 'C3', 'A3', 'C2', 'A1', 'A6'].filter(id => A[id]);
     const W = 600, rowH = 46, left = 160, right = 56, top = 30, H = top + rows.length * rowH + 8;
     const vmax = Math.max(60, ...ARMS.map(a => P(a.secure_pass_rate))) + 5;
     const X = v => left + v / vmax * (W - left - right), b0 = P(base.secure_pass_rate);
@@ -522,7 +522,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
         c.b0 = base ? P(base.secure_pass_rate) : 0;
         c.baseLine = S('line', { x1: X(c.b0), x2: X(c.b0), y1: 50, y2: 370, stroke: '#A39E96', 'stroke-width': 2, 'stroke-dasharray': '4 5', opacity: 0 }, svg); c.baseLine.style.transition = 'opacity .5s';
         c.baseLab = txt(svg, X(c.b0), 40, `Small model as is: ${c.b0}`, { a: 'middle', s: 13, c: '#C9C4BC', w: 500 }); c.baseLab.style.cssText = 'opacity:0;transition:opacity .5s';
-        const cmpIds = ['C1', 'A3', 'C2', 'A1', 'A6'].filter(id => A[id]), gapY = Math.min(80, 260 / Math.max(1, cmpIds.length - 1));
+        const cmpIds = ['C1', 'C3', 'A3', 'C2', 'A1', 'A6'].filter(id => A[id]), gapY = Math.min(80, 260 / Math.max(1, cmpIds.length - 1));
         c.rows = cmpIds.map((id, i) => {
           const v = P(A[id].secure_pass_rate), y = 100 + i * gapY;
           const lab = txt(svg, 240, y + 5, nm(id), { a: 'end', s: 15, c: '#F2EFEA', w: 500 }); lab.style.cssText = 'opacity:.25;transition:opacity .4s';
@@ -537,7 +537,7 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
       steps(c) {
         const slide = r => { r.lab.style.opacity = 1; r.dot.style.opacity = 1; r.dot.style.transform = `translate(${c.X(r.v)}px,${r.y}px)`; r.bar.style.transition = `all .7s ${ease}`; r.bar.setAttribute('x2', c.X(r.v)); r.d.style.opacity = 1; };
         const st = [{ text: `Start from the small model as it ships: <b>${c.b0}</b> safe apps out of 100. Everything is measured from this line.`, run: () => { c.baseLine.setAttribute('opacity', 1); c.baseLab.style.opacity = 1; } }];
-        const say = { C1: 'Show the small model <b>3 example apps that survived every exploit</b> first, one try', A3: 'Let the small model <b>retry</b> with feedback on what failed', C2: 'Give it the examples <b>and</b> the retries', A1: 'Swap in a <b>much bigger model</b>, one try', A6: 'The big model <b>with retries</b>' };
+        const say = { C1: 'Show the small model <b>3 example apps that survived every exploit</b> first, one try', A3: 'Let the small model <b>retry</b> with feedback on what failed', C2: 'Give it the examples <b>and</b> the retries', C3: 'Examples, with answers <b>capped at 4,096 tokens</b> so runaway replies stop early', A1: 'Swap in a <b>much bigger model</b>, one try', A6: 'The big model <b>with retries</b>' };
         c.rows.forEach(r => st.push({ text: `${say[r.id] || esc(nm(r.id))}: ${r.v} safe apps, <b>${r.v - c.b0 >= 0 ? '+' : ''}${r.v - c.b0}</b> over the small model.`, run: () => slide(r) }));
         if (smallBest && big) {
           const gap = P(big.secure_pass_rate) - c.b0, got = P(smallBest.secure_pass_rate) - c.b0;
