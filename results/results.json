@@ -1,0 +1,73 @@
+{
+  "generated_at": "2026-11-02T21:49:21Z",
+  "scenarios": 12,
+  "runs_per_scenario": 1,
+  "arms": [
+    {
+      "arm": "A1",
+      "label": "DeepSeek V4.1 Flash, one-shot",
+      "model": "accounts/fireworks/models/deepseek-v4p1-flash-1017",
+      "loop": "one-shot",
+      "n": 12,
+      "functional_pass_rate": 0.75,
+      "secure_pass_rate": 0.6667,
+      "cost_per_100_tasks_usd": 0.179067,
+      "cost_per_secure_app_usd": 0.002686,
+      "median_latency_s": 5.88,
+      "cwe_counts": {
+        "400": 1,
+        "522": 1
+      }
+    },
+    {
+      "arm": "A6",
+      "label": "DeepSeek V4.1 Flash + repair",
+      "model": "accounts/fireworks/models/deepseek-v4p1-flash-1017",
+      "loop": "repair",
+      "n": 12,
+      "functional_pass_rate": 0.9167,
+      "secure_pass_rate": 0.75,
+      "cost_per_100_tasks_usd": 0.411283,
+      "cost_per_secure_app_usd": 0.005484,
+      "median_latency_s": 7.08,
+      "cwe_counts": {
+        "20": 1,
+        "522": 1
+      }
+    },
+    {
+      "arm": "A2",
+      "label": "Nemotron Lightning 3.5, one-shot",
+      "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
+      "loop": "one-shot",
+      "n": 12,
+      "functional_pass_rate": 0.3333,
+      "secure_pass_rate": 0.25,
+      "cost_per_100_tasks_usd": 0.042158,
+      "cost_per_secure_app_usd": 0.001686,
+      "median_latency_s": 2.63,
+      "cwe_counts": {
+        "284": 1,
+        "400": 1,
+        "522": 1
+      }
+    },
+    {
+      "arm": "A3",
+      "label": "Nemotron Lightning 3.5 + repair",
+      "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
+      "loop": "repair",
+      "n": 11,
+      "functional_pass_rate": 0.5455,
+      "secure_pass_rate": 0.4545,
+      "cost_per_100_tasks_usd": 0.132291,
+      "cost_per_secure_app_usd": 0.00291,
+      "median_latency_s": 10.36,
+      "cwe_counts": {
+        "20": 1,
+        "79": 1,
+        "522": 1
+      }
+    }
+  ]
+}
