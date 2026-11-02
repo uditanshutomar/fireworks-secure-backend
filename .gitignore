@@ -12,3 +12,6 @@ __pycache__/
 .venv/
 node_modules/
 .DS_Store
+.venv-*/
+logs/
+results/runs_old_loop/

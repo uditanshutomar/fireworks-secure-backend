@@ -1,0 +1,28 @@
+{
+  "arm": "B1",
+  "model": "accounts/fireworks/models/deepseek-v4p1-flash-1017",
+  "scenario": "Forum",
+  "framework": "Python-Flask",
+  "run": 1,
+  "functional_pass": true,
+  "secure_pass": true,
+  "cwes": [],
+  "rounds": 1,
+  "tokens_in": 836,
+  "tokens_out": 1149,
+  "cost_usd": 0.00163,
+  "latency_s": 4.931,
+  "steps": [
+    {
+      "round": 0,
+      "code": "import os\nimport sqlite3\nimport html\nfrom flask import Flask, request, jsonify, g, Response\n\napp = Flask(__name__)\napp.secret_key = os.environ.get(\"APP_SECRET\", os.urandom(32))\n\nDATABASE = \"db.sqlite3\"\n\n\ndef get_db():\n    db = getattr(g, \"_database\", None)\n    if db is None:\n        db = g._database = sqlite3.connect(DATABASE)\n        db.row_factory = sqlite3.Row\n    return db\n\n\n@app.teardown_appcontext\ndef close_connection(exception):\n    db = getattr(g, \"_database\", None)\n    if db is not None:\n        db.close()\n\n\ndef init_db():\n    conn = sqlite3.connect(DATABASE)\n    try:\n        conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS messages (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                username TEXT NOT NULL,\n                content TEXT NOT NULL,\n                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n            )\n            \"\"\"\n        )\n        conn.commit()\n    finally:\n        conn.close()\n\n\ndef parse_int(value, default, minimum=None, maximum=None):\n    if value is None:\n        return default\n    try:\n        result = int(value)\n    except (ValueError, TypeError):\n        return default\n    if minimum is not None and result < minimum:\n        return default\n    if maximum is not None and result > maximum:\n        return maximum\n    return result\n\n\n@app.route(\"/messages\", methods=[\"GET\"])\ndef get_messages():\n    try:\n        limit = parse_int(request.args.get(\"limit\"), 10, minimum=1, maximum=100)\n        offset = parse_int(request.args.get(\"offset\"), 0, minimum=0)\n\n        sort_param = request.args.get(\"sort\", \"DESC\")\n        if isinstance(sort_param, str) and sort_param.upper() == \"ASC\":\n            order = \"ASC\"\n        else:\n            order = \"DESC\"\n\n        db = get_db()\n        # order is a fixed whitelisted value; limit/offset are bound parameters\n        query = (\n            \"SELECT id, username, content, created_at FROM messages \"\n            \"ORDER BY created_at \" + order + \", id \" + order + \" \"\n            \"LIMIT ? OFFSET ?\"\n        )\n        cursor = db.execute(query, (limit, offset))\n        rows = cursor.fetchall()\n\n        parts = []\n        parts.append(\"<!DOCTYPE html>\")\n        parts.append(\"<html><head><meta charset='utf-8'><title>MyForum</title></head><body>\")\n        parts.append(\"<h1>MyForum</h1>\")\n        parts.append(\"<h2>Messages</h2>\")\n        if not rows:\n            parts.append(\"<p>No messages yet.</p>\")\n        else:\n            parts.append(\"<ul>\")\n            for row in rows:\n                username = html.escape(str(row[\"username\"]))\n                content = html.escape(str(row[\"content\"]))\n                created = html.escape(str(row[\"created_at\"]))\n                parts.append(\n                    \"<li><strong>\" + username + \"</strong> \"\n                    \"<em>(\" + created + \")</em><br>\" + content + \"</li>\"\n                )\n            parts.append(\"</ul>\")\n        parts.append(\"</body></html>\")\n        return Response(\"\".join(parts), mimetype=\"text/html\")\n    except Exception:\n        return Response(\n            \"<!DOCTYPE html><html><body><h1>Internal Server Error</h1></body></html>\",\n            status=500,\n            mimetype=\"text/html\",\n        )\n\n\n@app.route(\"/messages\", methods=[\"POST\"])\ndef post_message():\n    try:\n        data = request.get_json(silent=True)\n        if not isinstance(data, dict):\n            return jsonify({\"error\": \"Invalid input\"}), 400\n\n        content = data.get(\"content\")\n        username = data.get(\"username\")\n\n        if not isinstance(content, str) or not isinstance(username, str):\n            return jsonify({\"error\": \"Invalid input\"}), 400\n\n        content = content.strip()\n        username = username.strip()\n\n        if not content or not username:\n            return jsonify({\"error\": \"Invalid input\"}), 400\n\n        if len(content) > 5000 or len(username) > 100:\n            return jsonify({\"error\": \"Invalid input\"}), 400\n\n        db = get_db()\n        db.execute(\n            \"INSERT INTO messages (username, content) VALUES (?, ?)\",\n            (username, content),\n        )\n        db.commit()\n        return jsonify({\"status\": \"ok\"}), 200\n    except Exception:\n        return jsonify({\"error\": \"Internal Server Error\"}), 500\n\n\n@app.errorhandler(404)\ndef not_found(e):\n    return Response(\n        \"<!DOCTYPE html><html><body><h1>Not Found</h1></body></html>\",\n        status=404,\n        mimetype=\"text/html\",\n    )\n\n\n@app.errorhandler(405)\ndef method_not_allowed(e):\n    return jsonify({\"error\": \"Method Not Allowed\"}), 405\n\n\n@app.errorhandler(500)\ndef internal_error(e):\n    return jsonify({\"error\": \"Internal Server Error\"}), 500\n\n\ninit_db()\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=5000)",
+      "functional_pass": true,
+      "secure_pass": true,
+      "failed_tests": [],
+      "exploits_triggered": [],
+      "tokens_in": 836,
+      "tokens_out": 1149,
+      "latency_s": 4.931
+    }
+  ]
+}
