@@ -91,7 +91,9 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
 .step { min-height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line-2); background: var(--panel-2); color: var(--text-2); font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
 .step[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-.logs { background: #101010; border: 1px solid var(--line); border-radius: 10px; font-family: var(--mono); font-size: 12px; line-height: 1.8; padding: 8px 0; overflow-x: auto; }
+.logs { background: #101010; border: 1px solid var(--line); border-radius: 10px; font-family: var(--mono); font-size: 12px; line-height: 1.8; padding: 8px 0; overflow: auto; max-height: 420px; }
+.ln.gap .t { color: var(--muted); font-style: italic; }
+.code-toggle { margin: 8px 12px 4px; }
 .ln { display: flex; padding-right: 12px; min-width: max-content; border-left: 2px solid transparent; }
 .ln .n { width: 36px; flex: none; text-align: right; padding-right: 14px; color: var(--muted); user-select: none; }
 .ln .t { white-space: pre; color: #E3DFD8; }
@@ -310,10 +312,20 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
     const lab = s => s.secure_pass ? [SAFE, 'Safe'] : s.exploits_triggered.length ? [HACK, 'Hacked'] : ['#A39E96', 'Doesn’t work'];
     $('steps').innerHTML = steps.map((s, i) => { const [c, t] = lab(s); return `<button type="button" class="step" data-i="${i}" aria-pressed="${i === cur.step}"><i class="dot" style="background:${c}"></i>${i === 0 ? 'First try' : 'Retry ' + i}: ${t}</button>`; }).join('');
     const nextSet = new Set(next ? next.code.split('\n') : []), prevSet = new Set(prev ? prev.code.split('\n') : []);
-    $('code').innerHTML = st.code.replace(/\n$/, '').split('\n').map((t, i) => {
-      const cls = next && !st.secure_pass && t.trim() && !nextSet.has(t) ? 'bad' : prev && t.trim() && !prevSet.has(t) ? 'new' : '';
-      return `<div class="ln ${cls}"><span class="n">${i + 1}</span><span class="t">${hl(t)}</span></div>`;
-    }).join('');
+    // Real apps run to hundreds of lines: show the changed lines with 4 lines of context, the rest collapsed.
+    const lines = st.code.replace(/\n$/, '').split('\n').map((t, i) => ({ t, i, cls: next && !st.secure_pass && t.trim() && !nextSet.has(t) ? 'bad' : prev && t.trim() && !prevSet.has(t) ? 'new' : '' }));
+    const marked = lines.filter(l => l.cls).map(l => l.i), CTX = 4;
+    const keep = i => cur.full || (marked.length ? marked.some(m => Math.abs(m - i) <= CTX) : i < 20);
+    let html = '', hidden = 0;
+    const gap = () => { if (hidden) html += `<div class="ln gap"><span class="n"></span><span class="t">··· ${hidden} unchanged line${hidden === 1 ? '' : 's'} ···</span></div>`; hidden = 0; };
+    lines.forEach(l => { if (keep(l.i)) { gap(); html += `<div class="ln ${l.cls}"><span class="n">${l.i + 1}</span><span class="t">${hl(l.t)}</span></div>`; } else hidden++; });
+    gap();
+    const toggle = lines.length > 20 ? `<button type="button" class="step code-toggle">${cur.full ? 'Show changed lines only' : `Show all ${lines.length} lines`}</button>` : '';
+    $('code').innerHTML = (lines.length && lines[0].t ? html : '<div class="empty">The model returned no code on this try.</div>') + toggle;
+    const tg = $('code').querySelector('.code-toggle');
+    if (tg) tg.addEventListener('click', e => { e.stopPropagation(); cur.full = !cur.full; renderRun(); });
+    const first = $('code').querySelector('.ln.bad, .ln.new');
+    if (first && cur.full) first.scrollIntoView({ block: 'nearest' });
     $('verdict').innerHTML = st.secure_pass
       ? `<b>Safe.</b> ${prev && prev.exploits_triggered.length ? `The attacker can no longer ${esc(atkNames(prev).replace(/s\b/, ''))}.` : 'No attack got in.'}`
       : st.exploits_triggered.length ? `<b>Hacked:</b> the attacker ${esc(atkNames(st))}. The model is told what failed, never the attack itself.`
