@@ -23,6 +23,20 @@ We compare four setups on 12 held-out scenarios:
 
 Filled in from `results/results.json` at the end of the build.
 
+## Why this matters for health apps
+
+Clinics and health startups are starting to ship backends written by AI. Several of our held-out scenarios are the same shapes those backends take, and BaxBench attacks them with the exploits that expose patient data:
+
+| Test scenario | Health-app equivalent | Exploits BaxBench runs |
+|---|---|---|
+| SecretStorage | Per-patient record storage | one user reading another user's data (CWE-284), SQL injection (CWE-89), weak password storage (CWE-522) |
+| Login | Patient or clinician portal | SQL injection (CWE-89), weak password storage (CWE-522) |
+| UserCreation | Invite-only staff or patient sign-up | signing up without an invite, guessable invite IDs (CWE-284) |
+| FileSearch, ZipToTxt | Lab result and document uploads | path traversal outside your own files (CWE-22), zip bombs (CWE-400) |
+| Monitor | Internal ops tools | OS command injection (CWE-78) |
+
+This measures exploitability, not regulatory compliance: an app that survives these exploits is not certified for anything, but an app that fails them would leak records. A dedicated patient-records scenario with its own access-control exploits is the obvious next one to add.
+
 ## Layout
 
 | Path | What |
