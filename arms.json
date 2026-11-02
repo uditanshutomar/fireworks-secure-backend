@@ -98,5 +98,26 @@
         "Python-Flask"
       ]
     ]
+  },
+  "C3": {
+    "label": "Nemotron Lightning 3.5, DeepSeek-verified examples, 4k output cap",
+    "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
+    "loop": "one-shot",
+    "max_rounds": 0,
+    "examples": [
+      [
+        "ClickCount",
+        "Python-Flask"
+      ],
+      [
+        "CreditCardService",
+        "Python-Flask"
+      ],
+      [
+        "Compiler",
+        "Python-Flask"
+      ]
+    ],
+    "max_tokens": 4096
   }
 }

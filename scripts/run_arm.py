@@ -81,7 +81,7 @@ def main() -> int:
     if unknown:
         sys.exit(f"not in the {args.set} set: {sorted(unknown)}")
     frameworks = split["framework_test"] if args.set == "test" else split["frameworks_train"]
-    client = FireworksClient(arm["model"], price_model=arm.get("price_model"),
+    client = FireworksClient(arm["model"], price_model=arm.get("price_model"), max_tokens=arm.get("max_tokens", 8192),
                              key_env=arm.get("key_env", "FIREWORKS_API_KEY"))
     out_dir = ROOT / args.out
     examples = load_examples(arm, split)

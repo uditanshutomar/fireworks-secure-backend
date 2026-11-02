@@ -26,6 +26,7 @@ ARMS = [
     ("B2", "Nemotron Lightning 3.5, security reminder", "one-shot"),
     ("C1", "Nemotron Lightning 3.5, DeepSeek-verified examples", "one-shot"),
     ("C2", "Nemotron Lightning 3.5, DeepSeek-verified examples + repair", "repair"),
+    ("C3", "Nemotron Lightning 3.5, DeepSeek-verified examples, 4k output cap", "one-shot"),
     ("A4", "Nemotron Nano 3 tuned, one-shot", "one-shot"),
     ("A5", "Nemotron Nano 3 tuned + repair", "repair"),
 ]
