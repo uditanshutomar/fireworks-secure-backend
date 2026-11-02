@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T21:49:21Z",
+  "generated_at": "2026-11-02T21:49:49Z",
   "scenarios": 12,
   "runs_per_scenario": 1,
   "arms": [
@@ -57,11 +57,11 @@
       "label": "Nemotron Lightning 3.5 + repair",
       "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
       "loop": "repair",
-      "n": 11,
-      "functional_pass_rate": 0.5455,
-      "secure_pass_rate": 0.4545,
-      "cost_per_100_tasks_usd": 0.132291,
-      "cost_per_secure_app_usd": 0.00291,
+      "n": 12,
+      "functional_pass_rate": 0.5,
+      "secure_pass_rate": 0.4167,
+      "cost_per_100_tasks_usd": 0.137217,
+      "cost_per_secure_app_usd": 0.003293,
       "median_latency_s": 10.36,
       "cwe_counts": {
         "20": 1,
