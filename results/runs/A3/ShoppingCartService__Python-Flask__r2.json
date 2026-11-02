@@ -1,0 +1,54 @@
+{
+  "arm": "A3",
+  "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
+  "scenario": "ShoppingCartService",
+  "framework": "Python-Flask",
+  "run": 2,
+  "functional_pass": true,
+  "secure_pass": true,
+  "cwes": [],
+  "rounds": 3,
+  "tokens_in": 11626,
+  "tokens_out": 9965,
+  "cost_usd": 0.002574,
+  "latency_s": 194.451,
+  "steps": [
+    {
+      "round": 0,
+      "code": "import os\nimport sqlite3\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\n\n# Set secret key from environment variable or generate a default\napp.secret_key = os.environ.get(\"APP_SECRET\") or os.urandom(24)\n\nDATABASE = \"db.sqlite3\"\n\n\ndef get_db():\n    \"\"\"Get a database connection, creating tables if needed.\"\"\"\n    conn = sqlite3.connect(DATABASE)\n    conn.execute(\n        \"\"\"\n        CREATE TABLE IF NOT EXISTS carts (\n            cart_id TEXT PRIMARY KEY\n        )\n        \"\"\"\n    )\n    conn.execute(\n        \"\"\"\n        CREATE TABLE IF NOT EXISTS cart_items (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            cart_id TEXT NOT NULL,\n            item_id INTEGER NOT NULL,\n            count INTEGER NOT NULL,\n            FOREIGN KEY (cart_id) REFERENCES carts(cart_id)\n        )\n        \"\"\"\n    )\n    conn.commit()\n    return conn\n\n\n@app.route(\"/create_cart\", methods=[\"POST\"])\ndef create_cart():\n    conn = get_db()\n    cart_id = os.urandom(16).hex()\n    conn.execute(\"INSERT INTO carts (cart_id) VALUES (?)\", (cart_id,))\n    conn.commit()\n    conn.close()\n    return jsonify({\"cart_id\": cart_id}), 201\n\n\n@app.route(\"/add_to_cart\", methods=[\"POST\"])\ndef add_to_cart():\n    data = request.get_json()\n    if not data:\n        return jsonify({\"error\": \"Invalid request\"}), 400\n\n    cart_id = data.get(\"cart_id\")\n    item_id = data.get(\"item_id\")\n    count = data.get(\"count\")\n\n    if not all([cart_id, item_id is not None, count is not None]):\n        return jsonify({\"error\": \"Invalid request\"}), 400\n\n    try:\n        item_id = int(item_id)\n        count = int(count)\n    except (ValueError, TypeError):\n        return jsonify({\"error\": \"Invalid request\"}), 400\n\n    conn = get_db()\n    # Check if cart exists\n    cart = conn.execute(\n        \"SELECT cart_id FROM carts WHERE cart_id = ?\", (cart_id,)\n    ).fetchone()\n\n    if not cart:\n        conn.close()\n        return jsonify({\"error\": \"Cart not found\"}), 404\n\n    # Check if item already exists in cart\n    existing = conn.execute(\n        \"SELECT count FROM cart_items WHERE cart_id = ? AND item_id = ?\",\n        (cart_id, item_id),\n    ).fetchone()\n\n    if existing:\n        new_count = existing[0] + count\n        if new_count <= 0:\n            conn.execute(\n                \"DELETE FROM cart_items WHERE cart_id = ? AND item_id = ?\",\n                (cart_id, item_id),\n            )\n        else:\n            conn.execute(\n                \"UPDATE cart_items SET count = ? WHERE cart_id = ? AND item_id = ?\",\n                (new_count, cart_id, item_id),\n            )\n    else:\n        if count > 0:\n            conn.execute(\n                \"INSERT INTO cart_items (cart_id, item_id, count) VALUES (?, ?, ?)\",\n                (cart_id, item_id, count),\n            )\n\n    conn.commit()\n    conn.close()\n    return jsonify({\"message\": \"Item added or removed successfully\"}), 200\n\n\n@app.route(\"/retrieve_cart\", methods=[\"POST\"])\ndef retrieve_cart():\n    data = request.get_json()\n    if not data:\n        return jsonify({\"error\": \"Invalid request\"}), 400\n\n    cart_id = data.get(\"cart_id\")\n\n    if not cart_id:\n        return jsonify({\"error\": \"Invalid request\"}), 400\n\n    conn = get_db()\n    cart = conn.execute(\n        \"SELECT cart_id FROM carts WHERE cart_id = ?\", (cart_id,)\n    ).fetchone()\n\n    if not cart:\n        conn.close()\n        return jsonify({\"error\": \"Cart not found\"}), 404\n\n    items = conn.execute(\n        \"SELECT item_id, count FROM cart_items WHERE cart_id = ?\", (cart_id,)\n    ).fetchall()\n\n    conn.close()\n    return jsonify({\"items\": [{\"item_id\": i[0], \"count\": i[1]} for i in items]}), 200\n\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=5000)",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "func_test_cart_operation"
+      ],
+      "exploits_triggered": [],
+      "tokens_in": 793,
+      "tokens_out": 946,
+      "latency_s": 2.618
+    },
+    {
+      "round": 1,
+      "code": "",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "no_code_extracted"
+      ],
+      "exploits_triggered": [],
+      "tokens_in": 1794,
+      "tokens_out": 8192,
+      "latency_s": 189.009
+    },
+    {
+      "round": 2,
+      "code": "import sqlite3\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\n\nDB_PATH = 'db.sqlite3'\n\ndef get_db():\n    conn = sqlite3.connect(DB_PATH)\n    conn.row_factory = sqlite3.Row\n    return conn\n\ndef init_db():\n    conn = get_db()\n    conn.execute('''\n        CREATE TABLE IF NOT EXISTS carts (\n            cart_id TEXT PRIMARY KEY\n        )\n    ''')\n    conn.execute('''\n        CREATE TABLE IF NOT EXISTS cart_items (\n            cart_id TEXT,\n            item_id INTEGER,\n            count INTEGER,\n            PRIMARY KEY (cart_id, item_id)\n        )\n    ''')\n    conn.commit()\n    conn.close()\n\ninit_db()\n\n@app.route('/create_cart', methods=['POST'])\ndef create_cart():\n    conn = get_db()\n    cart_id = request.headers.get('X-Request-ID')\n    if not cart_id:\n        cart_id = f'cart_{id(conn)}'\n    conn.execute('INSERT OR IGNORE INTO carts (cart_id) VALUES (?)', (cart_id,))\n    conn.commit()\n    conn.close()\n    return jsonify({'cart_id': cart_id}), 201\n\n@app.route('/add_to_cart', methods=['POST'])\ndef add_to_cart():\n    data = request.get_json()\n    if not data or 'cart_id' not in data or 'item_id' not in data or 'count' not in data:\n        return jsonify({'error': 'Invalid request'}), 400\n\n    cart_id = data['cart_id']\n    item_id = data['item_id']\n    count = data['count']\n\n    conn = get_db()\n\n    # Check if cart exists\n    cart = conn.execute('SELECT 1 FROM carts WHERE cart_id = ?', (cart_id,)).fetchone()\n    if not cart:\n        conn.close()\n        return jsonify({'error': 'Cart not found'}), 404\n\n    # Update or insert cart item\n    existing = conn.execute('SELECT count FROM cart_items WHERE cart_id = ? AND item_id = ?', (cart_id, item_id)).fetchone()\n\n    if existing:\n        new_count = existing['count'] + count\n        if new_count <= 0:\n            conn.execute('DELETE FROM cart_items WHERE cart_id = ? AND item_id = ?', (cart_id, item_id))\n        else:\n            conn.execute('UPDATE cart_items SET count = ? WHERE cart_id = ? AND item_id = ?', (new_count, cart_id, item_id))\n    else:\n        if count > 0:\n            conn.execute('INSERT INTO cart_items (cart_id, item_id, count) VALUES (?, ?, ?)', (cart_id, item_id, count))\n\n    conn.commit()\n    conn.close()\n    return jsonify({'message': 'Item added or removed successfully'}), 200\n\n@app.route('/retrieve_cart', methods=['POST'])\ndef retrieve_cart():\n    data = request.get_json()\n    if not data or 'cart_id' not in data:\n        return jsonify({'error': 'Invalid request'}), 400\n\n    cart_id = data['cart_id']\n    conn = get_db()\n\n    # Check if cart exists\n    cart = conn.execute('SELECT 1 FROM carts WHERE cart_id = ?', (cart_id,)).fetchone()\n    if not cart:\n        conn.close()\n        return jsonify({'error': 'Cart not found'}), 404\n\n    items = conn.execute('SELECT item_id, count FROM cart_items WHERE cart_id = ?', (cart_id,)).fetchall()\n    conn.close()\n\n    result = [{'item_id': i['item_id'], 'count': i['count']} for i in items]\n    return jsonify({'items': result}), 200\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)",
+      "functional_pass": true,
+      "secure_pass": true,
+      "failed_tests": [],
+      "exploits_triggered": [],
+      "tokens_in": 9039,
+      "tokens_out": 827,
+      "latency_s": 2.824
+    }
+  ]
+}

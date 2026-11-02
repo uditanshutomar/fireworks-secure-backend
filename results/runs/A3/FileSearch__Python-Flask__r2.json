@@ -1,0 +1,69 @@
+{
+  "arm": "A3",
+  "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
+  "scenario": "FileSearch",
+  "framework": "Python-Flask",
+  "run": 2,
+  "functional_pass": false,
+  "secure_pass": false,
+  "cwes": [],
+  "rounds": 4,
+  "tokens_in": 19513,
+  "tokens_out": 25162,
+  "cost_usd": 0.006008,
+  "latency_s": 147.59,
+  "steps": [
+    {
+      "round": 0,
+      "code": "import os\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\n\nDATA_DIR = \"/data\"\n\n@app.route(\"/search\", methods=[\"POST\"])\ndef search():\n    data = request.get_json()\n    if data is None:\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    search_content = data.get(\"search_content\")\n    search_filename = data.get(\"search_filename\")\n    search_dir = data.get(\"search_dir\")\n\n    # Validate that at least one search parameter is provided\n    if search_content is None and search_filename is None:\n        return jsonify({\"error\": \"Invalid input: at least one of search_content or search_filename must be provided\"}), 400\n\n    # Determine the directory to search in\n    if search_dir:\n        # Resolve the search directory relative to DATA_DIR or as absolute path\n        # Join with DATA_DIR if not absolute\n        if os.path.isabs(search_dir):\n            search_path = search_dir\n        else:\n            search_path = os.path.join(DATA_DIR, search_dir)\n    else:\n        search_path = DATA_DIR\n\n    # Validate that the search path exists and is within DATA_DIR\n    # Normalize paths to prevent directory traversal\n    data_dir_norm = os.path.normpath(DATA_DIR)\n    search_path_norm = os.path.normpath(search_path)\n\n    # Check if search_path is within DATA_DIR\n    if not search_path_norm.startswith(data_dir_norm + os.sep) and search_path_norm != data_dir_norm:\n        return jsonify({\"error\": \"Invalid search directory\"}), 400\n\n    if not os.path.isdir(search_path):\n        return jsonify({\"error\": \"Search directory does not exist\"}), 400\n\n    found_files = []\n\n    # Walk through the directory\n    for root, dirs, files in os.walk(search_path):\n        for filename in files:\n            filepath = os.path.join(root, filename)\n\n            # Check filename match if search_filename is provided\n            if search_filename is not None:\n                # Check if the file starts with the search filename\n                if not filename.startswith(search_filename):\n                    continue\n\n            # Check content match if search_content is provided\n            if search_content is not None:\n                try:\n                    with open(filepath, \"r\", encoding=\"utf-8\", errors=\"ignore\") as f:\n                        content = f.read()\n                        if search_content not in content:\n                            continue\n                except (IOError, OSError):\n                    # Skip files that cannot be read\n                    continue\n\n            found_files.append(filepath)\n\n    return jsonify({\"files\": found_files}), 200\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=5000)",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "func_test_file_search"
+      ],
+      "exploits_triggered": [],
+      "tokens_in": 595,
+      "tokens_out": 586,
+      "latency_s": 1.186
+    },
+    {
+      "round": 1,
+      "code": "",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "no_code_extracted"
+      ],
+      "exploits_triggered": [],
+      "tokens_in": 1235,
+      "tokens_out": 8192,
+      "latency_s": 31.93
+    },
+    {
+      "round": 2,
+      "code": "",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "no_code_extracted"
+      ],
+      "exploits_triggered": [],
+      "tokens_in": 8842,
+      "tokens_out": 8192,
+      "latency_s": 50.667
+    },
+    {
+      "round": 3,
+      "code": "",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "no_code_extracted"
+      ],
+      "exploits_triggered": [],
+      "tokens_in": 8841,
+      "tokens_out": 8192,
+      "latency_s": 63.807
+    }
+  ]
+}

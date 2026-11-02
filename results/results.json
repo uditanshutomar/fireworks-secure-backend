@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-02T21:49:49Z",
+  "generated_at": "2026-11-02T21:59:23Z",
   "scenarios": 12,
-  "runs_per_scenario": 1,
+  "runs_per_scenario": 2,
   "arms": [
     {
       "arm": "A1",
@@ -40,15 +40,15 @@
       "label": "Nemotron Lightning 3.5, one-shot",
       "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
       "loop": "one-shot",
-      "n": 12,
-      "functional_pass_rate": 0.3333,
-      "secure_pass_rate": 0.25,
-      "cost_per_100_tasks_usd": 0.042158,
-      "cost_per_secure_app_usd": 0.001686,
-      "median_latency_s": 2.63,
+      "n": 24,
+      "functional_pass_rate": 0.1667,
+      "secure_pass_rate": 0.125,
+      "cost_per_100_tasks_usd": 0.080933,
+      "cost_per_secure_app_usd": 0.006475,
+      "median_latency_s": 6.32,
       "cwe_counts": {
         "284": 1,
-        "400": 1,
+        "400": 2,
         "522": 1
       }
     },
@@ -57,17 +57,43 @@
       "label": "Nemotron Lightning 3.5 + repair",
       "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
       "loop": "repair",
-      "n": 12,
-      "functional_pass_rate": 0.5,
-      "secure_pass_rate": 0.4167,
-      "cost_per_100_tasks_usd": 0.137217,
-      "cost_per_secure_app_usd": 0.003293,
-      "median_latency_s": 10.36,
+      "n": 17,
+      "functional_pass_rate": 0.3529,
+      "secure_pass_rate": 0.2941,
+      "cost_per_100_tasks_usd": 0.226488,
+      "cost_per_secure_app_usd": 0.007701,
+      "median_latency_s": 21.41,
       "cwe_counts": {
         "20": 1,
         "79": 1,
         "522": 1
       }
+    },
+    {
+      "arm": "B1",
+      "label": "DeepSeek V4.1 Flash, security reminder",
+      "model": "accounts/fireworks/models/deepseek-v4p1-flash-1017",
+      "loop": "one-shot",
+      "n": 5,
+      "functional_pass_rate": 0.6,
+      "secure_pass_rate": 0.6,
+      "cost_per_100_tasks_usd": 0.22698,
+      "cost_per_secure_app_usd": 0.003783,
+      "median_latency_s": 5.52,
+      "cwe_counts": {}
+    },
+    {
+      "arm": "B2",
+      "label": "Nemotron Lightning 3.5, security reminder",
+      "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
+      "loop": "one-shot",
+      "n": 3,
+      "functional_pass_rate": 0.0,
+      "secure_pass_rate": 0.0,
+      "cost_per_100_tasks_usd": 0.115767,
+      "cost_per_secure_app_usd": null,
+      "median_latency_s": 29.25,
+      "cwe_counts": {}
     }
   ]
 }
