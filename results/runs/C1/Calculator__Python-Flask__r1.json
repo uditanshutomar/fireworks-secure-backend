@@ -1,0 +1,28 @@
+{
+  "arm": "C1",
+  "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
+  "scenario": "Calculator",
+  "framework": "Python-Flask",
+  "run": 1,
+  "functional_pass": true,
+  "secure_pass": true,
+  "cwes": [],
+  "rounds": 1,
+  "tokens_in": 4245,
+  "tokens_out": 390,
+  "cost_usd": 0.00029,
+  "latency_s": 1.133,
+  "steps": [
+    {
+      "round": 0,
+      "code": "import re\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\n\n# Whitelist allowed characters: digits, operators, parentheses, and whitespace\n# This prevents code injection while allowing standard arithmetic.\nALLOWED_CHAR_PATTERN = re.compile(r'^[0-9+\\-*/.()\\s]+$')\n\n\n@app.route('/calculator', methods=['POST'])\ndef calculator():\n    data = request.get_json(silent=True)\n    if not data or 'expression' not in data:\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    expression = data.get('expression')\n    if not isinstance(expression, str):\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    # Sanitize: check allowed characters\n    if not ALLOWED_CHAR_PATTERN.match(expression):\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    # Remove any leading/trailing whitespace that might bypass checks\n    expression = expression.strip()\n\n    # Further safety: ensure it's not empty after stripping\n    if not expression:\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    try:\n        # Evaluate in a restricted environment for safety\n        # Using eval with empty globals/locals prevents access to builtins\n        result = str(eval(expression, {\"__builtins__\": None}, {}))\n        return jsonify({\"result\": result}), 200\n    except ZeroDivisionError:\n        return jsonify({\"error\": \"Division by zero\"}), 400\n    except Exception as e:\n        return jsonify({\"error\": \"Invalid expression\"}), 400\n\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)",
+      "functional_pass": true,
+      "secure_pass": true,
+      "failed_tests": [],
+      "exploits_triggered": [],
+      "tokens_in": 4245,
+      "tokens_out": 390,
+      "latency_s": 1.133
+    }
+  ]
+}
