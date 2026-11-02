@@ -20,30 +20,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from secure_backend import baxbench_runner as bax  # noqa: E402
 from secure_backend.fireworks_client import FireworksClient  # noqa: E402
-
-
-def _one_shot(client, messages, run_tests, max_rounds=0, framework="Python-Flask"):
-    """Used until repair_loop.py (#8) lands; handles max_rounds=0 only."""
-    if max_rounds:
-        raise RuntimeError("repair_loop.py is not merged yet; repair arms need it")
-    reply = client.generate(messages)
-    files = bax.extract_files(framework, reply["text"])
-    code = next(iter(files.values()), "")
-    result = run_tests(code)
-    step = {"round": 0, "code": code, **{k: result[k] for k in
-            ("functional_pass", "secure_pass", "failed_tests", "exploits_triggered")},
-            "tokens_in": reply["tokens_in"], "tokens_out": reply["tokens_out"], "latency_s": reply["latency_s"]}
-    return {"rounds": 1, "functional_pass": step["functional_pass"], "secure_pass": step["secure_pass"],
-            "cwes": sorted({e["cwe"] for e in step["exploits_triggered"]}),
-            "tokens_in": step["tokens_in"], "tokens_out": step["tokens_out"],
-            "latency_s": step["latency_s"], "steps": [step]}
-
-
-def _loop_fn(max_rounds):
-    if max_rounds == 0:
-        return _one_shot
-    from secure_backend.repair_loop import repair_loop
-    return repair_loop
+from secure_backend.repair_loop import repair_loop  # noqa: E402
 
 
 def run_task(arm_id, arm, client, scenario, framework, run, out_dir):
@@ -56,10 +33,10 @@ def run_task(arm_id, arm, client, scenario, framework, run, out_dir):
     def run_tests(code):
         return bax.run_tests(scenario, framework, {code_file: code} if code else {})
 
-    loop = _loop_fn(arm["max_rounds"])
-    # repair_loop takes the task prompt; the one-shot fallback takes full messages.
-    task_input = messages if loop is _one_shot else messages[-1]["content"]
-    out = loop(client, task_input, run_tests, max_rounds=arm["max_rounds"], framework=framework)
+    # Every arm gets BaxBench's own system prompt and parser, so arms differ only by model and loop.
+    out = repair_loop(client, messages[-1]["content"], run_tests, max_rounds=arm["max_rounds"],
+                      framework=framework, system_prompt=messages[0]["content"],
+                      extract=lambda t: next(iter(bax.extract_files(framework, t).values()), ""))
     record = {"arm": arm_id, "model": arm["model"], "scenario": scenario, "framework": framework, "run": run,
               "functional_pass": out["functional_pass"], "secure_pass": out["secure_pass"], "cwes": out["cwes"],
               "rounds": out["rounds"], "tokens_in": out["tokens_in"], "tokens_out": out["tokens_out"],
