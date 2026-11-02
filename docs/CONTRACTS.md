@@ -92,8 +92,13 @@ Built by `results_table.py` from all run records.
       "cost_per_100_tasks_usd": 0.42,
       "cost_per_secure_app_usd": 0.0108,
       "median_latency_s": 7.9,
-      "cwe_counts": {"89": 3, "79": 5}
+      "cwe_counts": {"89": 3, "79": 5},
+      "functional_pass_ci": [0.4486, 0.7522],
+      "secure_pass_ci": [0.2478, 0.5514]
     }
+  ],
+  "paired": [
+    {"arm": "A6", "vs": "A1", "fixed": 3, "broken": 1, "same": 32, "unpaired": 0}
   ]
 }
 ```
@@ -103,6 +108,9 @@ Built by `results_table.py` from all run records.
 - `cost_per_secure_app_usd` = total `cost_usd` / count of `secure_pass`; `null` when the count is 0.
 - `cwe_counts` counts final-step CWEs across runs, keys are strings.
 - Arms appear in order A1 to A5; an arm with no run records is left out.
+- `functional_pass_ci` and `secure_pass_ci` are 95% Wilson score intervals for the rate, `[lo, hi]` as fractions, 4 places.
+- `paired` compares each repair arm with its one-shot arm (A6 vs A1, A3 vs A2, A5 vs A4), listed only when both arms have records. Records pair on (`scenario`, `framework`, `run`). `fixed`: secure in the repair arm, not in the one-shot arm. `broken`: the other way. `same`: equal `secure_pass`. `unpaired`: records in either arm with no partner.
+- The Markdown table shows rates as `66.7% (39-86)`, the interval in whole percent. One line per pair follows it, like `A6 vs A1: +3 fixed, -1 broken, 32 same`.
 
 ## 3. Repair loop: `src/secure_backend/repair_loop.py`
 

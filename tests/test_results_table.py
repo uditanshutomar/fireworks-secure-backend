@@ -108,8 +108,11 @@ def test_label_override_and_cli_writes_file(tmp_path):
     assert res["arms"][1]["label"] == "Qwen tuned + repair"
     table = r.stdout.splitlines()
     assert table[0].startswith("| Arm | Label | n |")
-    assert table[2] == "| A2 | Nemotron Lightning 3.5, one-shot | 3 | 33.3% | 0.0% | $0.1000 | n/a | 4.0 s |"
-    assert table[3] == "| A3 | Qwen tuned + repair | 4 | 100.0% | 75.0% | $0.3000 | $0.0040 | 5.0 s |"
+    assert table[2] == ("| A2 | Nemotron Lightning 3.5, one-shot | 3 | 33.3% (6-79) | 0.0% (0-56) "
+                        "| $0.1000 | n/a | 4.0 s |")
+    assert table[3] == ("| A3 | Qwen tuned + repair | 4 | 100.0% (51-100) | 75.0% (30-95) "
+                        "| $0.3000 | $0.0040 | 5.0 s |")
+    assert table[4:] == ["", "A3 vs A2: +2 fixed, -0 broken, 1 same, 1 unpaired"]
 
 
 @pytest.mark.parametrize("change", [
@@ -157,4 +160,65 @@ def test_ui_sample_runs(tmp_path, capsys):
     assert a5["cost_per_secure_app_usd"] == pytest.approx(0.0012)
     assert a5["median_latency_s"] == 9.4
     assert a5["cwe_counts"] == {}
-    assert "| A5 | Nemotron Nano 3 tuned + repair | 1 | 100.0% | 100.0% |" in capsys.readouterr().out
+    assert "| A5 | Nemotron Nano 3 tuned + repair | 1 | 100.0% (21-100) | 100.0% (21-100) |" \
+        in capsys.readouterr().out
+    assert res["paired"] == []
+
+
+@pytest.mark.parametrize("k, n, ci", [
+    (0, 12, [0.0, 0.2425]),
+    (6, 12, [0.2538, 0.7462]),
+    (12, 12, [0.7575, 1.0]),
+    (8, 12, [0.3906, 0.8619]),  # the issue's 66.7% (39-86)
+    (1, 1, [0.2065, 1.0]),
+])
+def test_wilson_known_values(k, n, ci):
+    assert results_table.wilson(k, n) == ci
+
+
+@pytest.mark.parametrize("k, n", [(0, 0), (-1, 3), (4, 3)])
+def test_wilson_rejects_bad_counts(k, n):
+    with pytest.raises(ValueError):
+        results_table.wilson(k, n)
+
+
+def test_arm_ci_fields(tmp_path):
+    a2, a3 = build(tmp_path)["arms"]
+    assert a3["secure_pass_ci"] == results_table.wilson(3, 4)
+    assert a3["functional_pass_ci"] == results_table.wilson(4, 4)
+    assert a2["secure_pass_ci"] == results_table.wilson(0, 3)
+    assert a2["functional_pass_ci"] == results_table.wilson(1, 3)
+
+
+def test_pairing_on_scenario_framework_and_run():
+    base = [
+        rec("A1", "Login", 1, False, False, 0.01, 1.0),  # fixed
+        rec("A1", "Login", 2, True, True, 0.01, 1.0),  # broken
+        rec("A1", "Upload", 1, True, True, 0.01, 1.0),  # same, both secure
+        rec("A1", "Forum", 1, True, False, 0.01, 1.0),  # same, both insecure
+        # Same scenario and run as the Forum pair, other framework: no partner.
+        rec("A1", "Forum", 1, True, True, 0.01, 1.0, framework="Python-FastAPI"),
+    ]
+    repair = [dict(r, arm="A6") for r in [
+        rec("A1", "Login", 1, True, True, 0.01, 1.0),
+        rec("A1", "Login", 2, True, False, 0.01, 1.0),
+        rec("A1", "Upload", 1, True, True, 0.01, 1.0),
+        rec("A1", "Forum", 1, False, False, 0.01, 1.0),
+        # Same scenario, other run: no partner, so not counted as fixed.
+        rec("A1", "Forum", 2, True, True, 0.01, 1.0),
+    ]]
+    assert results_table.paired_gains(base + repair) == [
+        {"arm": "A6", "vs": "A1", "fixed": 1, "broken": 1, "same": 2, "unpaired": 2},
+    ]
+    res = {"paired": results_table.paired_gains(base + repair)}
+    assert results_table.paired_lines(res) == ["A6 vs A1: +1 fixed, -1 broken, 2 same, 2 unpaired"]
+
+
+def test_pairing_skips_missing_arms_and_keeps_order():
+    recs = [rec("A3", "Login", 1, True, True, 0.01, 1.0), rec("A2", "Login", 1, True, False, 0.01, 1.0),
+            rec("A1", "Login", 1, True, True, 0.01, 1.0)]
+    assert results_table.paired_gains(recs) == [
+        {"arm": "A3", "vs": "A2", "fixed": 1, "broken": 0, "same": 0, "unpaired": 0},
+    ]
+    assert results_table.paired_lines({"paired": results_table.paired_gains(recs)}) == [
+        "A3 vs A2: +1 fixed, -0 broken, 0 same"]
