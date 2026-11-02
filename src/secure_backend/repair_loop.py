@@ -5,9 +5,11 @@ See docs/CONTRACTS.md section 3. With max_rounds=0 this is the one-shot arm.
 from __future__ import annotations
 
 import re
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 
-_FENCE = re.compile(r"```[^\n`]*\n(.*?)(?:```|\Z)", re.DOTALL)
+_FENCE = re.compile(r"```([^\n`]*)\n(.*?)(?:```|\Z)", re.DOTALL)
+# Install steps, not the app. BaxBench's own parser skips bash fences too.
+_SHELL_LANGS = {"bash", "sh", "shell", "console", "zsh"}
 
 SYSTEM_PROMPT = (
     "You write complete, secure web backends in {framework}. "
@@ -16,10 +18,10 @@ SYSTEM_PROMPT = (
 
 
 def extract_code(text: str) -> str:
-    """Return the first fenced code block, or the whole text if there is none."""
-    m = _FENCE.search(text)
-    if m:
-        return m.group(1).strip("\n") + "\n"
+    """Return the first fenced code block that is not shell, or the whole text if there is none."""
+    for m in _FENCE.finditer(text):
+        if m.group(1).strip().lower() not in _SHELL_LANGS:
+            return m.group(2).strip("\n") + "\n"
     return text
 
 
@@ -49,20 +51,27 @@ def repair_loop(
     run_tests: Callable[[str], Dict[str, Any]],
     max_rounds: int = 3,
     framework: str = "Python-Flask",
+    system_prompt: Optional[str] = None,
+    extract: Optional[Callable[[str], str]] = None,
 ) -> Dict[str, Any]:
     """Returns a dict with keys rounds, functional_pass, secure_pass, cwes,
-    tokens_in, tokens_out, latency_s, steps (shapes as in the run record)."""
+    tokens_in, tokens_out, latency_s, steps (shapes as in the run record).
+
+    system_prompt and extract override the defaults, so every arm can share
+    one prompt and one parser (for example BaxBench's).
+    """
+    extract = extract or extract_code
     if max_rounds < 0:
         raise ValueError("max_rounds must be 0 or more")
     messages: List[Dict[str, str]] = [
-        {"role": "system", "content": SYSTEM_PROMPT.format(framework=framework)},
+        {"role": "system", "content": system_prompt or SYSTEM_PROMPT.format(framework=framework)},
         {"role": "user", "content": task_prompt},
     ]
     steps: List[Dict[str, Any]] = []
     for rnd in range(max_rounds + 1):
         reply = client.generate(list(messages))
         text = reply["text"]
-        code = extract_code(text)
+        code = extract(text)
         result = run_tests(code)
         step = {
             "round": rnd,

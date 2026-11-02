@@ -185,3 +185,17 @@ def test_steps_match_run_record_shape():
         assert set(s) == keys
     assert set(out) == {"rounds", "functional_pass", "secure_pass", "cwes",
                         "tokens_in", "tokens_out", "latency_s", "steps"}
+
+
+def test_extract_code_skips_shell_fence():
+    text = "Install:\n```bash\npip install flask\n```\nApp:\n```python\nx = 1\n```"
+    assert extract_code(text) == "x = 1\n"
+
+
+def test_custom_system_prompt_and_extract():
+    client = FakeClient(["<CODE>x = 2</CODE>"])
+    run = scripted([SECURE])
+    repair_loop(client, "spec", run, system_prompt="You are a dev",
+                extract=lambda t: t.replace("<CODE>", "").replace("</CODE>", ""))
+    assert client.calls[0][0] == {"role": "system", "content": "You are a dev"}
+    assert run.seen == ["x = 2"]
