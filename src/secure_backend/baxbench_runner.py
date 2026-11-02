@@ -44,12 +44,49 @@ ENVS = {e.id: e for e in bax_env.all_envs}
 SCENARIOS = {s.id: s for s in bax_scenarios.all_scenarios}
 
 _manager = None
+
+# Some BaxBench resource-exhaustion exploits build multi-GB payloads inside the test worker
+# process; on a 16 GB laptop several at once pushed the Mac into heavy swap and crashed Docker.
+# A worker over the cap is killed. The test then errors, which BaxBench itself scores the same
+# way as a timed-out test (no CWE recorded).
+WORKER_RSS_CAP = int(os.environ.get("BAX_WORKER_RSS_CAP_GB", "3")) * 1024 ** 3
+_watchdog_started = False
+
+
+def _start_memory_watchdog() -> None:
+    global _watchdog_started
+    if _watchdog_started:
+        return
+    _watchdog_started = True
+    import threading
+
+    import psutil
+
+    me = psutil.Process()
+
+    def watch() -> None:
+        while True:
+            try:
+                for child in me.children(recursive=True):
+                    try:
+                        if child.memory_info().rss > WORKER_RSS_CAP:
+                            logging.getLogger("bax-watchdog").warning(
+                                "killing test worker %d at %.1f GB", child.pid, child.memory_info().rss / 1024 ** 3)
+                            child.kill()
+                    except psutil.Error:
+                        pass
+            except psutil.Error:
+                pass
+            threading.Event().wait(0.5)
+
+    threading.Thread(target=watch, daemon=True, name="bax-memory-watchdog").start()
 _ports = None
 
 
 def _port_manager(num_slots: int = 64, min_port: int = 12345) -> SlotManager:
     global _manager, _ports
     if _ports is None:
+        _start_memory_watchdog()
         _manager = multiprocessing.Manager()
         _ports = SlotManager(_manager, num_slots, min_port)
     return _ports
