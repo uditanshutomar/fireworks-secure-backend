@@ -1,0 +1,14 @@
+# Keys never enter the repo.
+.env
+*.env
+.env.*
+# Local-only: the locked test split, raw Docker output, training data, vendored benchmarks.
+private/
+data/
+vendor/
+runs/raw/
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+.DS_Store
