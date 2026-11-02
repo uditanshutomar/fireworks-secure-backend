@@ -1,4 +1,17 @@
-# Secure Backend: write-up
+# Teach'O'tron: write-up
+
+**In one line:** the same small NVIDIA Nemotron model, taught with three apps that survived real attacks in a sandbox, writes 2.7× more safe backends and gives 722 safe apps per $1, against 154 untaught and 372 for DeepSeek V4.1 Flash at about 6× the token price.
+
+| Setup (12 held-out scenarios) | Secure | Safe apps per $1 | Median wait |
+|---|---:|---:|---:|
+| Nemotron Lightning, as is | 12.5% | 154 | 6.3 s |
+| Nemotron + repair loop | 25.0% | 83 | 62.7 s |
+| Nemotron + 3 sandbox-verified examples | 20.8% | 321 | 2.8 s |
+| Nemotron + examples + repair | 33.3% | 178 | 31.2 s |
+| **Teach'O'tron: examples + 4k answer cap** | **33.3%** | **722** | **2.5 s** |
+| DeepSeek V4.1 Flash | 66.7% | 372 | 5.9 s |
+
+The cap was chosen after the first runs: untaught, 78% of Nemotron's spend was answers that hit the 8,192-token limit with no code, and no working app used more than 1,800 tokens. The sections below are the full write-up of the baseline study.
 
 ## The problem
 
