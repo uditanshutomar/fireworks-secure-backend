@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secure Backend: results</title>
+<link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #F9F7F5;
+  --paper-2: #F4F0EC;
+  --card: #FFFFFF;
+  --line: #E2DDD8;
+  --line-2: #C9C2C2;
+  --ink: #280016;
+  --ink-2: #5E5257;
+  --muted: #706666;
+  --plum: #610A45;
+  --rasp: #B4236A;
+  --coral: #F98461;
+  --coral-ink: #A63A1F;
+  --broken: #E2DDD8;
+  --serif: 'Instrument Serif', 'Times New Roman', Georgia, serif;
+  --sans: 'Geist', 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+a { color: var(--plum); }
+a:hover { color: var(--rasp); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 clamp(16px, 3vw, 40px) 72px; }
+.kicker { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; }
+.serif { font-family: var(--serif); font-weight: 400; }
+
+/* Top bar */
+.top { position: sticky; top: 0; z-index: 5; background: rgba(249, 247, 245, 0.9); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.top-in { max-width: 1240px; margin: 0 auto; padding: 10px clamp(16px, 3vw, 40px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; text-decoration: none; color: var(--ink); min-height: 44px; }
+nav { display: flex; flex-wrap: wrap; gap: 2px; }
+nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 999px; font-size: 13.5px; color: var(--ink-2); text-decoration: none; }
+nav a:hover { background: var(--paper-2); color: var(--ink); }
+.badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; background: #FDE7DF; color: var(--coral-ink); border: 1px solid #F6C4B2; }
+.badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--coral); }
+
+/* Hero */
+.hero { position: relative; padding: 72px 0 40px; text-align: center; }
+.hero::before { content: ""; position: absolute; inset: 40px -10% auto; height: 420px; background: radial-gradient(50% 60% at 50% 40%, rgba(249, 132, 97, 0.18), rgba(249, 132, 97, 0) 70%); z-index: -1; pointer-events: none; }
+.hero h1 { margin: 18px auto 0; max-width: 18ch; font-family: var(--serif); font-weight: 400; font-size: clamp(42px, 6vw, 76px); line-height: 1.02; letter-spacing: -0.01em; text-wrap: balance; }
+.hero h1 em { font-style: italic; color: var(--plum); }
+.hero .lede { margin: 22px auto 0; max-width: 64ch; font-size: 18px; color: var(--ink-2); text-wrap: pretty; }
+.answer { margin: 40px auto 0; max-width: 1000px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; text-align: left; }
+.answer > div { padding: 22px 24px; border-right: 1px solid var(--line); }
+.answer > div:last-child { border-right: 0; }
+.answer .big { font-family: var(--serif); font-size: 56px; line-height: 1; margin-top: 10px; letter-spacing: -0.01em; }
+.answer .big small { font-size: 0.5em; }
+.answer p { margin: 8px 0 0; font-size: 14px; color: var(--ink-2); }
+.answer .hl { background: var(--ink); color: var(--paper); }
+.answer .hl .kicker, .answer .hl p { color: rgba(249, 247, 245, 0.78); }
+.context { margin: 28px auto 0; max-width: 820px; font-size: 13.5px; color: var(--muted); text-wrap: pretty; }
+
+/* Sections */
+.sec { margin-top: 56px; scroll-margin-top: 80px; }
+.sec-head { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 12px 48px; align-items: end; margin-bottom: 20px; }
+.sec-head h2 { margin: 8px 0 0; font-family: var(--serif); font-weight: 400; font-size: clamp(30px, 3.4vw, 42px); line-height: 1.08; letter-spacing: -0.005em; text-wrap: balance; }
+.sec-head h2 em { font-style: italic; color: var(--plum); }
+.how { font-size: 14.5px; color: var(--ink-2); text-wrap: pretty; }
+.how b { color: var(--ink); font-weight: 600; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 26px; }
+.card svg[role="img"] { display: block; width: 100%; height: auto; }
+.foot { margin-top: 14px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(520px, 100%), 1fr)); gap: 20px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--ink-2); margin-bottom: 14px; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+/* Experiment design */
+.design { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr); gap: 20px; }
+@media (max-width: 860px) { .design { grid-template-columns: 1fr; } }
+.matrix2 { display: grid; grid-template-columns: 96px repeat(2, minmax(0, 1fr)); grid-template-rows: auto repeat(2, auto); gap: 10px; }
+.mx-col, .mx-row { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; }
+.mx-col { justify-content: center; padding-bottom: 2px; }
+.cell2 { position: relative; border-radius: 14px; padding: 18px 18px 16px; border: 1px solid var(--line); min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
+.cell2 .id { font-family: var(--mono); font-size: 12px; display: flex; align-items: center; gap: 8px; }
+.cell2 .pct { font-family: var(--serif); font-size: 54px; line-height: 0.95; }
+.cell2 .lab { font-size: 13px; }
+.cell2.dark { color: var(--paper); border-color: transparent; }
+.cell2.dark .id, .cell2.dark .lab { color: rgba(249, 247, 245, 0.85); }
+.effects { display: flex; flex-direction: column; gap: 12px; }
+.eff { border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; background: var(--card); }
+.eff .v { font-family: var(--serif); font-size: 40px; line-height: 1; margin-top: 6px; }
+.eff p { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-2); }
+.eff.ref { background: var(--paper-2); }
+
+/* Exploit matrix */
+.tbox { overflow-x: auto; }
+table { border-collapse: separate; border-spacing: 4px; width: 100%; min-width: 560px; }
+th { font-family: var(--mono); font-size: 11.5px; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 4px 6px 8px; text-align: center; }
+th:first-child { text-align: left; }
+td.w { padding: 6px 10px 6px 0; }
+.cwe { display: flex; align-items: center; gap: 10px; }
+.cwe-ico { width: 34px; height: 34px; border-radius: 9px; flex: none; display: grid; place-items: center; background: var(--paper-2); color: var(--ink); }
+.cwe-name { font-size: 14px; font-weight: 500; }
+.cwe-id { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+td.v { height: 46px; text-align: center; border-radius: 8px; font-family: var(--mono); font-size: 13.5px; }
+
+/* Run viewer */
+.run-top { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: flex-end; justify-content: space-between; margin-bottom: 18px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+select { min-height: 44px; padding: 0 14px; font-family: var(--mono); font-size: 13px; color: var(--ink); background: var(--card); border: 1px solid var(--line-2); border-radius: 10px; min-width: 300px; max-width: 100%; }
+.stats { display: flex; flex-wrap: wrap; gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.stat { padding: 9px 16px; border-right: 1px solid var(--line); }
+.stat:last-child { border-right: 0; }
+.stat b { display: block; font-family: var(--mono); font-weight: 400; font-size: 14px; color: var(--ink); }
+.rail { display: flex; align-items: center; margin: 4px 0 20px; overflow-x: auto; padding-bottom: 4px; }
+.step { flex: none; min-height: 56px; min-width: 180px; padding: 9px 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; text-align: left; background: var(--card); color: var(--ink); border: 1px solid var(--line-2); border-radius: 12px; font-family: var(--sans); cursor: pointer; }
+.step[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.step .kicker { color: inherit; opacity: 0.75; }
+.chip { font-family: var(--mono); font-size: 11.5px; padding: 3px 9px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase; }
+.chip.bad { background: var(--coral); color: var(--ink); }
+.chip.good { background: var(--plum); color: var(--paper); }
+.chip.warn { background: var(--broken); color: var(--ink); }
+.link { flex: 1; min-width: 120px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 12px; font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.link i { display: block; width: 100%; border-top: 1.5px dashed var(--line-2); position: relative; }
+.link i::after { content: ""; position: absolute; right: -2px; top: -6px; border: 5px solid transparent; border-left: 8px solid var(--line-2); border-right: 0; }
+.run-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr)); gap: 20px; align-items: start; }
+.code { background: #1A0710; color: #EFE9EC; font-family: var(--mono); font-size: 13px; line-height: 1.75; padding: 14px 0 16px; border-radius: 14px; overflow-x: auto; min-height: 220px; }
+.code-head { display: flex; justify-content: space-between; gap: 12px; padding: 0 18px 10px; margin-bottom: 8px; border-bottom: 1px solid rgba(239, 233, 236, 0.1); color: #A8979F; font-size: 12px; }
+.ln { display: flex; padding-right: 20px; min-width: max-content; }
+.ln .n { width: 44px; flex: none; text-align: right; padding-right: 10px; color: #8E7D85; user-select: none; }
+.ln .g { width: 18px; flex: none; text-align: center; font-weight: 600; }
+.ln .t { white-space: pre; }
+.ln.bad { background: rgba(249, 132, 97, 0.2); }
+.ln.bad .g { color: var(--coral); }
+.ln.new { background: rgba(214, 120, 180, 0.2); }
+.ln.new .g { color: #F0A6D2; }
+.tk-k { color: #F0A6D2; }
+.tk-s { color: #FFC2A8; }
+.tk-c { color: #8E7D85; }
+.verdict { display: flex; flex-direction: column; gap: 14px; }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.pair > div { background: var(--paper-2); border-radius: 12px; padding: 12px 16px; }
+.pair b { display: block; margin-top: 4px; font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.1; }
+.vcard { border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--line); }
+.vcard.bad { background: #FEF0EA; border-color: #F6C4B2; }
+.vcard.good { background: #F6EAF1; border-color: #E4C3D6; }
+.ex { display: flex; align-items: center; gap: 12px; }
+.ex .cwe-ico { background: var(--card); }
+.ex-title { font-weight: 600; font-size: 15px; }
+.ex-name { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); }
+.prompt { margin: 8px 0 0; padding: 14px 16px; background: var(--paper-2); border-radius: 12px; font-family: var(--mono); font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; }
+.note { font-size: 12.5px; color: var(--muted); }
+.empty { padding: 24px; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+
+footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: 16px 40px; font-size: 13px; color: var(--ink-2); }
+footer b { color: var(--ink); font-weight: 600; }
+footer h3 { margin: 0 0 6px; font-family: var(--mono); font-weight: 400; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <a class="brand" href="#"><img src="assets/logo-mark.svg" width="26" height="26" alt="">Secure Backend</a>
+  <nav aria-label="Sections">
+    <a href="#design">The experiment</a>
+    <a href="#outcomes">100 apps</a>
+    <a href="#lift">Lift vs baseline</a>
+    <a href="#cost">Cost</a>
+    <a href="#attacks">Attacks</a>
+    <a href="#run">Run viewer</a>
+  </nav>
+  <span class="badge" id="sample" hidden><i></i>Sample data</span>
+</div></div>
+
+<div class="wrap">
+  <section class="hero" aria-labelledby="q">
+    <div class="kicker">BaxBench · <span id="meta-n"></span> · Python with Flask</div>
+    <h1 id="q">Can a small open model write backends that <em>work</em> and survive <em>real attacks</em>?</h1>
+    <p class="lede">We gave each model an API spec. BaxBench ran the app in Docker, ran its functional tests, then fired expert-written exploits at it. An app counts as a <b>secure pass</b> only if every test passes and no exploit gets in.</p>
+    <div class="answer" id="answer"></div>
+    <p class="context">Why it matters: in the BaxBench paper (Vero et al., 2025, arXiv:2502.11844) the best model wrote correct code only 62% of the time, and about half of the correct programs could be exploited. Working code is not the same as safe code.</p>
+  </section>
+
+  <section class="sec" id="design" aria-labelledby="design-t">
+    <div class="sec-head">
+      <div><div class="kicker">1 · The experiment in one picture</div><h2 id="design-t"></h2></div>
+      <p class="how">Two changes to one small model, tested alone and together. <b>Across</b>: one shot vs a repair loop that tells the model which tests failed and which attacks worked, up to 3 retries. <b>Down</b>: the base model vs our fine-tuned version. Each box is the share of apps that passed every test and survived every exploit.</p>
+    </div>
+    <div class="design">
+      <div class="card"><div class="matrix2" id="matrix2"></div></div>
+      <div class="effects" id="effects"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="outcomes" aria-labelledby="out-t">
+    <div class="sec-head">
+      <div><div class="kicker">2 · What happens to 100 apps</div><h2 id="out-t"></h2></div>
+      <p class="how">Every app ends in one of three places. <b>Broken</b>: a functional test failed. <b>Works, but exploited</b>: all tests pass, yet an attack gets in, which is the dangerous case because it looks fine in a demo. <b>Secure</b>: works and no attack gets in. Read each bar left to right.</p>
+    </div>
+    <div class="card">
+      <div class="legend"><span><i class="sw" style="background:var(--plum)"></i>Secure</span><span><i class="sw" style="background:var(--coral)"></i>Works, but exploited</span><span><i class="sw" style="background:var(--broken)"></i>Broken</span></div>
+      <div id="stack"></div>
+      <div class="foot" id="stack-foot"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="lift" aria-labelledby="lift-t">
+    <div class="sec-head">
+      <div><div class="kicker">3 · Lift over the baseline, with uncertainty</div><h2 id="lift-t"></h2></div>
+      <p class="how">The <b>baseline</b> is the small model as it ships: base Nemotron Nano 3, one shot. Each row is how many percentage points more apps are secure than the baseline. The bar is a 95% confidence interval: if it crosses zero, the gain could be noise.</p>
+    </div>
+    <div class="card">
+      <div id="forest"></div>
+      <div class="foot" id="forest-foot"></div>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section class="sec" id="cost" aria-labelledby="cost-t">
+      <div class="sec-head" style="grid-template-columns:1fr"><div><div class="kicker">4 · What a secure app costs</div><h2 id="cost-t"></h2></div>
+        <p class="how">Cost per secure app is everything spent (all model calls, repair rounds included) divided by the number of secure apps. <b>Up and to the left is better</b>: more secure for less money.</p></div>
+      <div class="card"><div id="scatter"></div><div class="foot" id="cost-foot"></div></div>
+    </section>
+    <section class="sec" id="attacks" aria-labelledby="att-t">
+      <div class="sec-head" style="grid-template-columns:1fr"><div><div class="kicker">5 · Which attacks still work</div><h2 id="att-t"></h2></div>
+        <p class="how">Each row is a kind of weakness (its CWE number). Each cell counts runs whose final app was broken into that way. <b>Darker means more often.</b> A dot means never.</p></div>
+      <div class="card tbox"><table><thead id="mx-head"></thead><tbody id="mx-rows"></tbody></table><div class="foot" id="att-foot"></div></div>
+    </section>
+  </div>
+
+  <section class="sec" id="run" aria-labelledby="run-t">
+    <div class="sec-head">
+      <div><div class="kicker">6 · Run viewer</div><h2 id="run-t">Watch one app get <em>fixed</em></h2></div>
+      <p class="how">Pick a run and click through its rounds. Orange lines are what the attack exploited; pink lines are the model's fix. The middle shows the exact message the model got back between rounds.</p>
+    </div>
+    <div class="card">
+      <div class="run-top">
+        <div class="field"><label class="kicker" for="run-pick">Run</label><select id="run-pick"></select></div>
+        <div class="stats" id="run-stats"></div>
+      </div>
+      <div id="run-body"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div><h3>Definitions</h3><b>Secure pass</b>: every BaxBench functional test passed and no BaxBench exploit succeeded. <b>Cost</b>: Fireworks list price × tokens over every model call in a run, repair rounds included; the tuned model is priced like its base model. <b>Latency</b>: model time only, not Docker.</div>
+    <div><h3>How to read the uncertainty</h3>Intervals are 95% Wilson intervals; differences use Newcombe's method. They treat every run as independent. Each scenario is run several times, so runs of one scenario are correlated and the true intervals are somewhat wider.</div>
+    <div><h3>Built with</h3>Fireworks AI for inference, LoRA fine-tuning and deployment; NVIDIA Nemotron Nano 3; BaxBench scenarios, tests and exploits, used unchanged. <span id="foot-gen"></span></div>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  const D = window.DASHBOARD_DATA || { results: { arms: [] }, runs: [] };
+  const R = D.results || { arms: [] };
+  const ARM_IDS = ['A1', 'A2', 'A3', 'A4', 'A5'];
+  const ARMS = (R.arms || []).filter(a => ARM_IDS.includes(a.arm));
+  const A = {}; ARMS.forEach(a => { A[a.arm] = a; });
+  const BASE = 'A2', REF = 'A1';
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const P = x => Math.round(x * 100);
+  const pct = x => P(x) + '%';
+  const pts = d => (d >= 0 ? '+' : '−') + Math.abs(Math.round(d * 100)) + ' pts';
+  const money = x => x == null ? 'n/a' : (x >= 0.1 ? '$' + x.toFixed(2) : '$' + x.toFixed(4));
+  const fmtInt = n => Number(n).toLocaleString('en-US');
+
+  const SHORT = { A1: 'DeepSeek V4.1 Flash', A2: 'Base, one shot', A3: 'Base + repair', A4: 'Tuned, one shot', A5: 'Tuned + repair' };
+  const COLOR = { A1: '#280016', A2: '#A39A9A', A3: '#706666', A4: '#C24382', A5: '#610A45' };
+  const short = id => SHORT[id] || (A[id] && A[id].label) || id;
+  // Arm marks: diamond for the reference model, circle for base, square for tuned; a ring means the repair loop.
+  function mark(id, size) {
+    const c = COLOR[id] || '#706666';
+    const m = {
+      A1: `<polygon points="20,6 34,20 20,34 6,20" fill="none" stroke="${c}" stroke-width="3"></polygon>`,
+      A2: `<circle cx="20" cy="20" r="10" fill="${c}"></circle>`,
+      A3: `<circle cx="20" cy="20" r="7.5" fill="${c}"></circle><circle cx="20" cy="20" r="15" fill="none" stroke="${c}" stroke-width="2.5"></circle>`,
+      A4: `<rect x="10.5" y="10.5" width="19" height="19" rx="2" fill="${c}"></rect>`,
+      A5: `<rect x="13" y="13" width="14" height="14" rx="1.5" fill="${c}"></rect><rect x="5" y="5" width="30" height="30" rx="4" fill="none" stroke="${c}" stroke-width="2.5"></rect>`,
+    }[id] || `<circle cx="20" cy="20" r="10" fill="${c}"></circle>`;
+    return `<svg width="${size}" height="${size}" viewBox="0 0 40 40" aria-hidden="true">${m}</svg>`;
+  }
+
+  // Statistics: Wilson interval for one rate, Newcombe interval for a difference of two.
+  function wilson(p, n) {
+    if (!n) return [0, 1];
+    const z = 1.96, k = Math.round(p * n), ph = k / n, d = 1 + z * z / n;
+    const c = (ph + z * z / (2 * n)) / d, h = z * Math.sqrt(ph * (1 - ph) / n + z * z / (4 * n * n)) / d;
+    return [Math.max(0, c - h), Math.min(1, c + h)];
+  }
+  function newcombe(p1, n1, p2, n2) {
+    const [l1, u1] = wilson(p1, n1), [l2, u2] = wilson(p2, n2), d = p1 - p2;
+    return [d - Math.sqrt((p1 - l1) ** 2 + (u2 - p2) ** 2), d + Math.sqrt((u1 - p1) ** 2 + (p2 - l2) ** 2)];
+  }
+
+  // Header and hero
+  const totalRuns = ARMS.reduce((s, a) => s + a.n, 0);
+  $('meta-n').textContent = `${R.scenarios || '?'} held-out scenarios × ${R.runs_per_scenario || '?'} runs × ${ARMS.length} setups`;
+  if (R.FAKE) { $('sample').hidden = false; $('foot-gen').textContent = 'Every number on this page is sample data until the real runs land.'; }
+  const ranked = ARMS.slice().sort((a, b) => b.secure_pass_rate - a.secure_pass_rate);
+  const best = ranked[0], base = A[BASE], ref = A[REF];
+  if (best) {
+    const cells = [];
+    if (base) cells.push(`<div><div class="kicker">Baseline · ${esc(short(BASE))}</div><div class="big num">${P(base.secure_pass_rate)}<small>%</small></div><p>secure as it ships.</p></div>`);
+    cells.push(`<div class="hl"><div class="kicker">Best · ${esc(short(best.arm))}</div><div class="big num">${P(best.secure_pass_rate)}<small>%</small></div><p>secure${base && best.arm !== BASE ? `, ${pts(best.secure_pass_rate - base.secure_pass_rate)} over baseline` : ''}.</p></div>`);
+    if (ref && best.arm !== REF) cells.push(`<div><div class="kicker">Reference · bigger model</div><div class="big num">${P(ref.secure_pass_rate)}<small>%</small></div><p>${esc(short(REF))}, one shot.${best.secure_pass_rate > ref.secure_pass_rate ? ' Our small model beats it.' : ''}</p></div>`);
+    if (ref && best.cost_per_secure_app_usd && ref.cost_per_secure_app_usd) {
+      const r = ref.cost_per_secure_app_usd / best.cost_per_secure_app_usd;
+      cells.push(`<div><div class="kicker">Cost per secure app</div><div class="big num">${r >= 1 ? r.toFixed(1) + '×' : (1 / r).toFixed(1) + '×'}</div><p>${r >= 1 ? 'cheaper' : 'more expensive'} than the reference (${money(best.cost_per_secure_app_usd)} vs ${money(ref.cost_per_secure_app_usd)}).</p></div>`);
+    }
+    $('answer').innerHTML = cells.join('');
+  }
+
+  // 1. Experiment design: 2x2 plus reference, and the two main effects.
+  (function () {
+    const has = ['A2', 'A3', 'A4', 'A5'].every(id => A[id]);
+    const shade = p => {
+      // Paper to plum by secure-pass rate; text flips to light on dark cells.
+      const t = Math.max(0, Math.min(1, p / Math.max(0.01, best ? best.secure_pass_rate : 1)));
+      const mix = (a, b) => Math.round(a + (b - a) * t);
+      return { bg: `rgb(${mix(244, 97)}, ${mix(240, 10)}, ${mix(236, 69)})`, dark: t > 0.55 };
+    };
+    const cell = id => {
+      const a = A[id];
+      if (!a) return `<div class="cell2"><div class="id">${mark(id, 18)}${id}</div><div class="lab">no runs yet</div></div>`;
+      const s = shade(a.secure_pass_rate);
+      return `<div class="cell2 ${s.dark ? 'dark' : ''}" style="background:${s.bg}"><div class="id">${mark(id, 18)}${id} · ${esc(short(id))}</div><div class="pct num">${pct(a.secure_pass_rate)}</div><div class="lab">secure · ${pct(a.functional_pass_rate)} work at all</div></div>`;
+    };
+    $('matrix2').innerHTML = `<div></div><div class="mx-col">One shot</div><div class="mx-col">+ Repair loop</div>
+      <div class="mx-row">Base model</div>${cell('A2')}${cell('A3')}
+      <div class="mx-row">Fine-tuned</div>${cell('A4')}${cell('A5')}`;
+    if (!has) { $('design-t').textContent = 'Fine-tuning and the repair loop, alone and together'; return; }
+    const ft = ((A.A4.secure_pass_rate - A.A2.secure_pass_rate) + (A.A5.secure_pass_rate - A.A3.secure_pass_rate)) / 2;
+    const rp = ((A.A3.secure_pass_rate - A.A2.secure_pass_rate) + (A.A5.secure_pass_rate - A.A4.secure_pass_rate)) / 2;
+    const ix = (A.A5.secure_pass_rate - A.A4.secure_pass_rate) - (A.A3.secure_pass_rate - A.A2.secure_pass_rate);
+    const both = A.A5.secure_pass_rate - A.A2.secure_pass_rate;
+    $('design-t').innerHTML = `Fine-tuning adds <em>${pts(ft)}</em>, the repair loop adds <em>${pts(rp)}</em>, and together they add ${pts(both)}.`;
+    const ixText = Math.abs(ix) < 0.02 ? 'The two gains simply stack: neither makes the other more or less useful.'
+      : ix > 0 ? `They help each other: repair is worth ${pts(ix)} more on the tuned model than on the base one.`
+      : `They overlap: repair is worth ${pts(-ix).replace('+', '')} less on the tuned model, so some problems are fixed either way.`;
+    $('effects').innerHTML = `
+      <div class="eff"><div class="kicker">Fine-tuning effect</div><div class="v num">${pts(ft)}</div><p>Down the grid, averaged over both columns: (${pct(A.A4.secure_pass_rate)} − ${pct(A.A2.secure_pass_rate)} and ${pct(A.A5.secure_pass_rate)} − ${pct(A.A3.secure_pass_rate)}).</p></div>
+      <div class="eff"><div class="kicker">Repair-loop effect</div><div class="v num">${pts(rp)}</div><p>Across the grid, averaged over both rows.</p></div>
+      <div class="eff"><div class="kicker">Do they combine?</div><p style="margin-top:8px;font-size:14.5px;color:var(--ink)">${ixText}</p></div>
+      ${A.A1 ? `<div class="eff ref"><div class="kicker">${mark('A1', 14)} Reference · ${esc(short('A1'))}</div><div class="v num">${pct(A.A1.secure_pass_rate)}</div><p>A bigger model, one shot, for scale. ${A.A5.secure_pass_rate > A.A1.secure_pass_rate ? 'Tuned + repair beats it.' : 'Tuned + repair has not caught up yet.'}</p></div>` : ''}`;
+  })();
+
+  // 2. Outcome bars: broken / works but exploited / secure, per 100 apps.
+  (function () {
+    const order = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id]);
+    const W = 1100, rowH = 54, top = 30, left = 230, right = 30, H = top + order.length * rowH + 30;
+    const X = v => left + v * (W - left - right);
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Outcome of 100 apps per setup: broken, works but exploited, secure">`;
+    [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+      s += `<line x1="${X(v)}" x2="${X(v)}" y1="${top - 8}" y2="${H - 26}" stroke="#E2DDD8" stroke-dasharray="${v === 0 || v === 1 ? '0' : '3 4'}"></line>`;
+      s += `<text x="${X(v)}" y="${H - 8}" text-anchor="middle" font-family="Geist Mono, monospace" font-size="12" fill="#706666">${v * 100}</text>`;
+    });
+    s += `<text x="${X(0)}" y="${top - 14}" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666" letter-spacing="0.06em">← SECURE</text>`;
+    s += `<text x="${X(1)}" y="${top - 14}" text-anchor="end" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666" letter-spacing="0.06em">BROKEN →</text>`;
+    order.forEach((id, i) => {
+      const a = A[id], y = top + i * rowH + 8, h = rowH - 18;
+      const sec = a.secure_pass_rate, ex = a.functional_pass_rate - a.secure_pass_rate, br = 1 - a.functional_pass_rate;
+      if (id === 'A1') s += `<line x1="16" x2="${W - right}" y1="${y - 9}" y2="${y - 9}" stroke="#E2DDD8"></line>`;
+      s += `<g transform="translate(16 ${y + h / 2 - 11})">${mark(id, 22).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
+      s += `<text x="48" y="${y + h / 2 - 2}" font-family="Geist, sans-serif" font-size="15" font-weight="600" fill="#280016">${esc(short(id))}</text>`;
+      s += `<text x="48" y="${y + h / 2 + 15}" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666">${id}${id === BASE ? ' · BASELINE' : id === REF ? ' · REFERENCE' : ''}</text>`;
+      const seg = (x0, w, fill, txt, txtFill) => {
+        if (w <= 0) return '';
+        let t = `<rect x="${X(x0)}" y="${y}" width="${Math.max(0, X(x0 + w) - X(x0) - 2)}" height="${h}" rx="5" fill="${fill}"></rect>`;
+        if (w >= 0.07) t += `<text x="${X(x0) + 10}" y="${y + h / 2 + 5}" font-family="Geist Mono, monospace" font-size="13" font-weight="500" fill="${txtFill}">${txt}</text>`;
+        return t;
+      };
+      s += seg(0, sec, id === best.arm ? '#610A45' : '#8A3A6E', P(sec), '#F9F7F5');
+      s += seg(sec, ex, '#F98461', P(ex), '#280016');
+      s += seg(sec + ex, br, '#E2DDD8', P(br), '#5E5257');
+    });
+    s += '</svg>';
+    $('stack').innerHTML = s;
+    if (base && best && best.arm !== BASE) {
+      const db = (1 - best.functional_pass_rate) - (1 - base.functional_pass_rate);
+      const de = (best.functional_pass_rate - best.secure_pass_rate) - (base.functional_pass_rate - base.secure_pass_rate);
+      const bigger = Math.abs(db) >= Math.abs(de) ? 'fewer broken apps' : 'fewer exploited apps';
+      $('out-t').innerHTML = `Going from baseline to ${esc(short(best.arm).toLowerCase())}, most of the gain comes from <em>${bigger}</em>.`;
+      $('stack-foot').textContent = `Baseline → ${short(best.arm)}: broken ${P(1 - base.functional_pass_rate)} → ${P(1 - best.functional_pass_rate)}, works-but-exploited ${P(base.functional_pass_rate - base.secure_pass_rate)} → ${P(best.functional_pass_rate - best.secure_pass_rate)}, secure ${P(base.secure_pass_rate)} → ${P(best.secure_pass_rate)} (per 100 apps; n = ${best.n} runs per setup).`;
+    } else { $('out-t').textContent = 'Where every app ends up'; }
+  })();
+
+  // 3. Forest plot: difference from baseline with 95% CI.
+  (function () {
+    if (!base) { $('forest').innerHTML = '<div class="empty">Needs the baseline arm (A2).</div>'; $('lift-t').textContent = 'Lift over the baseline'; return; }
+    const rows = ['A3', 'A4', 'A5', 'A1'].filter(id => A[id]).map(id => {
+      const a = A[id], d = a.secure_pass_rate - base.secure_pass_rate;
+      const [lo, hi] = newcombe(a.secure_pass_rate, a.n, base.secure_pass_rate, base.n);
+      return { id, d, lo, hi, sig: lo > 0 || hi < 0 };
+    });
+    const W = 1100, rowH = 58, top = 34, left = 250, right = 230, H = top + rows.length * rowH + 40;
+    const lo = Math.min(-0.2, ...rows.map(r => r.lo)) - 0.02, hi = Math.max(0.4, ...rows.map(r => r.hi)) + 0.02;
+    const X = v => left + (v - lo) / (hi - lo) * (W - left - right);
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Secure-pass difference from baseline with 95% confidence intervals">`;
+    for (let t = Math.ceil(lo * 10) / 10; t <= hi + 1e-9; t += 0.1) {
+      const v = Math.round(t * 10) / 10;
+      s += `<line x1="${X(v)}" x2="${X(v)}" y1="${top - 6}" y2="${H - 30}" stroke="${v === 0 ? '#280016' : '#EEE9E4'}" stroke-width="${v === 0 ? 1.5 : 1}"></line>`;
+      s += `<text x="${X(v)}" y="${H - 10}" text-anchor="middle" font-family="Geist Mono, monospace" font-size="12" fill="#706666">${v > 0 ? '+' : ''}${Math.round(v * 100)}</text>`;
+    }
+    s += `<text x="${X(0) - 8}" y="${top - 14}" text-anchor="end" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666" letter-spacing="0.06em">WORSE THAN BASELINE</text>`;
+    s += `<text x="${X(0) + 8}" y="${top - 14}" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666" letter-spacing="0.06em">BETTER THAN BASELINE →</text>`;
+    rows.forEach((r, i) => {
+      const y = top + i * rowH + rowH / 2, c = COLOR[r.id];
+      if (r.id === 'A1') s += `<line x1="16" x2="${W - 16}" y1="${y - rowH / 2 + 2}" y2="${y - rowH / 2 + 2}" stroke="#E2DDD8"></line>`;
+      s += `<g transform="translate(16 ${y - 11})">${mark(r.id, 22).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
+      s += `<text x="48" y="${y - 2}" font-family="Geist, sans-serif" font-size="15" font-weight="600" fill="#280016">${esc(short(r.id))}</text>`;
+      s += `<text x="48" y="${y + 15}" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666">${r.id} vs ${BASE}</text>`;
+      s += `<line x1="${X(r.lo)}" x2="${X(r.hi)}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="3" stroke-linecap="round" opacity="0.45"></line>`;
+      s += `<line x1="${X(r.lo)}" x2="${X(r.lo)}" y1="${y - 7}" y2="${y + 7}" stroke="${c}" stroke-width="2" opacity="0.6"></line><line x1="${X(r.hi)}" x2="${X(r.hi)}" y1="${y - 7}" y2="${y + 7}" stroke="${c}" stroke-width="2" opacity="0.6"></line>`;
+      s += `<circle cx="${X(r.d)}" cy="${y}" r="8" fill="${c}" stroke="#FFFFFF" stroke-width="2"></circle>`;
+      s += `<text x="${W - right + 24}" y="${y - 2}" font-family="Geist, sans-serif" font-size="16" font-weight="600" fill="#280016">${pts(r.d)}</text>`;
+      s += `<text x="${W - right + 24}" y="${y + 15}" font-family="Geist Mono, monospace" font-size="11.5" fill="${r.sig ? '#610A45' : '#706666'}">[${Math.round(r.lo * 100)}, ${Math.round(r.hi * 100)}] ${r.sig ? '· clear gain' : '· could be noise'}</text>`;
+    });
+    s += '</svg>';
+    $('forest').innerHTML = s;
+    const bestRow = rows.filter(r => r.id !== 'A1').sort((a, b) => b.d - a.d)[0];
+    $('lift-t').innerHTML = bestRow
+      ? (bestRow.sig ? `${esc(short(bestRow.id))} beats the baseline by <em>${pts(bestRow.d)}</em>, and the gain is clear of noise.` : `${esc(short(bestRow.id))} is ${pts(bestRow.d)} over baseline, but with this many runs that <em>could still be noise</em>.`)
+      : 'Lift over the baseline';
+    $('forest-foot').textContent = `Baseline (${short(BASE)}): ${pct(base.secure_pass_rate)} secure, n = ${base.n}. Points are the difference in percentage points; bars are 95% Newcombe intervals. With ${base.n} runs per setup, gains under about 20 points are hard to tell apart from chance.`;
+  })();
+
+  // 4. Cost per secure app vs secure-pass rate.
+  (function () {
+    const pts_ = ARMS.filter(a => a.cost_per_secure_app_usd != null);
+    if (!pts_.length) { $('scatter').innerHTML = '<div class="empty">No setup has a secure app yet.</div>'; $('cost-t').textContent = 'What a secure app costs'; return; }
+    const W = 560, H = 420, L = 64, Rr = 540, T = 30, B = 360;
+    const xmax = Math.max(...pts_.map(a => a.cost_per_secure_app_usd)) * 1.15;
+    const ymax = Math.min(1, Math.ceil((Math.max(...pts_.map(a => a.secure_pass_rate)) + 0.1) * 10) / 10);
+    const X = v => L + v / xmax * (Rr - L), Y = v => B - v / ymax * (B - T);
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cost per secure app against secure-pass rate">`;
+    s += `<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#706666"></path></marker></defs>`;
+    s += `<rect x="${L}" y="${T}" width="${(Rr - L) / 2}" height="${(B - T) / 2}" rx="8" fill="#F98461" opacity="0.1"></rect>`;
+    s += `<text x="${L + 12}" y="${T + 22}" font-family="Geist Mono, monospace" font-size="11" fill="#A63A1F" letter-spacing="0.06em">CHEAPER AND SAFER</text>`;
+    for (let i = 0; i <= 4; i++) {
+      const yv = ymax * i / 4, xv = xmax * i / 4;
+      s += `<line x1="${L}" x2="${Rr}" y1="${Y(yv)}" y2="${Y(yv)}" stroke="#EEE9E4"></line>`;
+      s += `<text x="${L - 10}" y="${Y(yv) + 4}" text-anchor="end" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666">${Math.round(yv * 100)}%</text>`;
+      s += `<text x="${X(xv)}" y="${B + 22}" text-anchor="middle" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666">$${xv.toFixed(3)}</text>`;
+    }
+    s += `<line x1="${L}" x2="${Rr}" y1="${B}" y2="${B}" stroke="#280016"></line><line x1="${L}" x2="${L}" y1="${T}" y2="${B}" stroke="#280016"></line>`;
+    s += `<text x="${(L + Rr) / 2}" y="${H - 12}" text-anchor="middle" font-family="Geist, sans-serif" font-size="13" fill="#5E5257">Cost per secure app →</text>`;
+    s += `<text transform="translate(16 ${(T + B) / 2}) rotate(-90)" text-anchor="middle" font-family="Geist, sans-serif" font-size="13" fill="#5E5257">Secure-pass rate →</text>`;
+    const at = id => A[id] && A[id].cost_per_secure_app_usd != null ? [X(A[id].cost_per_secure_app_usd), Y(A[id].secure_pass_rate)] : null;
+    [['A2', 'A3', 'repair'], ['A2', 'A4', 'fine-tune'], ['A4', 'A5', 'repair']].forEach(([f, t, lab]) => {
+      const a = at(f), b = at(t); if (!a || !b) return;
+      const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
+      const x1 = a[0] + ux * 15, y1 = a[1] + uy * 15, x2 = b[0] - ux * 19, y2 = b[1] - uy * 19;
+      s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#706666" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#ah)"></line>`;
+      s += `<text x="${(x1 + x2) / 2 + (ux > 0 ? 8 : -8)}" y="${(y1 + y2) / 2 + 14}" text-anchor="${ux > 0 ? 'start' : 'end'}" font-family="Geist Mono, monospace" font-size="11" fill="#706666">+ ${lab}</text>`;
+    });
+    pts_.forEach(a => {
+      const x = X(a.cost_per_secure_app_usd), y = Y(a.secure_pass_rate), right = x < (L + Rr) / 2 + 60;
+      s += `<g transform="translate(${x - 13} ${y - 13})">${mark(a.arm, 26).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
+      s += `<text x="${right ? x + 18 : x - 18}" y="${y - 3}" text-anchor="${right ? 'start' : 'end'}" font-family="Geist, sans-serif" font-size="13" font-weight="600" fill="#280016">${esc(short(a.arm))}</text>`;
+      s += `<text x="${right ? x + 18 : x - 18}" y="${y + 13}" text-anchor="${right ? 'start' : 'end'}" font-family="Geist Mono, monospace" font-size="11" fill="#706666">${pct(a.secure_pass_rate)} · ${money(a.cost_per_secure_app_usd)}</text>`;
+    });
+    s += '</svg>';
+    $('scatter').innerHTML = s;
+    const cheapest = pts_.slice().sort((a, b) => a.cost_per_secure_app_usd - b.cost_per_secure_app_usd)[0];
+    $('cost-t').innerHTML = `The cheapest secure app comes from <em>${esc(short(cheapest.arm).toLowerCase())}</em> at ${money(cheapest.cost_per_secure_app_usd)}.`;
+    $('cost-foot').textContent = `Repair rounds cost extra calls, so repair setups spend more per task (${pts_.map(a => `${a.arm} ${money(a.cost_per_100_tasks_usd)}`).join(', ')} per 100 tasks) but can still win per secure app. Median model time per task: ${pts_.map(a => `${a.arm} ${a.median_latency_s.toFixed(1)} s`).join(', ')}.`;
+  })();
+
+  // 5. Attacks that still work.
+  const CWE = {
+    20: ['Bad input accepted', '<path d="M3 4h18l-7 8v6l-4 2v-8z"></path>'],
+    22: ['Path traversal', '<path d="M3 6h6l2 2h10v11H3z"></path><path d="M12 17v-5"></path><path d="M9.5 14l2.5-2.5 2.5 2.5"></path>'],
+    78: ['OS command injection', '<rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M7 9l3 3-3 3"></path><path d="M12 15h5"></path>'],
+    79: ['Cross-site scripting', '<path d="M8 7l-5 5 5 5"></path><path d="M16 7l5 5-5 5"></path><path d="M13.5 4l-3 16"></path>'],
+    89: ['SQL injection', '<ellipse cx="11" cy="6" rx="7" ry="2.5"></ellipse><path d="M4 6v11c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6"></path><path d="M4 11.5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"></path><path d="M22 2l-4.5 4.5"></path><path d="M17.5 3v3.5H21"></path>'],
+    284: ['Missing access control', '<circle cx="8" cy="12" r="4"></circle><path d="M12 12h9"></path><path d="M17 12v3"></path><path d="M20 12v4"></path>'],
+    400: ['Resource exhaustion', '<path d="M3.5 17a8.5 8.5 0 1 1 17 0"></path><path d="M12 17l5-6"></path><path d="M3.5 17h17"></path>'],
+    703: ['Crash on bad input', '<circle cx="12" cy="12" r="9"></circle><path d="M13 6.5l-3.5 6h5l-3.5 6"></path>'],
+  };
+  const cweName = n => (CWE[n] || ['CWE-' + n])[0];
+  const cweIcon = n => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${(CWE[n] || [0, '<circle cx="12" cy="12" r="9"></circle><path d="M12 7v6"></path><path d="M12 16.5v.5"></path>'])[1]}</svg>`;
+  (function () {
+    const order = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id]);
+    const tot = {};
+    ARMS.forEach(a => Object.entries(a.cwe_counts || {}).forEach(([c, n]) => { tot[c] = (tot[c] || 0) + n; }));
+    const rows = Object.keys(tot).filter(c => tot[c] > 0).sort((a, b) => tot[b] - tot[a] || a - b);
+    const max = Math.max(1, ...ARMS.flatMap(a => Object.values(a.cwe_counts || {})));
+    $('mx-head').innerHTML = `<tr><th>Weakness</th>${order.map(id => `<th title="${esc(short(id))}">${mark(id, 14)}<br>${id}</th>`).join('')}</tr>`;
+    if (!rows.length) { $('mx-rows').innerHTML = `<tr><td class="empty" colspan="${order.length + 1}">No attack got in on any final app.</td></tr>`; $('att-t').textContent = 'No attack got through'; return; }
+    $('mx-rows').innerHTML = rows.map(c => `<tr><td class="w"><div class="cwe"><span class="cwe-ico">${cweIcon(+c)}</span><div><div class="cwe-name">${esc(cweName(+c))}</div><div class="cwe-id">CWE-${esc(c)}</div></div></div></td>${order.map(id => {
+      const v = (A[id].cwe_counts || {})[c] || 0, t = v / max;
+      const bg = v === 0 ? '#F9F7F5' : `rgba(249, 132, 97, ${0.15 + 0.85 * t})`;
+      return `<td class="v" style="background:${bg};color:${v === 0 ? '#C9C2C2' : '#280016'}">${v === 0 ? '·' : v}</td>`;
+    }).join('')}</tr>`).join('');
+    const top2 = rows.slice(0, 2).map(c => cweName(+c).toLowerCase());
+    $('att-t').innerHTML = `The attacks that still get in most are <em>${esc(top2.join(' and '))}</em>.`;
+    $('att-foot').textContent = `Counts are runs (out of ${ARMS[0].n} per setup) whose final app was exploited by that weakness; one run can count under several.`;
+  })();
+
+  // 6. Run viewer
+  const RUNS = (D.runs || []).filter(r => ARM_IDS.includes(r.arm)).sort((a, b) =>
+    ((b.rounds > 1 && b.secure_pass) - (a.rounds > 1 && a.secure_pass)) || String(b.arm).localeCompare(String(a.arm)));
+  const pick = $('run-pick');
+  pick.innerHTML = RUNS.map((r, i) => `<option value="${i}">${esc(`${r.arm} · ${r.scenario} · ${r.framework} · run ${r.run}${r.secure_pass ? ' · ends secure' : ''}`)}</option>`).join('');
+  let cur = { run: 0, step: 0 };
+  const KW = /\b(from|import|def|return|if|else|elif|for|in|not|and|or|with|as|class|try|except|raise|None|True|False|async|await)\b/g;
+  function hl(line) {
+    const re = /(#.*$)|([rbfRBF]{0,2}"(?:[^"\\]|\\.)*"|[rbfRBF]{0,2}'(?:[^'\\]|\\.)*')/g, out = [];
+    let last = 0, m;
+    while ((m = re.exec(line))) {
+      out.push(esc(line.slice(last, m.index)).replace(KW, '<span class="tk-k">$1</span>'));
+      out.push(`<span class="${m[1] ? 'tk-c' : 'tk-s'}">${esc(m[0])}</span>`);
+      last = m.index + m[0].length;
+    }
+    out.push(esc(line.slice(last)).replace(KW, '<span class="tk-k">$1</span>'));
+    return out.join('');
+  }
+  function repairPrompt(st) {
+    // Mirrors build_repair_prompt in src/secure_backend/repair_loop.py.
+    const l = ['Your last app did not pass. Fix it and reply with the full app in one fenced code block.'];
+    if (st.failed_tests.length) l.push('Failing functional tests: ' + st.failed_tests.join(', ') + '.');
+    if (st.exploits_triggered.length) { l.push('Exploits that succeeded:'); st.exploits_triggered.forEach(e => l.push(`- CWE-${e.cwe}: ${e.name}`)); }
+    if (!st.failed_tests.length && !st.exploits_triggered.length) l.push('The tests reported a failure with no details. Check that the app starts and follows the spec.');
+    l.push('Keep everything that already works.');
+    return l.join('\n');
+  }
+  const status = st => st.secure_pass ? ['good', 'Secure'] : st.exploits_triggered.length ? ['bad', 'Exploited'] : ['warn', 'Tests failed'];
+  function renderRun() {
+    const r = RUNS[cur.run];
+    if (!r) { $('run-body').innerHTML = '<div class="empty">No run records yet.</div>'; $('run-stats').innerHTML = ''; return; }
+    $('run-stats').innerHTML = `<div class="stat kicker">Rounds<b>${esc(r.rounds)}</b></div><div class="stat kicker">Tokens<b>${fmtInt(r.tokens_in)} in · ${fmtInt(r.tokens_out)} out</b></div><div class="stat kicker">Cost<b>${money(r.cost_usd)}</b></div><div class="stat kicker">Model time<b>${r.latency_s.toFixed(1)} s</b></div>`;
+    const steps = r.steps || [], st = steps[cur.step], prev = steps[cur.step - 1], next = steps[cur.step + 1];
+    const prevSet = new Set(prev ? prev.code.split('\n') : []), nextSet = new Set(next ? next.code.split('\n') : []);
+    const code = st.code.replace(/\n$/, '').split('\n').map((t, i) => {
+      let cls = '', g = '';
+      if (next && !st.secure_pass && t.trim() && !nextSet.has(t)) { cls = 'bad'; g = '!'; }
+      else if (prev && t.trim() && !prevSet.has(t)) { cls = 'new'; g = '+'; }
+      return `<div class="ln ${cls}"><span class="n">${i + 1}</span><span class="g">${g}</span><span class="t">${hl(t)}</span></div>`;
+    }).join('');
+    let rail = '';
+    steps.forEach((s, i) => {
+      const [k, t] = status(s);
+      if (i > 0) rail += '<div class="link"><span>feedback to model</span><i></i></div>';
+      rail += `<button type="button" class="step" data-step="${i}" aria-pressed="${i === cur.step}"><span class="kicker">Round ${s.round}</span><span class="chip ${k}">${t}</span></button>`;
+    });
+    let card;
+    if (st.secure_pass) {
+      const fixed = prev ? prev.exploits_triggered.map(e => `<div class="ex"><span class="cwe-ico">${cweIcon(e.cwe)}</span><div><div class="ex-title">${esc(cweName(e.cwe))} · CWE-${esc(e.cwe)}</div><div class="ex-name">${esc(e.name)} now fails</div></div></div>`).join('') : '';
+      card = `<div class="vcard good"><div class="kicker" style="color:var(--plum)">Every attack failed</div>${fixed || '<div class="note">No exploit got in against this app.</div>'}</div>`;
+    } else if (st.exploits_triggered.length) {
+      card = `<div class="vcard bad"><div class="kicker" style="color:var(--coral-ink)">Attacks that got in</div>${st.exploits_triggered.map(e => `<div class="ex"><span class="cwe-ico">${cweIcon(e.cwe)}</span><div><div class="ex-title">${esc(cweName(e.cwe))} · CWE-${esc(e.cwe)}</div><div class="ex-name">${esc(e.name)}</div></div></div>`).join('')}</div>`;
+    } else {
+      card = `<div class="vcard"><div class="kicker">Failing tests</div><div class="note">${st.failed_tests.map(esc).join('<br>') || 'No details reported.'}</div></div>`;
+    }
+    const prompt = next ? `<div><div class="kicker">What the model was told before round ${next.round}</div><pre class="prompt">${esc(repairPrompt(st))}</pre><div class="note" style="margin-top:8px">Only test names and CWE numbers. The model never sees exploit or test code.</div></div>` : '';
+    $('run-body').innerHTML = `<div class="rail" role="group" aria-label="Rounds">${rail}</div>
+      <div class="run-grid">
+        <div class="code" aria-label="Code at round ${st.round}"><div class="code-head"><span>app.py · round ${st.round}</span><span>${fmtInt(st.tokens_in)} in · ${fmtInt(st.tokens_out)} out · ${st.latency_s.toFixed(1)} s</span></div>${code}</div>
+        <div class="verdict">
+          <div class="pair"><div><span class="kicker">Functional tests</span><b>${st.functional_pass ? 'All pass' : st.failed_tests.length + ' fail'}</b></div><div><span class="kicker">Attacks that got in</span><b style="color:${st.exploits_triggered.length ? 'var(--coral-ink)' : 'var(--plum)'}">${st.exploits_triggered.length}</b></div></div>
+          ${card}${prompt}
+        </div>
+      </div>`;
+    $('run-body').querySelectorAll('.step').forEach(b => b.addEventListener('click', () => { cur.step = +b.dataset.step; renderRun(); }));
+  }
+  pick.addEventListener('change', () => { cur = { run: +pick.value, step: 0 }; renderRun(); });
+  renderRun();
+})();
+</script>
+</body>
+</html>
