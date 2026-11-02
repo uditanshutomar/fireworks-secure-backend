@@ -154,6 +154,14 @@ select { min-height: 44px; padding: 0 14px; font-family: var(--mono); font-size:
 .prompt { margin: 8px 0 0; padding: 14px 16px; background: var(--paper-2); border-radius: 12px; font-family: var(--mono); font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; }
 .note { font-size: 12.5px; color: var(--muted); }
 .empty { padding: 24px; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.waffles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 28px; }
+.waffle h3 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 1.1; }
+.waffle .sub { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin: 4px 0 14px; letter-spacing: 0.04em; }
+.waffle .grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; max-width: 300px; }
+.waffle .grid i { aspect-ratio: 1; border-radius: 3px; display: block; }
+.waffle .tally { display: flex; gap: 16px; margin-top: 14px; font-size: 13.5px; color: var(--ink-2); }
+.waffle .tally b { font-family: var(--serif); font-weight: 400; font-size: 30px; color: var(--ink); display: block; line-height: 1; }
+.waffle.best h3 { color: var(--plum); }
 
 footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: 16px 40px; font-size: 13px; color: var(--ink-2); }
 footer b { color: var(--ink); font-weight: 600; }
@@ -164,11 +172,14 @@ footer h3 { margin: 0 0 6px; font-family: var(--mono); font-weight: 400; font-si
 <div class="top"><div class="top-in">
   <a class="brand" href="#"><img src="assets/logo-mark.svg" width="26" height="26" alt="">Secure Backend</a>
   <nav aria-label="Sections">
+    <a href="#waffle-sec">100 apps</a>
     <a href="#design">The experiment</a>
-    <a href="#outcomes">100 apps</a>
+    <a href="#outcomes">Outcomes</a>
     <a href="#lift">Lift vs baseline</a>
     <a href="#cost">Cost</a>
     <a href="#attacks">Attacks</a>
+    <a href="#dollar">Value</a>
+    <a href="#rounds">Repair rounds</a>
     <a href="#run">Run viewer</a>
   </nav>
   <span class="badge" id="sample" hidden><i></i>Sample data</span>
@@ -181,6 +192,17 @@ footer h3 { margin: 0 0 6px; font-family: var(--mono); font-weight: 400; font-si
     <p class="lede">We gave each model an API spec. BaxBench ran the app in Docker, ran its functional tests, then fired expert-written exploits at it. An app counts as a <b>secure pass</b> only if every test passes and no exploit gets in.</p>
     <div class="answer" id="answer"></div>
     <p class="context">Why it matters: in the BaxBench paper (Vero et al., 2025, arXiv:2502.11844) the best model wrote correct code only 62% of the time, and about half of the correct programs could be exploited. Working code is not the same as safe code.</p>
+  </section>
+
+  <section class="sec" id="waffle-sec" aria-labelledby="waffle-t">
+    <div class="sec-head">
+      <div><div class="kicker">0 · 100 apps, side by side</div><h2 id="waffle-t"></h2></div>
+      <p class="how">Imagine asking each setup for 100 backends. <b>Each square is one app.</b> Dark squares are safe to ship, coral ones work but an attacker gets in, pale ones don't work at all.</p>
+    </div>
+    <div class="card">
+      <div class="legend"><span><i class="sw" style="background:var(--plum)"></i>Safe to ship</span><span><i class="sw" style="background:var(--coral)"></i>Works, but hackable</span><span><i class="sw" style="background:var(--broken)"></i>Doesn't work</span></div>
+      <div class="waffles" id="waffles"></div>
+    </div>
   </section>
 
   <section class="sec" id="design" aria-labelledby="design-t">
@@ -229,6 +251,27 @@ footer h3 { margin: 0 0 6px; font-family: var(--mono); font-weight: 400; font-si
       <div class="card tbox"><table><thead id="mx-head"></thead><tbody id="mx-rows"></tbody></table><div class="foot" id="att-foot"></div></div>
     </section>
   </div>
+
+  <div class="grid2">
+    <section class="sec" id="dollar" aria-labelledby="dollar-t">
+      <div class="sec-head" style="grid-template-columns:1fr"><div><div class="kicker">7 · What $1 buys</div><h2 id="dollar-t"></h2></div>
+        <p class="how">Spend one dollar on model calls. <b>How many safe-to-ship apps come back?</b> Longer bar is better value.</p></div>
+      <div class="card"><div id="dollar-chart"></div><div class="foot">One dollar divided by the cost per secure app. Failed and hackable apps still cost money, which is why setups that fail often buy fewer.</div></div>
+    </section>
+    <section class="sec" id="wait" aria-labelledby="wait-t">
+      <div class="sec-head" style="grid-template-columns:1fr"><div><div class="kicker">8 · How long you wait</div><h2 id="wait-t"></h2></div>
+        <p class="how">Median seconds the model spends per app, all repair rounds added up. <b>Shorter bar is faster.</b> Repair setups wait longer because they can ask the model again.</p></div>
+      <div class="card"><div id="wait-chart"></div><div class="foot">Model time only. Building and attacking the app in Docker is not counted.</div></div>
+    </section>
+  </div>
+
+  <section class="sec" id="rounds" aria-labelledby="rounds-t">
+    <div class="sec-head">
+      <div><div class="kicker">9 · When the repair loop fixes things</div><h2 id="rounds-t"></h2></div>
+      <p class="how">In the repair setups the model gets up to 4 tries. <b>Round 0 is the first try</b>; each later round comes after it hears what failed. Each bar shows where runs ended up.</p>
+    </div>
+    <div class="card"><div id="rounds-chart"></div><div class="foot" id="rounds-foot"></div></div>
+  </section>
 
   <section class="sec" id="run" aria-labelledby="run-t">
     <div class="sec-head">
@@ -499,6 +542,104 @@ footer h3 { margin: 0 0 6px; font-family: var(--mono); font-weight: 400; font-si
     const top2 = rows.slice(0, 2).map(c => cweName(+c).toLowerCase());
     $('att-t').innerHTML = `The attacks that still get in most are <em>${esc(top2.join(' and '))}</em>.`;
     $('att-foot').textContent = `Counts are runs (out of ${ARMS[0].n} per setup) whose final app was exploited by that weakness; one run can count under several.`;
+  })();
+
+  // 0. Waffles: 100 apps per setup, counted out as squares.
+  (function () {
+    const show = [BASE, REF, best && best.arm].filter((id, i, a) => id && A[id] && a.indexOf(id) === i);
+    $('waffles').innerHTML = show.map(id => {
+      const a = A[id], s = P(a.secure_pass_rate), w = P(a.functional_pass_rate) - s, b = 100 - s - w;
+      const sq = Array.from({ length: 100 }, (_, i) => `<i style="background:${i < s ? '#610A45' : i < s + w ? '#F98461' : '#E2DDD8'}"></i>`).join('');
+      const role = id === BASE ? 'Baseline' : id === REF ? 'Reference, bigger model' : 'Our best setup';
+      return `<div class="waffle ${id === best.arm ? 'best' : ''}"><h3>${esc(short(id))}</h3><div class="sub">${esc(role.toUpperCase())} · ${id}</div>
+        <div class="grid" role="img" aria-label="${s} safe, ${w} hackable, ${b} broken out of 100">${sq}</div>
+        <div class="tally"><span><b class="num">${s}</b>safe</span><span><b class="num">${w}</b>hackable</span><span><b class="num">${b}</b>broken</span></div></div>`;
+    }).join('');
+    if (base && best && best.arm !== BASE) {
+      const m = best.secure_pass_rate / Math.max(0.001, base.secure_pass_rate);
+      $('waffle-t').innerHTML = `Out of 100 apps, the baseline gives <em>${P(base.secure_pass_rate)}</em> you could ship. Our best setup gives <em>${P(best.secure_pass_rate)}</em>${m >= 1.5 ? `, about ${m.toFixed(1)} times as many` : ''}.`;
+    } else { $('waffle-t').textContent = 'Out of 100 apps, how many could you ship?'; }
+  })();
+
+  // Simple labeled horizontal bars, shared by the value and wait charts.
+  function hbars(rows, fmt, opts) {
+    const W = 560, rowH = 50, left = 190, right = 90, top = 6, H = top + rows.length * rowH;
+    const max = Math.max(...rows.map(r => r.v)) || 1;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label)}">`;
+    rows.forEach((r, i) => {
+      const y = top + i * rowH, h = 26, w = (W - left - right) * r.v / max;
+      s += `<g transform="translate(6 ${y + 2})">${mark(r.id, 22).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
+      s += `<text x="38" y="${y + 18}" font-family="Geist, sans-serif" font-size="14" font-weight="600" fill="#280016">${esc(short(r.id))}</text>`;
+      s += `<rect x="${left}" y="${y}" width="${Math.max(2, w)}" height="${h}" rx="5" fill="${r.hi ? '#610A45' : '#D9CFD3'}"></rect>`;
+      s += `<text x="${left + Math.max(2, w) + 10}" y="${y + 18}" font-family="Geist Mono, monospace" font-size="13.5" font-weight="500" fill="#280016">${fmt(r.v)}</text>`;
+    });
+    return s + '</svg>';
+  }
+
+  // 7. What $1 buys.
+  (function () {
+    const rows = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id] && A[id].cost_per_secure_app_usd).map(id => ({ id, v: 1 / A[id].cost_per_secure_app_usd }));
+    if (!rows.length) { $('dollar-chart').innerHTML = '<div class="empty">No secure apps yet.</div>'; $('dollar-t').textContent = 'What $1 buys'; return; }
+    const top = rows.slice().sort((a, b) => b.v - a.v)[0];
+    rows.forEach(r => { r.hi = r.id === top.id; });
+    $('dollar-chart').innerHTML = hbars(rows, v => `${Math.round(v)} apps`, { label: 'Secure apps per dollar, by setup' });
+    $('dollar-t').innerHTML = `One dollar buys <em>${Math.round(top.v)} safe apps</em> from ${esc(short(top.id).toLowerCase())}.`;
+  })();
+
+  // 8. How long you wait.
+  (function () {
+    const rows = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id]).map(id => ({ id, v: A[id].median_latency_s }));
+    if (!rows.length) return;
+    const fast = rows.slice().sort((a, b) => a.v - b.v)[0];
+    rows.forEach(r => { r.hi = r.id === fast.id; });
+    $('wait-chart').innerHTML = hbars(rows, v => `${v.toFixed(1)} s`, { label: 'Median model seconds per app, by setup' });
+    const b = best ? A[best.arm] : null;
+    $('wait-t').innerHTML = b && b.arm !== fast.id
+      ? `The safest setup takes <em>${b.median_latency_s.toFixed(0)} seconds</em> per app; the fastest takes ${fast.v.toFixed(0)}.`
+      : `The fastest setup answers in <em>${fast.v.toFixed(0)} seconds</em>.`;
+  })();
+
+  // 9. When the repair loop fixes things: which round each repair run ended secure on.
+  (function () {
+    const repairIds = ['A3', 'A5'].filter(id => (A[id] && A[id].loop === 'repair') || (D.runs || []).some(r => r.arm === id));
+    const cats = ['Round 0', 'Round 1', 'Round 2', 'Round 3', 'Never'];
+    const colors = ['#610A45', '#8A3A6E', '#B4236A', '#D9799F', '#E2DDD8'];
+    const data = repairIds.map(id => {
+      const runs = (D.runs || []).filter(r => r.arm === id);
+      const c = [0, 0, 0, 0, 0];
+      runs.forEach(r => { if (r.secure_pass) c[Math.min(3, (r.steps || []).length - 1)]++; else c[4]++; });
+      return { id, n: runs.length, c };
+    }).filter(d => d.n > 0);
+    if (!data.length) {
+      $('rounds-chart').innerHTML = '<div class="empty">Appears once repair-loop run records are loaded.</div>';
+      $('rounds-t').textContent = 'When the repair loop fixes things';
+      return;
+    }
+    const W = 1100, rowH = 64, left = 230, right = 30, top = 10, H = top + data.length * rowH + 40;
+    const X = v => left + v * (W - left - right);
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Round on which repair-loop runs became secure">`;
+    data.forEach((d, i) => {
+      const y = top + i * rowH, h = 34;
+      s += `<g transform="translate(16 ${y + 6})">${mark(d.id, 22).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
+      s += `<text x="48" y="${y + 16}" font-family="Geist, sans-serif" font-size="15" font-weight="600" fill="#280016">${esc(short(d.id))}</text>`;
+      s += `<text x="48" y="${y + 33}" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666">${d.n} run${d.n === 1 ? '' : 's'}</text>`;
+      let x0 = 0;
+      d.c.forEach((v, k) => {
+        if (!v) return;
+        const f = v / d.n;
+        s += `<rect x="${X(x0)}" y="${y}" width="${Math.max(0, X(x0 + f) - X(x0) - 2)}" height="${h}" rx="5" fill="${colors[k]}"></rect>`;
+        if (f >= 0.08) s += `<text x="${X(x0) + 10}" y="${y + 22}" font-family="Geist Mono, monospace" font-size="12.5" fill="${k < 3 ? '#F9F7F5' : '#280016'}">${cats[k]} · ${Math.round(f * 100)}%</text>`;
+        x0 += f;
+      });
+    });
+    s += `<g transform="translate(${left} ${H - 22})">${cats.map((c, k) => `<rect x="${k * 130}" y="0" width="12" height="12" rx="3" fill="${colors[k]}"></rect><text x="${k * 130 + 18}" y="10" font-family="Geist, sans-serif" font-size="12.5" fill="#5E5257">${k < 4 ? 'Secure on ' + c.toLowerCase() : 'Never secure'}</text>`).join('')}</g>`;
+    $('rounds-chart').innerHTML = s + '</svg>';
+    const all = data.reduce((acc, d) => acc.map((v, k) => v + d.c[k]), [0, 0, 0, 0, 0]);
+    const tot = data.reduce((t, d) => t + d.n, 0), later = all[1] + all[2] + all[3];
+    $('rounds-t').innerHTML = later
+      ? `<em>${Math.round(later / tot * 100)}%</em> of repair runs were only made safe after the model heard what failed.`
+      : 'So far, every safe repair run was safe on the first try.';
+    $('rounds-foot').textContent = `From ${tot} run record${tot === 1 ? '' : 's'}${R.FAKE ? ' (sample data has only one)' : ''}. "Never" means the app was still broken or hackable after the last allowed round.`;
   })();
 
   // 6. Run viewer
