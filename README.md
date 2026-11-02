@@ -30,9 +30,9 @@ We compare four setups on 12 held-out scenarios, plus two prompt-only baselines 
 | A2 | Nemotron Lightning 3.5, one-shot | 24 | 16.7% | 12.5% | $0.0809 | $0.0065 | 6.3 s |
 | A3 | Nemotron Lightning 3.5 + repair | 24 | 33.3% | 25.0% | $0.3020 | $0.0121 | 62.7 s |
 | B1 | DeepSeek V4.1 Flash, security reminder | 12 | 66.7% | 58.3% | $0.2355 | $0.0040 | 7.3 s |
-| B2 | Nemotron Lightning 3.5, security reminder | 8 | 0.0% | 0.0% | $0.0792 | n/a | 16.9 s |
+| B2 | Nemotron Lightning 3.5, security reminder | 12 | 0.0% | 0.0% | $0.0762 | n/a | 22.0 s |
 
-"Secure" means every functional test passed and no exploit succeeded. B1 and B2 use BaxBench's own "specific" safety prompt, which names the scenario's CWEs; B2 is still finishing its last scenarios.
+"Secure" means every functional test passed and no exploit succeeded. B1 and B2 use BaxBench's own "specific" safety prompt, which names the scenario's CWEs.
 
 What we found:
 
