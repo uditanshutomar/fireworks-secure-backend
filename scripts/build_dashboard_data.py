@@ -1,6 +1,6 @@
 """Bundles results.json and the run records into ui/data.js so the dashboard opens from a file.
 
-python scripts/build_dashboard_data.py                                  # sample data (ui/sample)
+python scripts/build_dashboard_data.py                                  # sample data (ui/sample/four_arms)
 python scripts/build_dashboard_data.py --results results/results.json --runs results/runs   # real data
 
 Browsers block fetch() from file://, so the data ships as a script that sets window.DASHBOARD_DATA.
@@ -27,8 +27,8 @@ def load_runs(runs_dir: Path) -> List[dict]:
 
 def main(argv: Optional[List[str]] = None) -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    p.add_argument("--results", default=str(ROOT / "ui" / "sample" / "results.json"))
-    p.add_argument("--runs", default=str(ROOT / "ui" / "sample" / "runs"))
+    p.add_argument("--results", default=str(ROOT / "ui" / "sample" / "four_arms" / "results.json"))
+    p.add_argument("--runs", default=str(ROOT / "ui" / "sample" / "four_arms" / "runs"))
     p.add_argument("--out", default=str(ROOT / "ui" / "data.js"))
     args = p.parse_args(argv)
     try:

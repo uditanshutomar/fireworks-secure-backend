@@ -17,34 +17,46 @@ window.DASHBOARD_DATA = {
     "cost_per_secure_app_usd": 0.0108,
     "median_latency_s": 7.2,
     "cwe_counts": {
-     "22": 0,
      "78": 6,
-     "284": 4,
-     "79": 0
+     "284": 4
+    }
+   },
+   {
+    "arm": "A6",
+    "label": "DeepSeek V4.1 Flash + repair",
+    "model": "accounts/fireworks/models/deepseek-v4p1-flash-1017",
+    "loop": "repair",
+    "n": 36,
+    "functional_pass_rate": 0.7,
+    "secure_pass_rate": 0.5,
+    "cost_per_100_tasks_usd": 0.95,
+    "cost_per_secure_app_usd": 0.019,
+    "median_latency_s": 15.1,
+    "cwe_counts": {
+     "284": 3,
+     "400": 2
     }
    },
    {
     "arm": "A2",
-    "label": "Nemotron Nano 3, one-shot",
-    "model": "accounts/fireworks/models/nemotron-nano-3-30b-a3b",
+    "label": "Nemotron Lightning 3.5, one-shot",
+    "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
     "loop": "one-shot",
     "n": 36,
     "functional_pass_rate": 0.45,
     "secure_pass_rate": 0.22,
     "cost_per_100_tasks_usd": 0.09,
-    "cost_per_secure_app_usd": 0.004,
+    "cost_per_secure_app_usd": 0.0041,
     "median_latency_s": 7.7,
     "cwe_counts": {
-     "79": 0,
      "20": 3,
-     "89": 3,
-     "703": 0
+     "89": 3
     }
    },
    {
     "arm": "A3",
-    "label": "Nemotron Nano 3 + repair",
-    "model": "accounts/fireworks/models/nemotron-nano-3-30b-a3b",
+    "label": "Nemotron Lightning 3.5 + repair",
+    "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
     "loop": "repair",
     "n": 36,
     "functional_pass_rate": 0.58,
@@ -58,50 +70,14 @@ window.DASHBOARD_DATA = {
      "20": 5,
      "703": 4
     }
-   },
-   {
-    "arm": "A4",
-    "label": "Nemotron Nano 3 tuned, one-shot",
-    "model": "FAKE-tuned-model",
-    "loop": "one-shot",
-    "n": 36,
-    "functional_pass_rate": 0.56,
-    "secure_pass_rate": 0.38,
-    "cost_per_100_tasks_usd": 0.09,
-    "cost_per_secure_app_usd": 0.0023,
-    "median_latency_s": 13.5,
-    "cwe_counts": {
-     "400": 4,
-     "79": 6,
-     "89": 1,
-     "703": 2
-    }
-   },
-   {
-    "arm": "A5",
-    "label": "Nemotron Nano 3 tuned + repair",
-    "model": "FAKE-tuned-model",
-    "loop": "repair",
-    "n": 36,
-    "functional_pass_rate": 0.66,
-    "secure_pass_rate": 0.52,
-    "cost_per_100_tasks_usd": 0.21,
-    "cost_per_secure_app_usd": 0.004,
-    "median_latency_s": 16.4,
-    "cwe_counts": {
-     "89": 6,
-     "20": 5,
-     "22": 1,
-     "400": 0
-    }
    }
   ]
  },
  "runs": [
   {
    "FAKE": true,
-   "arm": "A5",
-   "model": "FAKE-tuned-model",
+   "arm": "A3",
+   "model": "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b",
    "scenario": "FakeLogin",
    "framework": "Python-Flask",
    "run": 1,
