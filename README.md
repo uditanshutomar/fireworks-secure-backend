@@ -1,6 +1,6 @@
 # Secure Backend
 
-Can a small, cheap open model write web backends that both work and survive real attacks, if it gets told which attacks worked?
+Can a small, cheap open model write web backends that both work and survive real attacks, if it gets told what failed and which attacks worked?
 
 We give a model a backend spec (an API to build in Python with Flask). [BaxBench](https://github.com/logic-star-ai/baxbench) then runs its functional tests and its expert-written exploits against the app in Docker. An app only counts if it passes every test and no exploit succeeds.
 
@@ -36,8 +36,8 @@ We compare four setups on 12 held-out scenarios, plus two prompt-only baselines 
 
 What we found:
 
-- **Cheaper per token is not cheaper per secure app.** Nemotron Lightning costs about 6× less per token than DeepSeek, but each secure app costs about 4.5× more with the repair loop, because so few of its apps survive.
-- **Telling a model which attacks worked helps.** The repair loop doubles Nemotron's secure rate (12.5% to 25.0%) and lifts DeepSeek from 66.7% to 75.0%.
+- **Cheaper per token is not cheaper per secure app.** Nemotron Lightning costs about 6× less per token than DeepSeek, but with the repair loop each secure app costs $0.0121: 4.5× DeepSeek one-shot and 2.2× DeepSeek with repair, because so few of its apps survive.
+- **Feedback helps, but mostly by fixing broken apps.** The repair loop doubles Nemotron's secure rate (12.5% to 25.0%) and lifts DeepSeek from 66.7% to 75.0%. Every app it turned secure had failed a functional test on the first try. In the two repair runs where an exploit worked on the first try, retries did not close it: Recipes kept CWE-20, and SecretStorage dropped CWE-522 but broke a test.
 - **Telling it to be careful does not.** Naming the CWEs up front lowered DeepSeek's secure rate (66.7% to 58.3%) and Nemotron produced no secure app at all.
 - **Small sample.** One scenario moves a DeepSeek rate by about 8 points and a Nemotron rate by about 4.
 
