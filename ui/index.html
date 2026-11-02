@@ -341,8 +341,14 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
 
   // Live loop at the end: attack gets in, agent is told, agent fixes the line, attack bounces off. Pure CSS timeline.
   (function () {
-    const r = RUNS.find(x => x.steps && x.steps.length > 1 && x.steps[0].exploits_triggered.length && x.secure_pass) || RUNS[0];
-    if (!r || !r.steps || r.steps.length < 2) { $('loop').innerHTML = '<div class="empty">Shows up once a run record has an exploit fixed by a retry.</div>'; return; }
+    // Use a recorded run where a retry fixed an exploit; until one exists, play a labelled illustration.
+    const ILLUSTRATION = {"arm": "A3", "scenario": "FakeLogin", "secure_pass": true, "steps": [{"code": "from flask import Flask, request\nimport sqlite3\napp = Flask(__name__)\n\n@app.post('/login')\ndef login():\n    u = request.json['username']\n    row = db.execute(f\"SELECT * FROM users WHERE name = '{u}'\").fetchone()\n    ...\n", "exploits_triggered": [{"cwe": 89, "name": "sql_injection_login"}], "failed_tests": [], "secure_pass": false}, {"code": "from flask import Flask, request\nimport sqlite3\napp = Flask(__name__)\n\n@app.post('/login')\ndef login():\n    u = request.json['username']\n    row = db.execute('SELECT * FROM users WHERE name = ?', (u,)).fetchone()\n    ...\n", "exploits_triggered": [], "failed_tests": [], "secure_pass": true}]};
+    let r = RUNS.find(x => x.steps && x.steps.length > 1 && x.steps[0].exploits_triggered.length && x.secure_pass);
+    if (!r) {
+      r = ILLUSTRATION;
+      $('loop-t').textContent = 'How the repair loop works (illustration)';
+      $('loop-t').parentElement.querySelector('.p-info').textContent = 'sample code, not a recorded run · loops continuously';
+    }
     const s0 = r.steps[0], s1 = r.steps[1], l0 = s0.code.replace(/\n$/, '').split('\n'), set1 = new Set(s1.code.split('\n')), set0 = new Set(l0);
     let bad = l0.findIndex(t => t.trim() && !set1.has(t)); if (bad < 0) bad = l0.length - 1;
     const fixed = s1.code.split('\n').find(t => t.trim() && !set0.has(t)) || l0[bad];
@@ -585,8 +591,8 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
     headline: {
       title: 'The headline, in four steps',
       setup(c) {
-        const svg = svgRoot(420), y0 = 340, sc = 4.2;
-        [0, 20, 40, 60].forEach(v => { S('line', { x1: 110, x2: 820, y1: y0 - v * sc, y2: y0 - v * sc, stroke: 'rgba(255,255,255,0.06)' }, svg); txt(svg, 100, y0 - v * sc + 4, v, { a: 'end', s: 11, c: '#A39E96', mono: 1 }); });
+        const svg = svgRoot(420), y0 = 340, vtop = Math.ceil((Math.max(...ARMS.map(x => P(x.secure_pass_rate))) + 10) / 20) * 20, sc = 270 / vtop;
+        Array.from({ length: vtop / 20 + 1 }, (_, k) => k * 20).forEach(v => { S('line', { x1: 110, x2: 820, y1: y0 - v * sc, y2: y0 - v * sc, stroke: 'rgba(255,255,255,0.06)' }, svg); txt(svg, 100, y0 - v * sc + 4, v, { a: 'end', s: 11, c: '#A39E96', mono: 1 }); });
         txt(svg, 110, 40, 'Safe apps out of 100', { s: 12, c: '#A39E96' });
         c.bars = [[base, 'A2', 170, '#A39E96'], [ours, 'A3', 400, SAFE], [big, 'A1', 630, '#86B3E0']].filter(b => b[0]).map(([a, id, x, col]) => {
           const v = P(a.secure_pass_rate), h = v * sc;
@@ -755,16 +761,23 @@ select { min-height: 32px; padding: 0 10px; font-size: 12px; color: var(--text);
         if (!r) return [{ text: 'No app records yet.', run: () => {} }];
         const s0 = r.steps[0], last = r.steps[r.steps.length - 1];
         const what = c.cwe ? (ATTACK[c.cwe] || 'gets in') : 'breaks it';
-        if (!s0.exploits_triggered.length) return [{ text: `<b>${esc(nm(r.arm))}</b> wrote this app. ${s0.secure_pass ? 'No attack got in. Safe on the first try.' : `It failed ${s0.failed_tests.length} test(s).`}`, run: () => {} }];
-        const st = [{ text: `<b>${esc(nm(r.arm))}</b> wrote this app on its first try, and it passes the tests. An attacker sends a booby-trapped input.`, run: () => { c.packet.style.opacity = 1; later(30, () => { c.packet.style.transform = `translate(450px,${c.badY - 5}px)`; }); } }];
-        st.push({ text: `It slips through this line, and the attacker <b>${esc(what)}</b>. Hacked.`, run: () => { c.packet.style.transform = `translate(450px,${c.badY - 5}px)`; c.packet.style.opacity = 0; c.hlRect.setAttribute('opacity', 0.35); c.badge.style.opacity = 1; c.badge.style.transform = 'translateY(0)'; } });
+        const hacked = s0.exploits_triggered.length > 0, nf = s0.failed_tests.length;
+        if (!hacked && (s0.secure_pass || r.steps.length < 2)) return [{ text: `<b>${esc(nm(r.arm))}</b> wrote this app. ${s0.secure_pass ? 'No attack got in. Safe on the first try.' : `It failed ${nf} test${nf === 1 ? '' : 's'}.`}`, run: () => {} }];
+        let st;
+        if (hacked) {
+          st = [{ text: `<b>${esc(nm(r.arm))}</b> wrote this app on its first try, and it passes the tests. An attacker sends a booby-trapped input.`, run: () => { c.packet.style.opacity = 1; later(30, () => { c.packet.style.transform = `translate(450px,${c.badY - 5}px)`; }); } }];
+          st.push({ text: `It slips through this line, and the attacker <b>${esc(what)}</b>. Hacked.`, run: () => { c.packet.style.transform = `translate(450px,${c.badY - 5}px)`; c.packet.style.opacity = 0; c.hlRect.setAttribute('opacity', 0.35); c.badge.style.opacity = 1; c.badge.style.transform = 'translateY(0)'; } });
+        } else {
+          // First try didn't work at all: the feedback is the failing test names.
+          st = [{ text: `<b>${esc(nm(r.arm))}</b> wrote this app on its first try, but <b>${nf} test${nf === 1 ? '' : 's'} failed</b>: it doesn't work yet.`, run: () => { c.badgeTxt.textContent = 'BROKEN'; c.badgeRect.setAttribute('fill', '#A39E96'); c.hlRect.setAttribute('opacity', 0.35); c.badge.style.opacity = 1; c.badge.style.transform = 'translateY(0)'; } }];
+        }
         if (r.steps.length < 2) return st;
-        st.push({ text: 'We tell the model only <b>what failed</b>. It never sees the attack itself.', run: () => { c.msg.style.opacity = 1; later(40, () => { c.msg.style.transform = 'translate(801px,215px)'; }); } });
+        st.push({ text: hacked ? 'We tell the model only <b>what failed</b>. It never sees the attack itself.' : 'We tell the model <b>which tests failed</b>. Nothing else.', run: () => { c.msg.style.opacity = 1; later(40, () => { c.msg.style.transform = 'translate(801px,215px)'; }); } });
         st.push({ text: 'The model rewrites that line.', run: () => {
           c.msg.style.opacity = 0; c.hlRect.setAttribute('fill', SAFE); c.hlRect.setAttribute('opacity', 0.22);
           c.badge.style.opacity = 0; c.badEl.textContent = c.fixed; c.badEl.setAttribute('fill', '#B8E3C6');
         } });
-        if (last.secure_pass) st.push({ text: 'Same attack again. This time it <b>bounces off</b>. Safe.', run: () => {
+        if (last.secure_pass) st.push({ text: hacked ? 'Same attack again. This time it <b>bounces off</b>. Safe.' : 'Now every test passes, and every attack <b>bounces off</b>. Safe.', run: () => {
           c.badgeRect.setAttribute('fill', SAFE); c.badgeTxt.textContent = 'SAFE';
           c.packet.style.transition = 'none'; c.packet.style.transform = 'translate(100px,215px)'; c.packet.style.opacity = 1;
           later(60, () => { c.packet.style.transition = `transform .9s ${ease}, opacity .3s`; c.packet.style.transform = `translate(330px,${c.badY - 5}px)`; });
