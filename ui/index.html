@@ -3,318 +3,171 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Secure Backend: results</title>
+<title>Secure Backend: dashboard</title>
 <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
   --paper: #F9F7F5;
-  --paper-2: #F4F0EC;
+  --soft: #F4F0EC;
   --card: #FFFFFF;
   --line: #E2DDD8;
-  --line-2: #C9C2C2;
   --ink: #280016;
   --ink-2: #5E5257;
   --muted: #706666;
-  --plum: #610A45;
-  --rasp: #B4236A;
-  --coral: #F98461;
-  --coral-ink: #A63A1F;
+  --safe: #610A45;
+  --hack: #F98461;
+  --hack-ink: #A63A1F;
   --broken: #E2DDD8;
-  --serif: 'Instrument Serif', 'Times New Roman', Georgia, serif;
+  --serif: 'Instrument Serif', Georgia, serif;
   --sans: 'Geist', 'Helvetica Neue', Arial, sans-serif;
-  --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --mono: 'Geist Mono', ui-monospace, Menlo, monospace;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
-a { color: var(--plum); }
-a:hover { color: var(--rasp); }
-.wrap { max-width: 1240px; margin: 0 auto; padding: 0 clamp(16px, 3vw, 40px) 72px; }
-.kicker { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+.dash { max-width: 1480px; margin: 0 auto; padding: 18px clamp(12px, 2vw, 28px) 28px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 1000px) { .dash > * { grid-column: 1 / -1 !important; } }
 .num { font-variant-numeric: tabular-nums; }
-.serif { font-family: var(--serif); font-weight: 400; }
 
-/* Top bar */
-.top { position: sticky; top: 0; z-index: 5; background: rgba(249, 247, 245, 0.9); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
-.top-in { max-width: 1240px; margin: 0 auto; padding: 10px clamp(16px, 3vw, 40px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; text-decoration: none; color: var(--ink); min-height: 44px; }
-nav { display: flex; flex-wrap: wrap; gap: 2px; }
-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 999px; font-size: 13.5px; color: var(--ink-2); text-decoration: none; }
-nav a:hover { background: var(--paper-2); color: var(--ink); }
-.badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; background: #FDE7DF; color: var(--coral-ink); border: 1px solid #F6C4B2; }
-.badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--coral); }
+/* Title bar */
+.bar { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; padding: 4px 2px 6px; }
+.bar-l { display: flex; align-items: center; gap: 12px; }
+.bar h1 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+.bar .sub { color: var(--muted); font-size: 13px; }
+.badge { display: inline-flex; align-items: center; gap: 8px; padding: 5px 11px; border-radius: 999px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; background: #FDE7DF; color: var(--hack-ink); border: 1px solid #F6C4B2; }
+.badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--hack); }
+.key { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); }
+.key span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
 
-/* Hero */
-.hero { position: relative; padding: 72px 0 40px; text-align: center; }
-.hero::before { content: ""; position: absolute; inset: 40px -10% auto; height: 420px; background: radial-gradient(50% 60% at 50% 40%, rgba(249, 132, 97, 0.18), rgba(249, 132, 97, 0) 70%); z-index: -1; pointer-events: none; }
-.hero h1 { margin: 18px auto 0; max-width: 18ch; font-family: var(--serif); font-weight: 400; font-size: clamp(42px, 6vw, 76px); line-height: 1.02; letter-spacing: -0.01em; text-wrap: balance; }
-.hero h1 em { font-style: italic; color: var(--plum); }
-.hero .lede { margin: 22px auto 0; max-width: 64ch; font-size: 18px; color: var(--ink-2); text-wrap: pretty; }
-.answer { margin: 40px auto 0; max-width: 1000px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; text-align: left; }
-.answer > div { padding: 22px 24px; border-right: 1px solid var(--line); }
-.answer > div:last-child { border-right: 0; }
-.answer .big { font-family: var(--serif); font-size: 56px; line-height: 1; margin-top: 10px; letter-spacing: -0.01em; }
-.answer .big small { font-size: 0.5em; }
-.answer p { margin: 8px 0 0; font-size: 14px; color: var(--ink-2); }
-.answer .hl { background: var(--ink); color: var(--paper); }
-.answer .hl .kicker, .answer .hl p { color: rgba(249, 247, 245, 0.78); }
-.context { margin: 28px auto 0; max-width: 820px; font-size: 13.5px; color: var(--muted); text-wrap: pretty; }
+/* Tiles */
+.tile { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.t-title { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.t-take { font-size: 17px; font-weight: 600; line-height: 1.3; text-wrap: pretty; }
+.t-take em { font-style: normal; color: var(--safe); }
+.t-note { font-size: 12px; color: var(--muted); margin-top: auto; }
+.tile svg[role="img"] { display: block; width: 100%; height: auto; }
+.s3 { grid-column: span 3; } .s4 { grid-column: span 4; } .s5 { grid-column: span 5; } .s6 { grid-column: span 6; } .s7 { grid-column: span 7; } .s8 { grid-column: span 8; } .s12 { grid-column: 1 / -1; }
 
-/* Sections */
-.sec { margin-top: 56px; scroll-margin-top: 80px; }
-.sec-head { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 12px 48px; align-items: end; margin-bottom: 20px; }
-.sec-head h2 { margin: 8px 0 0; font-family: var(--serif); font-weight: 400; font-size: clamp(30px, 3.4vw, 42px); line-height: 1.08; letter-spacing: -0.005em; text-wrap: balance; }
-.sec-head h2 em { font-style: italic; color: var(--plum); }
-.how { font-size: 14.5px; color: var(--ink-2); text-wrap: pretty; }
-.how b { color: var(--ink); font-weight: 600; }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 26px; }
-.card svg[role="img"] { display: block; width: 100%; height: auto; }
-.foot { margin-top: 14px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
-.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(520px, 100%), 1fr)); gap: 20px; }
-.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--ink-2); margin-bottom: 14px; }
-.legend span { display: inline-flex; align-items: center; gap: 8px; }
-.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+/* KPI tiles */
+.kpi .v { font-family: var(--serif); font-size: 52px; line-height: 0.95; }
+.kpi .v small { font-family: var(--sans); font-size: 15px; color: var(--muted); margin-left: 4px; }
+.kpi .d { font-size: 13px; color: var(--ink-2); }
+.kpi.hl { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.kpi.hl .t-title, .kpi.hl .d, .kpi.hl .v small { color: rgba(249, 247, 245, 0.75); }
+.up { color: var(--safe); font-weight: 600; }
+.kpi.hl .up { color: #FFB59C; }
 
-/* Experiment design */
-.design { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr); gap: 20px; }
-@media (max-width: 860px) { .design { grid-template-columns: 1fr; } }
-.matrix2 { display: grid; grid-template-columns: 96px repeat(2, minmax(0, 1fr)); grid-template-rows: auto repeat(2, auto); gap: 10px; }
-.mx-col, .mx-row { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; }
-.mx-col { justify-content: center; padding-bottom: 2px; }
-.cell2 { position: relative; border-radius: 14px; padding: 18px 18px 16px; border: 1px solid var(--line); min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
-.cell2 .id { font-family: var(--mono); font-size: 12px; display: flex; align-items: center; gap: 8px; }
-.cell2 .pct { font-family: var(--serif); font-size: 54px; line-height: 0.95; }
-.cell2 .lab { font-size: 13px; }
-.cell2.dark { color: var(--paper); border-color: transparent; }
-.cell2.dark .id, .cell2.dark .lab { color: rgba(249, 247, 245, 0.85); }
-.effects { display: flex; flex-direction: column; gap: 12px; }
-.eff { border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; background: var(--card); }
-.eff .v { font-family: var(--serif); font-size: 40px; line-height: 1; margin-top: 6px; }
-.eff p { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-2); }
-.eff.ref { background: var(--paper-2); }
+/* Waffles */
+.waffles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 640px) { .waffles { grid-template-columns: 1fr; } }
+.wf h3 { margin: 0 0 8px; font-size: 13.5px; font-weight: 600; }
+.wf .grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; }
+.wf .grid i { aspect-ratio: 1; border-radius: 2px; display: block; }
+.wf .tally { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--ink-2); }
+.wf .tally b { font-family: var(--serif); font-weight: 400; font-size: 24px; color: var(--ink); display: block; line-height: 1; }
 
-/* Exploit matrix */
-.tbox { overflow-x: auto; }
-table { border-collapse: separate; border-spacing: 4px; width: 100%; min-width: 560px; }
-th { font-family: var(--mono); font-size: 11.5px; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 4px 6px 8px; text-align: center; }
-th:first-child { text-align: left; }
-td.w { padding: 6px 10px 6px 0; }
-.cwe { display: flex; align-items: center; gap: 10px; }
-.cwe-ico { width: 34px; height: 34px; border-radius: 9px; flex: none; display: grid; place-items: center; background: var(--paper-2); color: var(--ink); }
-.cwe-name { font-size: 14px; font-weight: 500; }
-.cwe-id { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
-td.v { height: 46px; text-align: center; border-radius: 8px; font-family: var(--mono); font-size: 13.5px; }
+/* 2x2 */
+.g22 { display: grid; grid-template-columns: 74px repeat(2, minmax(0, 1fr)); gap: 6px; }
+.g22 .h { font-size: 11.5px; color: var(--muted); display: flex; align-items: center; }
+.g22 .h.c { justify-content: center; }
+.c22 { border-radius: 10px; padding: 10px 12px; min-height: 86px; display: flex; flex-direction: column; justify-content: space-between; }
+.c22 .p { font-family: var(--serif); font-size: 38px; line-height: 1; }
+.c22 .l { font-size: 11.5px; }
+.c22.dark { color: var(--paper); }
 
-/* Run viewer */
-.run-top { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: flex-end; justify-content: space-between; margin-bottom: 18px; }
-.field { display: flex; flex-direction: column; gap: 6px; }
-select { min-height: 44px; padding: 0 14px; font-family: var(--mono); font-size: 13px; color: var(--ink); background: var(--card); border: 1px solid var(--line-2); border-radius: 10px; min-width: 300px; max-width: 100%; }
-.stats { display: flex; flex-wrap: wrap; gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-.stat { padding: 9px 16px; border-right: 1px solid var(--line); }
-.stat:last-child { border-right: 0; }
-.stat b { display: block; font-family: var(--mono); font-weight: 400; font-size: 14px; color: var(--ink); }
-.rail { display: flex; align-items: center; margin: 4px 0 20px; overflow-x: auto; padding-bottom: 4px; }
-.step { flex: none; min-height: 56px; min-width: 180px; padding: 9px 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; text-align: left; background: var(--card); color: var(--ink); border: 1px solid var(--line-2); border-radius: 12px; font-family: var(--sans); cursor: pointer; }
+/* Heatmap */
+.hm { width: 100%; border-collapse: separate; border-spacing: 3px; }
+.hm th { font-size: 11px; font-weight: 500; color: var(--muted); padding: 0 2px 4px; text-align: center; }
+.hm th:first-child { text-align: left; }
+.hm td.w { font-size: 12.5px; padding-right: 8px; white-space: nowrap; }
+.hm td.w svg { vertical-align: -4px; margin-right: 6px; color: var(--ink-2); }
+.hm td.v { height: 30px; text-align: center; border-radius: 6px; font-family: var(--mono); font-size: 12.5px; }
+
+/* Fix in action */
+.fix { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); gap: 14px; }
+.fix-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+select { min-height: 40px; padding: 0 12px; font-family: var(--sans); font-size: 13px; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 9px; max-width: 100%; }
+.steps { display: flex; gap: 6px; flex-wrap: wrap; }
+.step { min-height: 40px; padding: 0 14px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-family: var(--sans); font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
 .step[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-.step .kicker { color: inherit; opacity: 0.75; }
-.chip { font-family: var(--mono); font-size: 11.5px; padding: 3px 9px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase; }
-.chip.bad { background: var(--coral); color: var(--ink); }
-.chip.good { background: var(--plum); color: var(--paper); }
-.chip.warn { background: var(--broken); color: var(--ink); }
-.link { flex: 1; min-width: 120px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 12px; font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-.link i { display: block; width: 100%; border-top: 1.5px dashed var(--line-2); position: relative; }
-.link i::after { content: ""; position: absolute; right: -2px; top: -6px; border: 5px solid transparent; border-left: 8px solid var(--line-2); border-right: 0; }
-.run-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr)); gap: 20px; align-items: start; }
-.code { background: #1A0710; color: #EFE9EC; font-family: var(--mono); font-size: 13px; line-height: 1.75; padding: 14px 0 16px; border-radius: 14px; overflow-x: auto; min-height: 220px; }
-.code-head { display: flex; justify-content: space-between; gap: 12px; padding: 0 18px 10px; margin-bottom: 8px; border-bottom: 1px solid rgba(239, 233, 236, 0.1); color: #A8979F; font-size: 12px; }
-.ln { display: flex; padding-right: 20px; min-width: max-content; }
-.ln .n { width: 44px; flex: none; text-align: right; padding-right: 10px; color: #8E7D85; user-select: none; }
-.ln .g { width: 18px; flex: none; text-align: center; font-weight: 600; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.code { background: #1A0710; color: #EFE9EC; font-family: var(--mono); font-size: 12.5px; line-height: 1.7; padding: 10px 0; border-radius: 10px; overflow-x: auto; }
+.ln { display: flex; padding-right: 16px; min-width: max-content; }
+.ln .n { width: 36px; flex: none; text-align: right; padding-right: 10px; color: #8E7D85; user-select: none; }
 .ln .t { white-space: pre; }
-.ln.bad { background: rgba(249, 132, 97, 0.2); }
-.ln.bad .g { color: var(--coral); }
-.ln.new { background: rgba(214, 120, 180, 0.2); }
-.ln.new .g { color: #F0A6D2; }
-.tk-k { color: #F0A6D2; }
-.tk-s { color: #FFC2A8; }
-.tk-c { color: #8E7D85; }
-.verdict { display: flex; flex-direction: column; gap: 14px; }
-.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.pair > div { background: var(--paper-2); border-radius: 12px; padding: 12px 16px; }
-.pair b { display: block; margin-top: 4px; font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.1; }
-.vcard { border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--line); }
-.vcard.bad { background: #FEF0EA; border-color: #F6C4B2; }
-.vcard.good { background: #F6EAF1; border-color: #E4C3D6; }
-.ex { display: flex; align-items: center; gap: 12px; }
-.ex .cwe-ico { background: var(--card); }
-.ex-title { font-weight: 600; font-size: 15px; }
-.ex-name { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); }
-.prompt { margin: 8px 0 0; padding: 14px 16px; background: var(--paper-2); border-radius: 12px; font-family: var(--mono); font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; }
-.note { font-size: 12.5px; color: var(--muted); }
-.empty { padding: 24px; font-family: var(--mono); font-size: 13px; color: var(--muted); }
-.waffles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 28px; }
-.waffle h3 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 1.1; }
-.waffle .sub { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin: 4px 0 14px; letter-spacing: 0.04em; }
-.waffle .grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; max-width: 300px; }
-.waffle .grid i { aspect-ratio: 1; border-radius: 3px; display: block; }
-.waffle .tally { display: flex; gap: 16px; margin-top: 14px; font-size: 13.5px; color: var(--ink-2); }
-.waffle .tally b { font-family: var(--serif); font-weight: 400; font-size: 30px; color: var(--ink); display: block; line-height: 1; }
-.waffle.best h3 { color: var(--plum); }
-
-footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: 16px 40px; font-size: 13px; color: var(--ink-2); }
-footer b { color: var(--ink); font-weight: 600; }
-footer h3 { margin: 0 0 6px; font-family: var(--mono); font-weight: 400; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.ln.bad { background: rgba(249, 132, 97, 0.25); }
+.ln.new { background: rgba(214, 120, 180, 0.25); }
+.tk-k { color: #F0A6D2; } .tk-s { color: #FFC2A8; } .tk-c { color: #8E7D85; }
+.verdict { display: flex; flex-direction: column; gap: 10px; }
+.vbox { border-radius: 10px; padding: 12px 14px; font-size: 13.5px; }
+.vbox.bad { background: #FEF0EA; }
+.vbox.good { background: #F6EAF1; }
+.vbox b { display: block; font-size: 15px; margin-bottom: 2px; }
+.said { margin: 0; padding: 10px 12px; background: var(--soft); border-radius: 10px; font-family: var(--mono); font-size: 12px; line-height: 1.55; white-space: pre-wrap; }
+.empty { padding: 16px; font-size: 13px; color: var(--muted); }
+.foot { grid-column: 1 / -1; font-size: 11.5px; color: var(--muted); padding: 2px; }
 </style>
 </head>
 <body>
-<div class="top"><div class="top-in">
-  <a class="brand" href="#"><img src="assets/logo-mark.svg" width="26" height="26" alt="">Secure Backend</a>
-  <nav aria-label="Sections">
-    <a href="#waffle-sec">100 apps</a>
-    <a href="#design">The experiment</a>
-    <a href="#outcomes">Outcomes</a>
-    <a href="#lift">Lift vs baseline</a>
-    <a href="#cost">Cost</a>
-    <a href="#attacks">Attacks</a>
-    <a href="#dollar">Value</a>
-    <a href="#rounds">Repair rounds</a>
-    <a href="#run">Run viewer</a>
-  </nav>
-  <span class="badge" id="sample" hidden><i></i>Sample data</span>
-</div></div>
-
-<div class="wrap">
-  <section class="hero" aria-labelledby="q">
-    <div class="kicker">BaxBench · <span id="meta-n"></span> · Python with Flask</div>
-    <h1 id="q">Can a small open model write backends that <em>work</em> and survive <em>real attacks</em>?</h1>
-    <p class="lede">We gave each model an API spec. BaxBench ran the app in Docker, ran its functional tests, then fired expert-written exploits at it. An app counts as a <b>secure pass</b> only if every test passes and no exploit gets in.</p>
-    <div class="answer" id="answer"></div>
-    <p class="context">Why it matters: in the BaxBench paper (Vero et al., 2025, arXiv:2502.11844) the best model wrote correct code only 62% of the time, and about half of the correct programs could be exploited. Working code is not the same as safe code.</p>
-  </section>
-
-  <section class="sec" id="waffle-sec" aria-labelledby="waffle-t">
-    <div class="sec-head">
-      <div><div class="kicker">0 · 100 apps, side by side</div><h2 id="waffle-t"></h2></div>
-      <p class="how">Imagine asking each setup for 100 backends. <b>Each square is one app.</b> Dark squares are safe to ship, coral ones work but an attacker gets in, pale ones don't work at all.</p>
+<main class="dash">
+  <div class="bar">
+    <div class="bar-l">
+      <img src="assets/logo-mark.svg" width="28" height="28" alt="">
+      <div><h1>Secure Backend</h1><div class="sub" id="sub"></div></div>
+      <span class="badge" id="sample" hidden><i></i>Sample data</span>
     </div>
-    <div class="card">
-      <div class="legend"><span><i class="sw" style="background:var(--plum)"></i>Safe to ship</span><span><i class="sw" style="background:var(--coral)"></i>Works, but hackable</span><span><i class="sw" style="background:var(--broken)"></i>Doesn't work</span></div>
-      <div class="waffles" id="waffles"></div>
-    </div>
-  </section>
-
-  <section class="sec" id="design" aria-labelledby="design-t">
-    <div class="sec-head">
-      <div><div class="kicker">1 · The experiment in one picture</div><h2 id="design-t"></h2></div>
-      <p class="how">Two changes to one small model, tested alone and together. <b>Across</b>: one shot vs a repair loop that tells the model which tests failed and which attacks worked, up to 3 retries. <b>Down</b>: the base model vs our fine-tuned version. Each box is the share of apps that passed every test and survived every exploit.</p>
-    </div>
-    <div class="design">
-      <div class="card"><div class="matrix2" id="matrix2"></div></div>
-      <div class="effects" id="effects"></div>
-    </div>
-  </section>
-
-  <section class="sec" id="outcomes" aria-labelledby="out-t">
-    <div class="sec-head">
-      <div><div class="kicker">2 · What happens to 100 apps</div><h2 id="out-t"></h2></div>
-      <p class="how">Every app ends in one of three places. <b>Broken</b>: a functional test failed. <b>Works, but exploited</b>: all tests pass, yet an attack gets in, which is the dangerous case because it looks fine in a demo. <b>Secure</b>: works and no attack gets in. Read each bar left to right.</p>
-    </div>
-    <div class="card">
-      <div class="legend"><span><i class="sw" style="background:var(--plum)"></i>Secure</span><span><i class="sw" style="background:var(--coral)"></i>Works, but exploited</span><span><i class="sw" style="background:var(--broken)"></i>Broken</span></div>
-      <div id="stack"></div>
-      <div class="foot" id="stack-foot"></div>
-    </div>
-  </section>
-
-  <section class="sec" id="lift" aria-labelledby="lift-t">
-    <div class="sec-head">
-      <div><div class="kicker">3 · Lift over the baseline, with uncertainty</div><h2 id="lift-t"></h2></div>
-      <p class="how">The <b>baseline</b> is the small model as it ships: base Nemotron Nano 3, one shot. Each row is how many percentage points more apps are secure than the baseline. The bar is a 95% confidence interval: if it crosses zero, the gain could be noise.</p>
-    </div>
-    <div class="card">
-      <div id="forest"></div>
-      <div class="foot" id="forest-foot"></div>
-    </div>
-  </section>
-
-  <div class="grid2">
-    <section class="sec" id="cost" aria-labelledby="cost-t">
-      <div class="sec-head" style="grid-template-columns:1fr"><div><div class="kicker">4 · What a secure app costs</div><h2 id="cost-t"></h2></div>
-        <p class="how">Cost per secure app is everything spent (all model calls, repair rounds included) divided by the number of secure apps. <b>Up and to the left is better</b>: more secure for less money.</p></div>
-      <div class="card"><div id="scatter"></div><div class="foot" id="cost-foot"></div></div>
-    </section>
-    <section class="sec" id="attacks" aria-labelledby="att-t">
-      <div class="sec-head" style="grid-template-columns:1fr"><div><div class="kicker">5 · Which attacks still work</div><h2 id="att-t"></h2></div>
-        <p class="how">Each row is a kind of weakness (its CWE number). Each cell counts runs whose final app was broken into that way. <b>Darker means more often.</b> A dot means never.</p></div>
-      <div class="card tbox"><table><thead id="mx-head"></thead><tbody id="mx-rows"></tbody></table><div class="foot" id="att-foot"></div></div>
-    </section>
+    <div class="key"><span><i class="sw" style="background:var(--safe)"></i>Safe: works and couldn't be hacked</span><span><i class="sw" style="background:var(--hack)"></i>Hacked: works, but an attack got in</span><span><i class="sw" style="background:var(--broken)"></i>Doesn't work</span></div>
   </div>
 
-  <div class="grid2">
-    <section class="sec" id="dollar" aria-labelledby="dollar-t">
-      <div class="sec-head" style="grid-template-columns:1fr"><div><div class="kicker">7 · What $1 buys</div><h2 id="dollar-t"></h2></div>
-        <p class="how">Spend one dollar on model calls. <b>How many safe-to-ship apps come back?</b> Longer bar is better value.</p></div>
-      <div class="card"><div id="dollar-chart"></div><div class="foot">One dollar divided by the cost per secure app. Failed and hackable apps still cost money, which is why setups that fail often buy fewer.</div></div>
-    </section>
-    <section class="sec" id="wait" aria-labelledby="wait-t">
-      <div class="sec-head" style="grid-template-columns:1fr"><div><div class="kicker">8 · How long you wait</div><h2 id="wait-t"></h2></div>
-        <p class="how">Median seconds the model spends per app, all repair rounds added up. <b>Shorter bar is faster.</b> Repair setups wait longer because they can ask the model again.</p></div>
-      <div class="card"><div id="wait-chart"></div><div class="foot">Model time only. Building and attacking the app in Docker is not counted.</div></div>
-    </section>
-  </div>
+  <div class="tile kpi s3" id="k1"></div>
+  <div class="tile kpi hl s3" id="k2"></div>
+  <div class="tile kpi s3" id="k3"></div>
+  <div class="tile kpi s3" id="k4"></div>
 
-  <section class="sec" id="rounds" aria-labelledby="rounds-t">
-    <div class="sec-head">
-      <div><div class="kicker">9 · When the repair loop fixes things</div><h2 id="rounds-t"></h2></div>
-      <p class="how">In the repair setups the model gets up to 4 tries. <b>Round 0 is the first try</b>; each later round comes after it hears what failed. Each bar shows where runs ended up.</p>
-    </div>
-    <div class="card"><div id="rounds-chart"></div><div class="foot" id="rounds-foot"></div></div>
+  <section class="tile s7" aria-labelledby="wf-t"><div class="t-title">Out of 100 apps</div><div class="t-take" id="wf-t"></div><div class="waffles" id="waffles"></div></section>
+  <section class="tile s5" aria-labelledby="g-t"><div class="t-title">What each change adds</div><div class="t-take" id="g-t"></div><div class="g22" id="g22"></div><div class="t-note" id="g-note"></div></section>
+
+  <section class="tile s7" aria-labelledby="o-t"><div class="t-title">Where every app ends up</div><div class="t-take" id="o-t"></div><div id="outcomes"></div></section>
+  <section class="tile s5" aria-labelledby="l-t"><div class="t-title">Gain over the small model, out of 100</div><div class="t-take" id="l-t"></div><div id="lift"></div><div class="t-note">The line shows the range the true gain likely falls in. If it reaches 0, the gain could be luck.</div></section>
+
+  <section class="tile s4" aria-labelledby="c-t"><div class="t-title">Safe apps per $1</div><div class="t-take" id="c-t"></div><div id="dollar"></div></section>
+  <section class="tile s4" aria-labelledby="w-t"><div class="t-title">Wait per app</div><div class="t-take" id="w-t"></div><div id="wait"></div></section>
+  <section class="tile s4" aria-labelledby="a-t"><div class="t-title">Attacks that still get in</div><div class="t-take" id="a-t"></div><table class="hm"><thead id="hm-h"></thead><tbody id="hm-b"></tbody></table></section>
+
+  <section class="tile s8" aria-labelledby="f-t">
+    <div class="fix-top"><div><div class="t-title">Fix in action</div><div class="t-take" id="f-t">One app, before and after feedback</div></div>
+      <div class="steps"><label class="t-title" for="run-pick" style="align-self:center">App</label><select id="run-pick"></select></div></div>
+    <div class="steps" id="steps"></div>
+    <div class="fix" id="fix"></div>
   </section>
+  <section class="tile s4" aria-labelledby="r-t"><div class="t-title">When retries make it safe</div><div class="t-take" id="r-t"></div><div id="rounds"></div><div class="t-note" id="r-note"></div></section>
 
-  <section class="sec" id="run" aria-labelledby="run-t">
-    <div class="sec-head">
-      <div><div class="kicker">6 · Run viewer</div><h2 id="run-t">Watch one app get <em>fixed</em></h2></div>
-      <p class="how">Pick a run and click through its rounds. Orange lines are what the attack exploited; pink lines are the model's fix. The middle shows the exact message the model got back between rounds.</p>
-    </div>
-    <div class="card">
-      <div class="run-top">
-        <div class="field"><label class="kicker" for="run-pick">Run</label><select id="run-pick"></select></div>
-        <div class="stats" id="run-stats"></div>
-      </div>
-      <div id="run-body"></div>
-    </div>
-  </section>
-
-  <footer>
-    <div><h3>Definitions</h3><b>Secure pass</b>: every BaxBench functional test passed and no BaxBench exploit succeeded. <b>Cost</b>: Fireworks list price × tokens over every model call in a run, repair rounds included; the tuned model is priced like its base model. <b>Latency</b>: model time only, not Docker.</div>
-    <div><h3>How to read the uncertainty</h3>Intervals are 95% Wilson intervals; differences use Newcombe's method. They treat every run as independent. Each scenario is run several times, so runs of one scenario are correlated and the true intervals are somewhat wider.</div>
-    <div><h3>Built with</h3>Fireworks AI for inference, LoRA fine-tuning and deployment; NVIDIA Nemotron Nano 3; BaxBench scenarios, tests and exploits, used unchanged. <span id="foot-gen"></span></div>
-  </footer>
-</div>
+  <div class="foot" id="foot"></div>
+</main>
 
 <script src="data.js"></script>
 <script>
 (function () {
   const D = window.DASHBOARD_DATA || { results: { arms: [] }, runs: [] };
   const R = D.results || { arms: [] };
-  const ARM_IDS = ['A1', 'A2', 'A3', 'A4', 'A5'];
-  const ARMS = (R.arms || []).filter(a => ARM_IDS.includes(a.arm));
+  const IDS = ['A1', 'A2', 'A3', 'A4', 'A5'];
+  const ARMS = (R.arms || []).filter(a => IDS.includes(a.arm));
   const A = {}; ARMS.forEach(a => { A[a.arm] = a; });
-  const BASE = 'A2', REF = 'A1';
+  const BASE = 'A2', BIG = 'A1';
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const P = x => Math.round(x * 100);
-  const pct = x => P(x) + '%';
-  const pts = d => (d >= 0 ? '+' : '−') + Math.abs(Math.round(d * 100)) + ' pts';
+  const signed = n => (n >= 0 ? '+' : '−') + Math.abs(n);
   const money = x => x == null ? 'n/a' : (x >= 0.1 ? '$' + x.toFixed(2) : '$' + x.toFixed(4));
-  const fmtInt = n => Number(n).toLocaleString('en-US');
 
-  const SHORT = { A1: 'DeepSeek V4.1 Flash', A2: 'Base, one shot', A3: 'Base + repair', A4: 'Tuned, one shot', A5: 'Tuned + repair' };
+  // Plain names for each setup.
+  const NAME = { A1: 'Big model (DeepSeek)', A2: 'Small model', A3: 'Small + retries', A4: 'Trained small', A5: 'Trained small + retries' };
   const COLOR = { A1: '#280016', A2: '#A39A9A', A3: '#706666', A4: '#C24382', A5: '#610A45' };
-  const short = id => SHORT[id] || (A[id] && A[id].label) || id;
-  // Arm marks: diamond for the reference model, circle for base, square for tuned; a ring means the repair loop.
+  const nm = id => NAME[id] || id;
+  // Marks: diamond = big model, circle = small model, square = trained; an outer ring = retries.
   function mark(id, size) {
     const c = COLOR[id] || '#706666';
     const m = {
@@ -323,332 +176,192 @@ footer h3 { margin: 0 0 6px; font-family: var(--mono); font-weight: 400; font-si
       A3: `<circle cx="20" cy="20" r="7.5" fill="${c}"></circle><circle cx="20" cy="20" r="15" fill="none" stroke="${c}" stroke-width="2.5"></circle>`,
       A4: `<rect x="10.5" y="10.5" width="19" height="19" rx="2" fill="${c}"></rect>`,
       A5: `<rect x="13" y="13" width="14" height="14" rx="1.5" fill="${c}"></rect><rect x="5" y="5" width="30" height="30" rx="4" fill="none" stroke="${c}" stroke-width="2.5"></rect>`,
-    }[id] || `<circle cx="20" cy="20" r="10" fill="${c}"></circle>`;
+    }[id] || '';
     return `<svg width="${size}" height="${size}" viewBox="0 0 40 40" aria-hidden="true">${m}</svg>`;
   }
+  const svgMark = (id, x, y, size) => `<g transform="translate(${x} ${y})">${mark(id, size).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
+  const T = (x, y, txt, o = {}) => `<text x="${x}" y="${y}" text-anchor="${o.a || 'start'}" font-family="${o.mono ? 'Geist Mono, monospace' : 'Geist, sans-serif'}" font-size="${o.s || 12.5}" font-weight="${o.w || 400}" fill="${o.c || '#280016'}">${txt}</text>`;
 
-  // Statistics: Wilson interval for one rate, Newcombe interval for a difference of two.
+  // Uncertainty: Wilson range for one rate, Newcombe range for a difference.
   function wilson(p, n) {
     if (!n) return [0, 1];
-    const z = 1.96, k = Math.round(p * n), ph = k / n, d = 1 + z * z / n;
+    const z = 1.96, ph = Math.round(p * n) / n, d = 1 + z * z / n;
     const c = (ph + z * z / (2 * n)) / d, h = z * Math.sqrt(ph * (1 - ph) / n + z * z / (4 * n * n)) / d;
     return [Math.max(0, c - h), Math.min(1, c + h)];
   }
-  function newcombe(p1, n1, p2, n2) {
+  function diffRange(p1, n1, p2, n2) {
     const [l1, u1] = wilson(p1, n1), [l2, u2] = wilson(p2, n2), d = p1 - p2;
     return [d - Math.sqrt((p1 - l1) ** 2 + (u2 - p2) ** 2), d + Math.sqrt((u1 - p1) ** 2 + (p2 - l2) ** 2)];
   }
 
-  // Header and hero
-  const totalRuns = ARMS.reduce((s, a) => s + a.n, 0);
-  $('meta-n').textContent = `${R.scenarios || '?'} held-out scenarios × ${R.runs_per_scenario || '?'} runs × ${ARMS.length} setups`;
-  if (R.FAKE) { $('sample').hidden = false; $('foot-gen').textContent = 'Every number on this page is sample data until the real runs land.'; }
   const ranked = ARMS.slice().sort((a, b) => b.secure_pass_rate - a.secure_pass_rate);
-  const best = ranked[0], base = A[BASE], ref = A[REF];
-  if (best) {
-    const cells = [];
-    if (base) cells.push(`<div><div class="kicker">Baseline · ${esc(short(BASE))}</div><div class="big num">${P(base.secure_pass_rate)}<small>%</small></div><p>secure as it ships.</p></div>`);
-    cells.push(`<div class="hl"><div class="kicker">Best · ${esc(short(best.arm))}</div><div class="big num">${P(best.secure_pass_rate)}<small>%</small></div><p>secure${base && best.arm !== BASE ? `, ${pts(best.secure_pass_rate - base.secure_pass_rate)} over baseline` : ''}.</p></div>`);
-    if (ref && best.arm !== REF) cells.push(`<div><div class="kicker">Reference · bigger model</div><div class="big num">${P(ref.secure_pass_rate)}<small>%</small></div><p>${esc(short(REF))}, one shot.${best.secure_pass_rate > ref.secure_pass_rate ? ' Our small model beats it.' : ''}</p></div>`);
-    if (ref && best.cost_per_secure_app_usd && ref.cost_per_secure_app_usd) {
-      const r = ref.cost_per_secure_app_usd / best.cost_per_secure_app_usd;
-      cells.push(`<div><div class="kicker">Cost per secure app</div><div class="big num">${r >= 1 ? r.toFixed(1) + '×' : (1 / r).toFixed(1) + '×'}</div><p>${r >= 1 ? 'cheaper' : 'more expensive'} than the reference (${money(best.cost_per_secure_app_usd)} vs ${money(ref.cost_per_secure_app_usd)}).</p></div>`);
-    }
-    $('answer').innerHTML = cells.join('');
+  const best = ranked[0], base = A[BASE], big = A[BIG];
+  $('sub').textContent = `${R.scenarios || '?'} backend tasks × ${R.runs_per_scenario || '?'} tries each, attacked with real exploits`;
+  if (R.FAKE) $('sample').hidden = false;
+  $('foot').textContent = `Safe = every test passed and no attack got in. Cost counts every model call, retries included. Wait counts model time only.${R.FAKE ? ' All numbers are sample data until the real runs land.' : ''}`;
+
+  // KPIs
+  const kpi = (id, title, v, d) => { $(id).innerHTML = `<div class="t-title">${title}</div><div class="v num">${v}</div><div class="d">${d}</div>`; };
+  if (base) kpi('k1', 'Small model, as is', `${P(base.secure_pass_rate)}<small>safe / 100</small>`, `${P(base.functional_pass_rate)} of 100 work at all`);
+  if (best) kpi('k2', `Best: ${esc(nm(best.arm))}`, `${P(best.secure_pass_rate)}<small>safe / 100</small>`, base && best.arm !== BASE ? `<span class="up">${signed(P(best.secure_pass_rate) - P(base.secure_pass_rate))} safe apps</span> vs the small model` : '');
+  if (big) kpi('k3', 'Big model, for scale', `${P(big.secure_pass_rate)}<small>safe / 100</small>`, best && best.arm !== BIG ? (best.secure_pass_rate > big.secure_pass_rate ? `Our best beats it by <span class="up">${P(best.secure_pass_rate) - P(big.secure_pass_rate)}</span>` : 'Our best has not caught up yet') : '');
+  if (best && big && best.cost_per_secure_app_usd && big.cost_per_secure_app_usd) {
+    const r = big.cost_per_secure_app_usd / best.cost_per_secure_app_usd;
+    kpi('k4', 'Cost per safe app', `${money(best.cost_per_secure_app_usd)}`, r >= 1 ? `<span class="up">${r.toFixed(1)}× cheaper</span> than the big model (${money(big.cost_per_secure_app_usd)})` : `${(1 / r).toFixed(1)}× the big model's ${money(big.cost_per_secure_app_usd)}`);
   }
 
-  // 1. Experiment design: 2x2 plus reference, and the two main effects.
+  // Out of 100 apps
   (function () {
-    const has = ['A2', 'A3', 'A4', 'A5'].every(id => A[id]);
-    const shade = p => {
-      // Paper to plum by secure-pass rate; text flips to light on dark cells.
-      const t = Math.max(0, Math.min(1, p / Math.max(0.01, best ? best.secure_pass_rate : 1)));
-      const mix = (a, b) => Math.round(a + (b - a) * t);
-      return { bg: `rgb(${mix(244, 97)}, ${mix(240, 10)}, ${mix(236, 69)})`, dark: t > 0.55 };
-    };
+    const show = [BASE, BIG, best && best.arm].filter((id, i, a) => id && A[id] && a.indexOf(id) === i);
+    $('waffles').innerHTML = show.map(id => {
+      const a = A[id], s = P(a.secure_pass_rate), h = P(a.functional_pass_rate) - s, b = 100 - s - h;
+      const sq = Array.from({ length: 100 }, (_, i) => `<i style="background:${i < s ? '#610A45' : i < s + h ? '#F98461' : '#E2DDD8'}"></i>`).join('');
+      return `<div class="wf"><h3>${mark(id, 13)} ${esc(nm(id))}</h3><div class="grid" role="img" aria-label="${s} safe, ${h} hacked, ${b} not working, out of 100">${sq}</div>
+        <div class="tally"><span><b class="num">${s}</b>safe</span><span><b class="num">${h}</b>hacked</span><span><b class="num">${b}</b>broken</span></div></div>`;
+    }).join('');
+    if (base && best && best.arm !== BASE) {
+      const m = best.secure_pass_rate / Math.max(0.001, base.secure_pass_rate);
+      $('wf-t').innerHTML = `The small model gives ${P(base.secure_pass_rate)} safe apps. Our best gives <em>${P(best.secure_pass_rate)}</em>${m >= 1.5 ? `, about ${m.toFixed(1)}× as many` : ''}.`;
+    }
+  })();
+
+  // What each change adds (2x2)
+  (function () {
     const cell = id => {
       const a = A[id];
-      if (!a) return `<div class="cell2"><div class="id">${mark(id, 18)}${id}</div><div class="lab">no runs yet</div></div>`;
-      const s = shade(a.secure_pass_rate);
-      return `<div class="cell2 ${s.dark ? 'dark' : ''}" style="background:${s.bg}"><div class="id">${mark(id, 18)}${id} · ${esc(short(id))}</div><div class="pct num">${pct(a.secure_pass_rate)}</div><div class="lab">secure · ${pct(a.functional_pass_rate)} work at all</div></div>`;
+      if (!a) return '<div class="c22" style="background:#F4F0EC"><div class="l">no data yet</div></div>';
+      const t = Math.max(0, Math.min(1, a.secure_pass_rate / (best ? best.secure_pass_rate : 1)));
+      const mix = (x, y) => Math.round(x + (y - x) * t);
+      return `<div class="c22 ${t > 0.55 ? 'dark' : ''}" style="background:rgb(${mix(244, 97)},${mix(240, 10)},${mix(236, 69)})"><div class="l">${esc(nm(id))}</div><div class="p num">${P(a.secure_pass_rate)}</div><div class="l">safe / 100</div></div>`;
     };
-    $('matrix2').innerHTML = `<div></div><div class="mx-col">One shot</div><div class="mx-col">+ Repair loop</div>
-      <div class="mx-row">Base model</div>${cell('A2')}${cell('A3')}
-      <div class="mx-row">Fine-tuned</div>${cell('A4')}${cell('A5')}`;
-    if (!has) { $('design-t').textContent = 'Fine-tuning and the repair loop, alone and together'; return; }
-    const ft = ((A.A4.secure_pass_rate - A.A2.secure_pass_rate) + (A.A5.secure_pass_rate - A.A3.secure_pass_rate)) / 2;
-    const rp = ((A.A3.secure_pass_rate - A.A2.secure_pass_rate) + (A.A5.secure_pass_rate - A.A4.secure_pass_rate)) / 2;
-    const ix = (A.A5.secure_pass_rate - A.A4.secure_pass_rate) - (A.A3.secure_pass_rate - A.A2.secure_pass_rate);
-    const both = A.A5.secure_pass_rate - A.A2.secure_pass_rate;
-    $('design-t').innerHTML = `Fine-tuning adds <em>${pts(ft)}</em>, the repair loop adds <em>${pts(rp)}</em>, and together they add ${pts(both)}.`;
-    const ixText = Math.abs(ix) < 0.02 ? 'The two gains simply stack: neither makes the other more or less useful.'
-      : ix > 0 ? `They help each other: repair is worth ${pts(ix)} more on the tuned model than on the base one.`
-      : `They overlap: repair is worth ${pts(-ix).replace('+', '')} less on the tuned model, so some problems are fixed either way.`;
-    $('effects').innerHTML = `
-      <div class="eff"><div class="kicker">Fine-tuning effect</div><div class="v num">${pts(ft)}</div><p>Down the grid, averaged over both columns: (${pct(A.A4.secure_pass_rate)} − ${pct(A.A2.secure_pass_rate)} and ${pct(A.A5.secure_pass_rate)} − ${pct(A.A3.secure_pass_rate)}).</p></div>
-      <div class="eff"><div class="kicker">Repair-loop effect</div><div class="v num">${pts(rp)}</div><p>Across the grid, averaged over both rows.</p></div>
-      <div class="eff"><div class="kicker">Do they combine?</div><p style="margin-top:8px;font-size:14.5px;color:var(--ink)">${ixText}</p></div>
-      ${A.A1 ? `<div class="eff ref"><div class="kicker">${mark('A1', 14)} Reference · ${esc(short('A1'))}</div><div class="v num">${pct(A.A1.secure_pass_rate)}</div><p>A bigger model, one shot, for scale. ${A.A5.secure_pass_rate > A.A1.secure_pass_rate ? 'Tuned + repair beats it.' : 'Tuned + repair has not caught up yet.'}</p></div>` : ''}`;
+    $('g22').innerHTML = `<div></div><div class="h c">One try</div><div class="h c">+ Retries with feedback</div><div class="h">Small model</div>${cell('A2')}${cell('A3')}<div class="h">Trained on safe examples</div>${cell('A4')}${cell('A5')}`;
+    if (!['A2', 'A3', 'A4', 'A5'].every(id => A[id])) return;
+    const s = id => A[id].secure_pass_rate;
+    const train = Math.round(((s('A4') - s('A2')) + (s('A5') - s('A3'))) / 2 * 100);
+    const retry = Math.round(((s('A3') - s('A2')) + (s('A5') - s('A4'))) / 2 * 100);
+    $('g-t').innerHTML = `Training adds <em>${signed(train)}</em>, retries add <em>${signed(retry)}</em> safe apps per 100.`;
+    const ix = Math.round(((s('A5') - s('A4')) - (s('A3') - s('A2'))) * 100);
+    $('g-note').textContent = Math.abs(ix) < 2 ? 'The two gains add up: doing both gets you both.' : ix > 0 ? `They boost each other: retries help ${ix} more on the trained model.` : `They overlap: retries help ${-ix} less on the trained model.`;
   })();
 
-  // 2. Outcome bars: broken / works but exploited / secure, per 100 apps.
+  // Where every app ends up
   (function () {
     const order = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id]);
-    const W = 1100, rowH = 54, top = 30, left = 230, right = 30, H = top + order.length * rowH + 30;
+    const W = 760, rowH = 40, left = 190, right = 10, top = 4, H = top + order.length * rowH + 18;
     const X = v => left + v * (W - left - right);
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Outcome of 100 apps per setup: broken, works but exploited, secure">`;
-    [0, 0.25, 0.5, 0.75, 1].forEach(v => {
-      s += `<line x1="${X(v)}" x2="${X(v)}" y1="${top - 8}" y2="${H - 26}" stroke="#E2DDD8" stroke-dasharray="${v === 0 || v === 1 ? '0' : '3 4'}"></line>`;
-      s += `<text x="${X(v)}" y="${H - 8}" text-anchor="middle" font-family="Geist Mono, monospace" font-size="12" fill="#706666">${v * 100}</text>`;
-    });
-    s += `<text x="${X(0)}" y="${top - 14}" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666" letter-spacing="0.06em">← SECURE</text>`;
-    s += `<text x="${X(1)}" y="${top - 14}" text-anchor="end" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666" letter-spacing="0.06em">BROKEN →</text>`;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Safe, hacked and broken apps out of 100 for each setup">`;
     order.forEach((id, i) => {
-      const a = A[id], y = top + i * rowH + 8, h = rowH - 18;
-      const sec = a.secure_pass_rate, ex = a.functional_pass_rate - a.secure_pass_rate, br = 1 - a.functional_pass_rate;
-      if (id === 'A1') s += `<line x1="16" x2="${W - right}" y1="${y - 9}" y2="${y - 9}" stroke="#E2DDD8"></line>`;
-      s += `<g transform="translate(16 ${y + h / 2 - 11})">${mark(id, 22).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
-      s += `<text x="48" y="${y + h / 2 - 2}" font-family="Geist, sans-serif" font-size="15" font-weight="600" fill="#280016">${esc(short(id))}</text>`;
-      s += `<text x="48" y="${y + h / 2 + 15}" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666">${id}${id === BASE ? ' · BASELINE' : id === REF ? ' · REFERENCE' : ''}</text>`;
-      const seg = (x0, w, fill, txt, txtFill) => {
-        if (w <= 0) return '';
-        let t = `<rect x="${X(x0)}" y="${y}" width="${Math.max(0, X(x0 + w) - X(x0) - 2)}" height="${h}" rx="5" fill="${fill}"></rect>`;
-        if (w >= 0.07) t += `<text x="${X(x0) + 10}" y="${y + h / 2 + 5}" font-family="Geist Mono, monospace" font-size="13" font-weight="500" fill="${txtFill}">${txt}</text>`;
-        return t;
-      };
-      s += seg(0, sec, id === best.arm ? '#610A45' : '#8A3A6E', P(sec), '#F9F7F5');
-      s += seg(sec, ex, '#F98461', P(ex), '#280016');
-      s += seg(sec + ex, br, '#E2DDD8', P(br), '#5E5257');
+      const a = A[id], y = top + i * rowH, h = 28;
+      const parts = [[a.secure_pass_rate, '#610A45', '#F9F7F5'], [a.functional_pass_rate - a.secure_pass_rate, '#F98461', '#280016'], [1 - a.functional_pass_rate, '#E2DDD8', '#5E5257']];
+      s += svgMark(id, 0, y + 4, 20) + T(28, y + 19, esc(nm(id)), { w: 600, s: 13 });
+      let x0 = 0;
+      parts.forEach(([v, fill, tc]) => {
+        if (v <= 0) return;
+        s += `<rect x="${X(x0)}" y="${y}" width="${Math.max(0, X(x0 + v) - X(x0) - 2)}" height="${h}" rx="4" fill="${fill}"></rect>`;
+        if (v >= 0.06) s += T(X(x0) + 8, y + 19, P(v), { mono: 1, c: tc, w: 500 });
+        x0 += v;
+      });
     });
-    s += '</svg>';
-    $('stack').innerHTML = s;
+    [0, 50, 100].forEach(v => { s += T(X(v / 100), H - 2, v, { a: 'middle', mono: 1, s: 11, c: '#706666' }); });
+    $('outcomes').innerHTML = s + '</svg>';
     if (base && best && best.arm !== BASE) {
-      const db = (1 - best.functional_pass_rate) - (1 - base.functional_pass_rate);
-      const de = (best.functional_pass_rate - best.secure_pass_rate) - (base.functional_pass_rate - base.secure_pass_rate);
-      const bigger = Math.abs(db) >= Math.abs(de) ? 'fewer broken apps' : 'fewer exploited apps';
-      $('out-t').innerHTML = `Going from baseline to ${esc(short(best.arm).toLowerCase())}, most of the gain comes from <em>${bigger}</em>.`;
-      $('stack-foot').textContent = `Baseline → ${short(best.arm)}: broken ${P(1 - base.functional_pass_rate)} → ${P(1 - best.functional_pass_rate)}, works-but-exploited ${P(base.functional_pass_rate - base.secure_pass_rate)} → ${P(best.functional_pass_rate - best.secure_pass_rate)}, secure ${P(base.secure_pass_rate)} → ${P(best.secure_pass_rate)} (per 100 apps; n = ${best.n} runs per setup).`;
-    } else { $('out-t').textContent = 'Where every app ends up'; }
+      const db = P(1 - base.functional_pass_rate) - P(1 - best.functional_pass_rate);
+      const dh = P(base.functional_pass_rate - base.secure_pass_rate) - P(best.functional_pass_rate - best.secure_pass_rate);
+      $('o-t').innerHTML = `Versus the small model, our best has <em>${db} fewer broken</em> and <em>${dh} fewer hacked</em> apps per 100.`;
+    }
   })();
 
-  // 3. Forest plot: difference from baseline with 95% CI.
+  // Gain over the small model, with a likely range
   (function () {
-    if (!base) { $('forest').innerHTML = '<div class="empty">Needs the baseline arm (A2).</div>'; $('lift-t').textContent = 'Lift over the baseline'; return; }
+    if (!base) { $('lift').innerHTML = '<div class="empty">Needs the small model results.</div>'; return; }
     const rows = ['A3', 'A4', 'A5', 'A1'].filter(id => A[id]).map(id => {
-      const a = A[id], d = a.secure_pass_rate - base.secure_pass_rate;
-      const [lo, hi] = newcombe(a.secure_pass_rate, a.n, base.secure_pass_rate, base.n);
-      return { id, d, lo, hi, sig: lo > 0 || hi < 0 };
+      const a = A[id], [lo, hi] = diffRange(a.secure_pass_rate, a.n, base.secure_pass_rate, base.n);
+      return { id, d: a.secure_pass_rate - base.secure_pass_rate, lo, hi, real: lo > 0 || hi < 0 };
     });
-    const W = 1100, rowH = 58, top = 34, left = 250, right = 230, H = top + rows.length * rowH + 40;
+    const W = 520, rowH = 44, left = 170, right = 70, top = 22, H = top + rows.length * rowH + 20;
     const lo = Math.min(-0.2, ...rows.map(r => r.lo)) - 0.02, hi = Math.max(0.4, ...rows.map(r => r.hi)) + 0.02;
     const X = v => left + (v - lo) / (hi - lo) * (W - left - right);
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Secure-pass difference from baseline with 95% confidence intervals">`;
-    for (let t = Math.ceil(lo * 10) / 10; t <= hi + 1e-9; t += 0.1) {
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Extra safe apps per 100 compared with the small model, with likely range">`;
+    for (let t = Math.ceil(lo * 5) / 5; t <= hi + 1e-9; t += 0.2) {
       const v = Math.round(t * 10) / 10;
-      s += `<line x1="${X(v)}" x2="${X(v)}" y1="${top - 6}" y2="${H - 30}" stroke="${v === 0 ? '#280016' : '#EEE9E4'}" stroke-width="${v === 0 ? 1.5 : 1}"></line>`;
-      s += `<text x="${X(v)}" y="${H - 10}" text-anchor="middle" font-family="Geist Mono, monospace" font-size="12" fill="#706666">${v > 0 ? '+' : ''}${Math.round(v * 100)}</text>`;
+      s += `<line x1="${X(v)}" x2="${X(v)}" y1="${top - 4}" y2="${H - 16}" stroke="${v === 0 ? '#280016' : '#EEE9E4'}" stroke-width="${v === 0 ? 1.5 : 1}"></line>`;
+      s += T(X(v), H - 2, (v > 0 ? '+' : '') + Math.round(v * 100), { a: 'middle', mono: 1, s: 11, c: '#706666' });
     }
-    s += `<text x="${X(0) - 8}" y="${top - 14}" text-anchor="end" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666" letter-spacing="0.06em">WORSE THAN BASELINE</text>`;
-    s += `<text x="${X(0) + 8}" y="${top - 14}" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666" letter-spacing="0.06em">BETTER THAN BASELINE →</text>`;
+    s += T(X(0) + 6, 12, 'better →', { s: 11, c: '#706666' }) + T(X(0) - 6, 12, '← worse', { a: 'end', s: 11, c: '#706666' });
     rows.forEach((r, i) => {
       const y = top + i * rowH + rowH / 2, c = COLOR[r.id];
-      if (r.id === 'A1') s += `<line x1="16" x2="${W - 16}" y1="${y - rowH / 2 + 2}" y2="${y - rowH / 2 + 2}" stroke="#E2DDD8"></line>`;
-      s += `<g transform="translate(16 ${y - 11})">${mark(r.id, 22).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
-      s += `<text x="48" y="${y - 2}" font-family="Geist, sans-serif" font-size="15" font-weight="600" fill="#280016">${esc(short(r.id))}</text>`;
-      s += `<text x="48" y="${y + 15}" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666">${r.id} vs ${BASE}</text>`;
-      s += `<line x1="${X(r.lo)}" x2="${X(r.hi)}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="3" stroke-linecap="round" opacity="0.45"></line>`;
-      s += `<line x1="${X(r.lo)}" x2="${X(r.lo)}" y1="${y - 7}" y2="${y + 7}" stroke="${c}" stroke-width="2" opacity="0.6"></line><line x1="${X(r.hi)}" x2="${X(r.hi)}" y1="${y - 7}" y2="${y + 7}" stroke="${c}" stroke-width="2" opacity="0.6"></line>`;
-      s += `<circle cx="${X(r.d)}" cy="${y}" r="8" fill="${c}" stroke="#FFFFFF" stroke-width="2"></circle>`;
-      s += `<text x="${W - right + 24}" y="${y - 2}" font-family="Geist, sans-serif" font-size="16" font-weight="600" fill="#280016">${pts(r.d)}</text>`;
-      s += `<text x="${W - right + 24}" y="${y + 15}" font-family="Geist Mono, monospace" font-size="11.5" fill="${r.sig ? '#610A45' : '#706666'}">[${Math.round(r.lo * 100)}, ${Math.round(r.hi * 100)}] ${r.sig ? '· clear gain' : '· could be noise'}</text>`;
+      s += svgMark(r.id, 0, y - 10, 20) + T(28, y + 4, esc(nm(r.id)), { w: 600, s: 12.5 });
+      s += `<line x1="${X(r.lo)}" x2="${X(r.hi)}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="3" stroke-linecap="round" opacity="0.4"></line>`;
+      s += `<circle cx="${X(r.d)}" cy="${y}" r="7" fill="${c}" stroke="#FFFFFF" stroke-width="2"></circle>`;
+      s += T(W - right + 10, y - 1, signed(P(r.d)), { w: 600, s: 13.5 }) + T(W - right + 10, y + 13, r.real ? 'real gain' : 'could be luck', { s: 10.5, c: r.real ? '#610A45' : '#706666' });
     });
-    s += '</svg>';
-    $('forest').innerHTML = s;
-    const bestRow = rows.filter(r => r.id !== 'A1').sort((a, b) => b.d - a.d)[0];
-    $('lift-t').innerHTML = bestRow
-      ? (bestRow.sig ? `${esc(short(bestRow.id))} beats the baseline by <em>${pts(bestRow.d)}</em>, and the gain is clear of noise.` : `${esc(short(bestRow.id))} is ${pts(bestRow.d)} over baseline, but with this many runs that <em>could still be noise</em>.`)
-      : 'Lift over the baseline';
-    $('forest-foot').textContent = `Baseline (${short(BASE)}): ${pct(base.secure_pass_rate)} secure, n = ${base.n}. Points are the difference in percentage points; bars are 95% Newcombe intervals. With ${base.n} runs per setup, gains under about 20 points are hard to tell apart from chance.`;
+    $('lift').innerHTML = s + '</svg>';
+    const top1 = rows.filter(r => r.id !== BIG).sort((a, b) => b.d - a.d)[0];
+    if (top1) $('l-t').innerHTML = top1.real ? `${esc(nm(top1.id))}: <em>${signed(P(top1.d))}</em>, and it's not luck.` : `${esc(nm(top1.id))}: ${signed(P(top1.d))}, but it could still be luck.`;
   })();
 
-  // 4. Cost per secure app vs secure-pass rate.
+  // Simple bars
+  function hbars(rows, fmt, label) {
+    const W = 420, rowH = 36, left = 150, right = 70, H = rows.length * rowH;
+    const max = Math.max(...rows.map(r => r.v)) || 1;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">`;
+    rows.forEach((r, i) => {
+      const y = i * rowH + 4, w = Math.max(2, (W - left - right) * r.v / max);
+      s += svgMark(r.id, 0, y + 2, 18) + T(24, y + 15, esc(nm(r.id)), { s: 12, w: 600 });
+      s += `<rect x="${left}" y="${y}" width="${w}" height="22" rx="4" fill="${r.hi ? '#610A45' : '#D9CFD3'}"></rect>` + T(left + w + 8, y + 15, fmt(r.v), { mono: 1, s: 12, w: 500 });
+    });
+    return s + '</svg>';
+  }
   (function () {
-    const pts_ = ARMS.filter(a => a.cost_per_secure_app_usd != null);
-    if (!pts_.length) { $('scatter').innerHTML = '<div class="empty">No setup has a secure app yet.</div>'; $('cost-t').textContent = 'What a secure app costs'; return; }
-    const W = 560, H = 420, L = 64, Rr = 540, T = 30, B = 360;
-    const xmax = Math.max(...pts_.map(a => a.cost_per_secure_app_usd)) * 1.15;
-    const ymax = Math.min(1, Math.ceil((Math.max(...pts_.map(a => a.secure_pass_rate)) + 0.1) * 10) / 10);
-    const X = v => L + v / xmax * (Rr - L), Y = v => B - v / ymax * (B - T);
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cost per secure app against secure-pass rate">`;
-    s += `<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#706666"></path></marker></defs>`;
-    s += `<rect x="${L}" y="${T}" width="${(Rr - L) / 2}" height="${(B - T) / 2}" rx="8" fill="#F98461" opacity="0.1"></rect>`;
-    s += `<text x="${L + 12}" y="${T + 22}" font-family="Geist Mono, monospace" font-size="11" fill="#A63A1F" letter-spacing="0.06em">CHEAPER AND SAFER</text>`;
-    for (let i = 0; i <= 4; i++) {
-      const yv = ymax * i / 4, xv = xmax * i / 4;
-      s += `<line x1="${L}" x2="${Rr}" y1="${Y(yv)}" y2="${Y(yv)}" stroke="#EEE9E4"></line>`;
-      s += `<text x="${L - 10}" y="${Y(yv) + 4}" text-anchor="end" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666">${Math.round(yv * 100)}%</text>`;
-      s += `<text x="${X(xv)}" y="${B + 22}" text-anchor="middle" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666">$${xv.toFixed(3)}</text>`;
-    }
-    s += `<line x1="${L}" x2="${Rr}" y1="${B}" y2="${B}" stroke="#280016"></line><line x1="${L}" x2="${L}" y1="${T}" y2="${B}" stroke="#280016"></line>`;
-    s += `<text x="${(L + Rr) / 2}" y="${H - 12}" text-anchor="middle" font-family="Geist, sans-serif" font-size="13" fill="#5E5257">Cost per secure app →</text>`;
-    s += `<text transform="translate(16 ${(T + B) / 2}) rotate(-90)" text-anchor="middle" font-family="Geist, sans-serif" font-size="13" fill="#5E5257">Secure-pass rate →</text>`;
-    const at = id => A[id] && A[id].cost_per_secure_app_usd != null ? [X(A[id].cost_per_secure_app_usd), Y(A[id].secure_pass_rate)] : null;
-    [['A2', 'A3', 'repair'], ['A2', 'A4', 'fine-tune'], ['A4', 'A5', 'repair']].forEach(([f, t, lab]) => {
-      const a = at(f), b = at(t); if (!a || !b) return;
-      const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
-      const x1 = a[0] + ux * 15, y1 = a[1] + uy * 15, x2 = b[0] - ux * 19, y2 = b[1] - uy * 19;
-      s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#706666" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#ah)"></line>`;
-      s += `<text x="${(x1 + x2) / 2 + (ux > 0 ? 8 : -8)}" y="${(y1 + y2) / 2 + 14}" text-anchor="${ux > 0 ? 'start' : 'end'}" font-family="Geist Mono, monospace" font-size="11" fill="#706666">+ ${lab}</text>`;
-    });
-    pts_.forEach(a => {
-      const x = X(a.cost_per_secure_app_usd), y = Y(a.secure_pass_rate), right = x < (L + Rr) / 2 + 60;
-      s += `<g transform="translate(${x - 13} ${y - 13})">${mark(a.arm, 26).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
-      s += `<text x="${right ? x + 18 : x - 18}" y="${y - 3}" text-anchor="${right ? 'start' : 'end'}" font-family="Geist, sans-serif" font-size="13" font-weight="600" fill="#280016">${esc(short(a.arm))}</text>`;
-      s += `<text x="${right ? x + 18 : x - 18}" y="${y + 13}" text-anchor="${right ? 'start' : 'end'}" font-family="Geist Mono, monospace" font-size="11" fill="#706666">${pct(a.secure_pass_rate)} · ${money(a.cost_per_secure_app_usd)}</text>`;
-    });
-    s += '</svg>';
-    $('scatter').innerHTML = s;
-    const cheapest = pts_.slice().sort((a, b) => a.cost_per_secure_app_usd - b.cost_per_secure_app_usd)[0];
-    $('cost-t').innerHTML = `The cheapest secure app comes from <em>${esc(short(cheapest.arm).toLowerCase())}</em> at ${money(cheapest.cost_per_secure_app_usd)}.`;
-    $('cost-foot').textContent = `Repair rounds cost extra calls, so repair setups spend more per task (${pts_.map(a => `${a.arm} ${money(a.cost_per_100_tasks_usd)}`).join(', ')} per 100 tasks) but can still win per secure app. Median model time per task: ${pts_.map(a => `${a.arm} ${a.median_latency_s.toFixed(1)} s`).join(', ')}.`;
+    const rows = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id] && A[id].cost_per_secure_app_usd).map(id => ({ id, v: 1 / A[id].cost_per_secure_app_usd }));
+    if (!rows.length) { $('dollar').innerHTML = '<div class="empty">No safe apps yet.</div>'; return; }
+    const top = rows.slice().sort((a, b) => b.v - a.v)[0]; rows.forEach(r => { r.hi = r.id === top.id; });
+    $('dollar').innerHTML = hbars(rows, v => Math.round(v), 'Safe apps per dollar');
+    $('c-t').innerHTML = `<em>${Math.round(top.v)}</em> safe apps per dollar from ${esc(nm(top.id).toLowerCase())}.`;
+  })();
+  (function () {
+    const rows = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id]).map(id => ({ id, v: A[id].median_latency_s }));
+    if (!rows.length) return;
+    const fast = rows.slice().sort((a, b) => a.v - b.v)[0]; rows.forEach(r => { r.hi = r.id === fast.id; });
+    $('wait').innerHTML = hbars(rows, v => v.toFixed(0) + ' s', 'Typical seconds per app');
+    $('w-t').innerHTML = best ? `Our best takes <em>${A[best.arm].median_latency_s.toFixed(0)} s</em> per app; retries add wait.` : '';
   })();
 
-  // 5. Attacks that still work.
-  const CWE = {
-    20: ['Bad input accepted', '<path d="M3 4h18l-7 8v6l-4 2v-8z"></path>'],
-    22: ['Path traversal', '<path d="M3 6h6l2 2h10v11H3z"></path><path d="M12 17v-5"></path><path d="M9.5 14l2.5-2.5 2.5 2.5"></path>'],
-    78: ['OS command injection', '<rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M7 9l3 3-3 3"></path><path d="M12 15h5"></path>'],
-    79: ['Cross-site scripting', '<path d="M8 7l-5 5 5 5"></path><path d="M16 7l5 5-5 5"></path><path d="M13.5 4l-3 16"></path>'],
-    89: ['SQL injection', '<ellipse cx="11" cy="6" rx="7" ry="2.5"></ellipse><path d="M4 6v11c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6"></path><path d="M4 11.5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"></path><path d="M22 2l-4.5 4.5"></path><path d="M17.5 3v3.5H21"></path>'],
-    284: ['Missing access control', '<circle cx="8" cy="12" r="4"></circle><path d="M12 12h9"></path><path d="M17 12v3"></path><path d="M20 12v4"></path>'],
-    400: ['Resource exhaustion', '<path d="M3.5 17a8.5 8.5 0 1 1 17 0"></path><path d="M12 17l5-6"></path><path d="M3.5 17h17"></path>'],
-    703: ['Crash on bad input', '<circle cx="12" cy="12" r="9"></circle><path d="M13 6.5l-3.5 6h5l-3.5 6"></path>'],
+  // Attacks that still get in
+  const ATTACK = {
+    20: ['Accepts bad input', '<path d="M3 4h18l-7 8v6l-4 2v-8z"></path>'],
+    22: ['Reads files it shouldn’t', '<path d="M3 6h6l2 2h10v11H3z"></path><path d="M12 17v-5"></path><path d="M9.5 14l2.5-2.5 2.5 2.5"></path>'],
+    78: ['Runs attacker commands', '<rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M7 9l3 3-3 3"></path><path d="M12 15h5"></path>'],
+    79: ['Injects code into pages', '<path d="M8 7l-5 5 5 5"></path><path d="M16 7l5 5-5 5"></path><path d="M13.5 4l-3 16"></path>'],
+    89: ['Tricks the database', '<ellipse cx="11" cy="6" rx="7" ry="2.5"></ellipse><path d="M4 6v11c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6"></path><path d="M4 11.5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"></path>'],
+    284: ['Skips permission checks', '<circle cx="8" cy="12" r="4"></circle><path d="M12 12h9"></path><path d="M17 12v3"></path><path d="M20 12v4"></path>'],
+    400: ['Can be overloaded', '<path d="M3.5 17a8.5 8.5 0 1 1 17 0"></path><path d="M12 17l5-6"></path><path d="M3.5 17h17"></path>'],
+    703: ['Crashes on odd input', '<circle cx="12" cy="12" r="9"></circle><path d="M13 6.5l-3.5 6h5l-3.5 6"></path>'],
   };
-  const cweName = n => (CWE[n] || ['CWE-' + n])[0];
-  const cweIcon = n => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${(CWE[n] || [0, '<circle cx="12" cy="12" r="9"></circle><path d="M12 7v6"></path><path d="M12 16.5v.5"></path>'])[1]}</svg>`;
+  const atk = n => (ATTACK[n] || ['Other attack', '<circle cx="12" cy="12" r="9"></circle>']);
+  const atkIcon = n => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${atk(n)[1]}</svg>`;
   (function () {
     const order = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id]);
     const tot = {};
     ARMS.forEach(a => Object.entries(a.cwe_counts || {}).forEach(([c, n]) => { tot[c] = (tot[c] || 0) + n; }));
-    const rows = Object.keys(tot).filter(c => tot[c] > 0).sort((a, b) => tot[b] - tot[a] || a - b);
+    const rows = Object.keys(tot).filter(c => tot[c] > 0).sort((a, b) => tot[b] - tot[a]).slice(0, 6);
     const max = Math.max(1, ...ARMS.flatMap(a => Object.values(a.cwe_counts || {})));
-    $('mx-head').innerHTML = `<tr><th>Weakness</th>${order.map(id => `<th title="${esc(short(id))}">${mark(id, 14)}<br>${id}</th>`).join('')}</tr>`;
-    if (!rows.length) { $('mx-rows').innerHTML = `<tr><td class="empty" colspan="${order.length + 1}">No attack got in on any final app.</td></tr>`; $('att-t').textContent = 'No attack got through'; return; }
-    $('mx-rows').innerHTML = rows.map(c => `<tr><td class="w"><div class="cwe"><span class="cwe-ico">${cweIcon(+c)}</span><div><div class="cwe-name">${esc(cweName(+c))}</div><div class="cwe-id">CWE-${esc(c)}</div></div></div></td>${order.map(id => {
-      const v = (A[id].cwe_counts || {})[c] || 0, t = v / max;
-      const bg = v === 0 ? '#F9F7F5' : `rgba(249, 132, 97, ${0.15 + 0.85 * t})`;
-      return `<td class="v" style="background:${bg};color:${v === 0 ? '#C9C2C2' : '#280016'}">${v === 0 ? '·' : v}</td>`;
+    $('hm-h').innerHTML = `<tr><th></th>${order.map(id => `<th title="${esc(nm(id))}">${mark(id, 14)}</th>`).join('')}</tr>`;
+    if (!rows.length) { $('hm-b').innerHTML = '<tr><td class="empty">No attack got in.</td></tr>'; $('a-t').textContent = 'No attack got in.'; return; }
+    $('hm-b').innerHTML = rows.map(c => `<tr><td class="w">${atkIcon(+c)}${esc(atk(+c)[0])}</td>${order.map(id => {
+      const v = (A[id].cwe_counts || {})[c] || 0;
+      return `<td class="v" style="background:${v ? `rgba(249,132,97,${0.15 + 0.85 * v / max})` : '#F9F7F5'};color:${v ? '#280016' : '#C9C2C2'}">${v || '·'}</td>`;
     }).join('')}</tr>`).join('');
-    const top2 = rows.slice(0, 2).map(c => cweName(+c).toLowerCase());
-    $('att-t').innerHTML = `The attacks that still get in most are <em>${esc(top2.join(' and '))}</em>.`;
-    $('att-foot').textContent = `Counts are runs (out of ${ARMS[0].n} per setup) whose final app was exploited by that weakness; one run can count under several.`;
+    $('a-t').innerHTML = `Most common: <em>${esc(atk(+rows[0])[0].toLowerCase())}</em>.`;
   })();
 
-  // 0. Waffles: 100 apps per setup, counted out as squares.
-  (function () {
-    const show = [BASE, REF, best && best.arm].filter((id, i, a) => id && A[id] && a.indexOf(id) === i);
-    $('waffles').innerHTML = show.map(id => {
-      const a = A[id], s = P(a.secure_pass_rate), w = P(a.functional_pass_rate) - s, b = 100 - s - w;
-      const sq = Array.from({ length: 100 }, (_, i) => `<i style="background:${i < s ? '#610A45' : i < s + w ? '#F98461' : '#E2DDD8'}"></i>`).join('');
-      const role = id === BASE ? 'Baseline' : id === REF ? 'Reference, bigger model' : 'Our best setup';
-      return `<div class="waffle ${id === best.arm ? 'best' : ''}"><h3>${esc(short(id))}</h3><div class="sub">${esc(role.toUpperCase())} · ${id}</div>
-        <div class="grid" role="img" aria-label="${s} safe, ${w} hackable, ${b} broken out of 100">${sq}</div>
-        <div class="tally"><span><b class="num">${s}</b>safe</span><span><b class="num">${w}</b>hackable</span><span><b class="num">${b}</b>broken</span></div></div>`;
-    }).join('');
-    if (base && best && best.arm !== BASE) {
-      const m = best.secure_pass_rate / Math.max(0.001, base.secure_pass_rate);
-      $('waffle-t').innerHTML = `Out of 100 apps, the baseline gives <em>${P(base.secure_pass_rate)}</em> you could ship. Our best setup gives <em>${P(best.secure_pass_rate)}</em>${m >= 1.5 ? `, about ${m.toFixed(1)} times as many` : ''}.`;
-    } else { $('waffle-t').textContent = 'Out of 100 apps, how many could you ship?'; }
-  })();
-
-  // Simple labeled horizontal bars, shared by the value and wait charts.
-  function hbars(rows, fmt, opts) {
-    const W = 560, rowH = 50, left = 190, right = 90, top = 6, H = top + rows.length * rowH;
-    const max = Math.max(...rows.map(r => r.v)) || 1;
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label)}">`;
-    rows.forEach((r, i) => {
-      const y = top + i * rowH, h = 26, w = (W - left - right) * r.v / max;
-      s += `<g transform="translate(6 ${y + 2})">${mark(r.id, 22).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
-      s += `<text x="38" y="${y + 18}" font-family="Geist, sans-serif" font-size="14" font-weight="600" fill="#280016">${esc(short(r.id))}</text>`;
-      s += `<rect x="${left}" y="${y}" width="${Math.max(2, w)}" height="${h}" rx="5" fill="${r.hi ? '#610A45' : '#D9CFD3'}"></rect>`;
-      s += `<text x="${left + Math.max(2, w) + 10}" y="${y + 18}" font-family="Geist Mono, monospace" font-size="13.5" font-weight="500" fill="#280016">${fmt(r.v)}</text>`;
-    });
-    return s + '</svg>';
-  }
-
-  // 7. What $1 buys.
-  (function () {
-    const rows = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id] && A[id].cost_per_secure_app_usd).map(id => ({ id, v: 1 / A[id].cost_per_secure_app_usd }));
-    if (!rows.length) { $('dollar-chart').innerHTML = '<div class="empty">No secure apps yet.</div>'; $('dollar-t').textContent = 'What $1 buys'; return; }
-    const top = rows.slice().sort((a, b) => b.v - a.v)[0];
-    rows.forEach(r => { r.hi = r.id === top.id; });
-    $('dollar-chart').innerHTML = hbars(rows, v => `${Math.round(v)} apps`, { label: 'Secure apps per dollar, by setup' });
-    $('dollar-t').innerHTML = `One dollar buys <em>${Math.round(top.v)} safe apps</em> from ${esc(short(top.id).toLowerCase())}.`;
-  })();
-
-  // 8. How long you wait.
-  (function () {
-    const rows = ['A2', 'A3', 'A4', 'A5', 'A1'].filter(id => A[id]).map(id => ({ id, v: A[id].median_latency_s }));
-    if (!rows.length) return;
-    const fast = rows.slice().sort((a, b) => a.v - b.v)[0];
-    rows.forEach(r => { r.hi = r.id === fast.id; });
-    $('wait-chart').innerHTML = hbars(rows, v => `${v.toFixed(1)} s`, { label: 'Median model seconds per app, by setup' });
-    const b = best ? A[best.arm] : null;
-    $('wait-t').innerHTML = b && b.arm !== fast.id
-      ? `The safest setup takes <em>${b.median_latency_s.toFixed(0)} seconds</em> per app; the fastest takes ${fast.v.toFixed(0)}.`
-      : `The fastest setup answers in <em>${fast.v.toFixed(0)} seconds</em>.`;
-  })();
-
-  // 9. When the repair loop fixes things: which round each repair run ended secure on.
-  (function () {
-    const repairIds = ['A3', 'A5'].filter(id => (A[id] && A[id].loop === 'repair') || (D.runs || []).some(r => r.arm === id));
-    const cats = ['Round 0', 'Round 1', 'Round 2', 'Round 3', 'Never'];
-    const colors = ['#610A45', '#8A3A6E', '#B4236A', '#D9799F', '#E2DDD8'];
-    const data = repairIds.map(id => {
-      const runs = (D.runs || []).filter(r => r.arm === id);
-      const c = [0, 0, 0, 0, 0];
-      runs.forEach(r => { if (r.secure_pass) c[Math.min(3, (r.steps || []).length - 1)]++; else c[4]++; });
-      return { id, n: runs.length, c };
-    }).filter(d => d.n > 0);
-    if (!data.length) {
-      $('rounds-chart').innerHTML = '<div class="empty">Appears once repair-loop run records are loaded.</div>';
-      $('rounds-t').textContent = 'When the repair loop fixes things';
-      return;
-    }
-    const W = 1100, rowH = 64, left = 230, right = 30, top = 10, H = top + data.length * rowH + 40;
-    const X = v => left + v * (W - left - right);
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Round on which repair-loop runs became secure">`;
-    data.forEach((d, i) => {
-      const y = top + i * rowH, h = 34;
-      s += `<g transform="translate(16 ${y + 6})">${mark(d.id, 22).replace('<svg ', '<svg x="0" y="0" ')}</g>`;
-      s += `<text x="48" y="${y + 16}" font-family="Geist, sans-serif" font-size="15" font-weight="600" fill="#280016">${esc(short(d.id))}</text>`;
-      s += `<text x="48" y="${y + 33}" font-family="Geist Mono, monospace" font-size="11.5" fill="#706666">${d.n} run${d.n === 1 ? '' : 's'}</text>`;
-      let x0 = 0;
-      d.c.forEach((v, k) => {
-        if (!v) return;
-        const f = v / d.n;
-        s += `<rect x="${X(x0)}" y="${y}" width="${Math.max(0, X(x0 + f) - X(x0) - 2)}" height="${h}" rx="5" fill="${colors[k]}"></rect>`;
-        if (f >= 0.08) s += `<text x="${X(x0) + 10}" y="${y + 22}" font-family="Geist Mono, monospace" font-size="12.5" fill="${k < 3 ? '#F9F7F5' : '#280016'}">${cats[k]} · ${Math.round(f * 100)}%</text>`;
-        x0 += f;
-      });
-    });
-    s += `<g transform="translate(${left} ${H - 22})">${cats.map((c, k) => `<rect x="${k * 130}" y="0" width="12" height="12" rx="3" fill="${colors[k]}"></rect><text x="${k * 130 + 18}" y="10" font-family="Geist, sans-serif" font-size="12.5" fill="#5E5257">${k < 4 ? 'Secure on ' + c.toLowerCase() : 'Never secure'}</text>`).join('')}</g>`;
-    $('rounds-chart').innerHTML = s + '</svg>';
-    const all = data.reduce((acc, d) => acc.map((v, k) => v + d.c[k]), [0, 0, 0, 0, 0]);
-    const tot = data.reduce((t, d) => t + d.n, 0), later = all[1] + all[2] + all[3];
-    $('rounds-t').innerHTML = later
-      ? `<em>${Math.round(later / tot * 100)}%</em> of repair runs were only made safe after the model heard what failed.`
-      : 'So far, every safe repair run was safe on the first try.';
-    $('rounds-foot').textContent = `From ${tot} run record${tot === 1 ? '' : 's'}${R.FAKE ? ' (sample data has only one)' : ''}. "Never" means the app was still broken or hackable after the last allowed round.`;
-  })();
-
-  // 6. Run viewer
-  const RUNS = (D.runs || []).filter(r => ARM_IDS.includes(r.arm)).sort((a, b) =>
+  // Fix in action
+  const RUNS = (D.runs || []).filter(r => IDS.includes(r.arm)).sort((a, b) =>
     ((b.rounds > 1 && b.secure_pass) - (a.rounds > 1 && a.secure_pass)) || String(b.arm).localeCompare(String(a.arm)));
   const pick = $('run-pick');
-  pick.innerHTML = RUNS.map((r, i) => `<option value="${i}">${esc(`${r.arm} · ${r.scenario} · ${r.framework} · run ${r.run}${r.secure_pass ? ' · ends secure' : ''}`)}</option>`).join('');
+  pick.innerHTML = RUNS.map((r, i) => `<option value="${i}">${esc(`${nm(r.arm)} · ${r.scenario} · try ${r.run}`)}</option>`).join('');
   let cur = { run: 0, step: 0 };
-  const KW = /\b(from|import|def|return|if|else|elif|for|in|not|and|or|with|as|class|try|except|raise|None|True|False|async|await)\b/g;
+  const KW = /\b(from|import|def|return|if|else|elif|for|in|not|and|or|with|as|class|try|except|raise|None|True|False)\b/g;
   function hl(line) {
     const re = /(#.*$)|([rbfRBF]{0,2}"(?:[^"\\]|\\.)*"|[rbfRBF]{0,2}'(?:[^'\\]|\\.)*')/g, out = [];
     let last = 0, m;
@@ -657,59 +370,61 @@ footer h3 { margin: 0 0 6px; font-family: var(--mono); font-weight: 400; font-si
       out.push(`<span class="${m[1] ? 'tk-c' : 'tk-s'}">${esc(m[0])}</span>`);
       last = m.index + m[0].length;
     }
-    out.push(esc(line.slice(last)).replace(KW, '<span class="tk-k">$1</span>'));
-    return out.join('');
+    return out.join('') + esc(line.slice(last)).replace(KW, '<span class="tk-k">$1</span>');
   }
-  function repairPrompt(st) {
-    // Mirrors build_repair_prompt in src/secure_backend/repair_loop.py.
+  function feedback(st) {
+    // Same message the model gets in src/secure_backend/repair_loop.py.
     const l = ['Your last app did not pass. Fix it and reply with the full app in one fenced code block.'];
     if (st.failed_tests.length) l.push('Failing functional tests: ' + st.failed_tests.join(', ') + '.');
     if (st.exploits_triggered.length) { l.push('Exploits that succeeded:'); st.exploits_triggered.forEach(e => l.push(`- CWE-${e.cwe}: ${e.name}`)); }
-    if (!st.failed_tests.length && !st.exploits_triggered.length) l.push('The tests reported a failure with no details. Check that the app starts and follows the spec.');
     l.push('Keep everything that already works.');
     return l.join('\n');
   }
-  const status = st => st.secure_pass ? ['good', 'Secure'] : st.exploits_triggered.length ? ['bad', 'Exploited'] : ['warn', 'Tests failed'];
   function renderRun() {
     const r = RUNS[cur.run];
-    if (!r) { $('run-body').innerHTML = '<div class="empty">No run records yet.</div>'; $('run-stats').innerHTML = ''; return; }
-    $('run-stats').innerHTML = `<div class="stat kicker">Rounds<b>${esc(r.rounds)}</b></div><div class="stat kicker">Tokens<b>${fmtInt(r.tokens_in)} in · ${fmtInt(r.tokens_out)} out</b></div><div class="stat kicker">Cost<b>${money(r.cost_usd)}</b></div><div class="stat kicker">Model time<b>${r.latency_s.toFixed(1)} s</b></div>`;
+    if (!r) { $('fix').innerHTML = '<div class="empty">No app records yet.</div>'; return; }
     const steps = r.steps || [], st = steps[cur.step], prev = steps[cur.step - 1], next = steps[cur.step + 1];
-    const prevSet = new Set(prev ? prev.code.split('\n') : []), nextSet = new Set(next ? next.code.split('\n') : []);
+    const label = s => s.secure_pass ? ['#610A45', 'Safe'] : s.exploits_triggered.length ? ['#F98461', 'Hacked'] : ['#C9C2C2', "Doesn't work"];
+    $('steps').innerHTML = steps.map((s, i) => { const [c, t] = label(s); return `<button type="button" class="step" data-i="${i}" aria-pressed="${i === cur.step}"><i class="dot" style="background:${c}"></i>${i === 0 ? 'First try' : 'Retry ' + i}: ${t}</button>`; }).join('');
+    const nextSet = new Set(next ? next.code.split('\n') : []), prevSet = new Set(prev ? prev.code.split('\n') : []);
     const code = st.code.replace(/\n$/, '').split('\n').map((t, i) => {
-      let cls = '', g = '';
-      if (next && !st.secure_pass && t.trim() && !nextSet.has(t)) { cls = 'bad'; g = '!'; }
-      else if (prev && t.trim() && !prevSet.has(t)) { cls = 'new'; g = '+'; }
-      return `<div class="ln ${cls}"><span class="n">${i + 1}</span><span class="g">${g}</span><span class="t">${hl(t)}</span></div>`;
+      const cls = next && !st.secure_pass && t.trim() && !nextSet.has(t) ? 'bad' : prev && t.trim() && !prevSet.has(t) ? 'new' : '';
+      return `<div class="ln ${cls}"><span class="n">${i + 1}</span><span class="t">${hl(t)}</span></div>`;
     }).join('');
-    let rail = '';
-    steps.forEach((s, i) => {
-      const [k, t] = status(s);
-      if (i > 0) rail += '<div class="link"><span>feedback to model</span><i></i></div>';
-      rail += `<button type="button" class="step" data-step="${i}" aria-pressed="${i === cur.step}"><span class="kicker">Round ${s.round}</span><span class="chip ${k}">${t}</span></button>`;
-    });
-    let card;
-    if (st.secure_pass) {
-      const fixed = prev ? prev.exploits_triggered.map(e => `<div class="ex"><span class="cwe-ico">${cweIcon(e.cwe)}</span><div><div class="ex-title">${esc(cweName(e.cwe))} · CWE-${esc(e.cwe)}</div><div class="ex-name">${esc(e.name)} now fails</div></div></div>`).join('') : '';
-      card = `<div class="vcard good"><div class="kicker" style="color:var(--plum)">Every attack failed</div>${fixed || '<div class="note">No exploit got in against this app.</div>'}</div>`;
-    } else if (st.exploits_triggered.length) {
-      card = `<div class="vcard bad"><div class="kicker" style="color:var(--coral-ink)">Attacks that got in</div>${st.exploits_triggered.map(e => `<div class="ex"><span class="cwe-ico">${cweIcon(e.cwe)}</span><div><div class="ex-title">${esc(cweName(e.cwe))} · CWE-${esc(e.cwe)}</div><div class="ex-name">${esc(e.name)}</div></div></div>`).join('')}</div>`;
-    } else {
-      card = `<div class="vcard"><div class="kicker">Failing tests</div><div class="note">${st.failed_tests.map(esc).join('<br>') || 'No details reported.'}</div></div>`;
-    }
-    const prompt = next ? `<div><div class="kicker">What the model was told before round ${next.round}</div><pre class="prompt">${esc(repairPrompt(st))}</pre><div class="note" style="margin-top:8px">Only test names and CWE numbers. The model never sees exploit or test code.</div></div>` : '';
-    $('run-body').innerHTML = `<div class="rail" role="group" aria-label="Rounds">${rail}</div>
-      <div class="run-grid">
-        <div class="code" aria-label="Code at round ${st.round}"><div class="code-head"><span>app.py · round ${st.round}</span><span>${fmtInt(st.tokens_in)} in · ${fmtInt(st.tokens_out)} out · ${st.latency_s.toFixed(1)} s</span></div>${code}</div>
-        <div class="verdict">
-          <div class="pair"><div><span class="kicker">Functional tests</span><b>${st.functional_pass ? 'All pass' : st.failed_tests.length + ' fail'}</b></div><div><span class="kicker">Attacks that got in</span><b style="color:${st.exploits_triggered.length ? 'var(--coral-ink)' : 'var(--plum)'}">${st.exploits_triggered.length}</b></div></div>
-          ${card}${prompt}
-        </div>
-      </div>`;
-    $('run-body').querySelectorAll('.step').forEach(b => b.addEventListener('click', () => { cur.step = +b.dataset.step; renderRun(); }));
+    let v;
+    if (st.secure_pass) v = `<div class="vbox good"><b>Safe: every attack failed.</b>${prev && prev.exploits_triggered.length ? `The ${esc(prev.exploits_triggered.map(e => atk(e.cwe)[0].toLowerCase()).join(', '))} attack no longer works. Pink lines are the fix.` : 'No attack got in.'}</div>`;
+    else if (st.exploits_triggered.length) v = `<div class="vbox bad"><b>Hacked: ${esc(st.exploits_triggered.map(e => atk(e.cwe)[0].toLowerCase()).join(', '))}.</b>The app works, but an attack got in through the orange line.</div>`;
+    else v = `<div class="vbox"><b>Doesn't work.</b>${st.failed_tests.length} test${st.failed_tests.length === 1 ? '' : 's'} failed.</div>`;
+    const told = next ? `<div><div class="t-title" style="margin-bottom:6px">What we told the model</div><pre class="said">${esc(feedback(st))}</pre><div class="t-note" style="margin-top:6px">Only what failed. Never the attack itself.</div></div>` : '';
+    $('fix').innerHTML = `<div class="code" aria-label="App code">${code}</div><div class="verdict">${v}${told}</div>`;
+    $('steps').querySelectorAll('.step').forEach(b => b.addEventListener('click', () => { cur.step = +b.dataset.i; renderRun(); }));
   }
   pick.addEventListener('change', () => { cur = { run: +pick.value, step: 0 }; renderRun(); });
   renderRun();
+
+  // When retries make it safe
+  (function () {
+    const data = ['A3', 'A5'].map(id => {
+      const runs = (D.runs || []).filter(r => r.arm === id), c = [0, 0, 0, 0, 0];
+      runs.forEach(r => { if (r.secure_pass) c[Math.min(3, (r.steps || []).length - 1)]++; else c[4]++; });
+      return { id, n: runs.length, c };
+    }).filter(d => d.n);
+    if (!data.length) { $('rounds').innerHTML = '<div class="empty">Shows up once app records with retries are loaded.</div>'; $('r-t').textContent = ''; return; }
+    const cats = ['First try', 'Retry 1', 'Retry 2', 'Retry 3', 'Never'], cols = ['#610A45', '#8A3A6E', '#B4236A', '#D9799F', '#E2DDD8'];
+    const W = 420, rowH = 52, left = 0, H = data.length * rowH + 44;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Which try made the app safe">`;
+    data.forEach((d, i) => {
+      const y = i * rowH;
+      s += svgMark(d.id, 0, y, 16) + T(22, y + 13, esc(nm(d.id)), { s: 12, w: 600 });
+      let x0 = 0;
+      d.c.forEach((v, k) => { if (!v) return; const w = v / d.n * W; s += `<rect x="${x0}" y="${y + 20}" width="${Math.max(0, w - 2)}" height="22" rx="4" fill="${cols[k]}"></rect>`; if (w > 60) s += T(x0 + 8, y + 35, `${cats[k]} ${Math.round(v / d.n * 100)}%`, { s: 11, c: k < 3 ? '#F9F7F5' : '#280016' }); x0 += w; });
+    });
+    cats.forEach((c, k) => { const x = (k % 3) * 140, y = H - 30 + Math.floor(k / 3) * 16; s += `<rect x="${x}" y="${y}" width="10" height="10" rx="2" fill="${cols[k]}"></rect>` + T(x + 15, y + 9, c, { s: 11, c: '#5E5257' }); });
+    $('rounds').innerHTML = s + '</svg>';
+    const all = data.reduce((a, d) => a.map((v, k) => v + d.c[k]), [0, 0, 0, 0, 0]), tot = data.reduce((t, d) => t + d.n, 0), later = all[1] + all[2] + all[3];
+    $('r-t').innerHTML = later ? `<em>${Math.round(later / tot * 100)}%</em> only became safe after feedback.` : 'All safe apps were safe on the first try.';
+    $('r-note').textContent = `From ${tot} app record${tot === 1 ? '' : 's'}${R.FAKE ? ' (sample data has just one)' : ''}.`;
+  })();
 })();
 </script>
 </body>
