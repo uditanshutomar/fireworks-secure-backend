@@ -92,8 +92,9 @@ def _port_manager(num_slots: int = 64, min_port: int = 12345) -> SlotManager:
     return _ports
 
 
-def build_messages(scenario_id: str, framework: str) -> list:
-    prompt = SCENARIOS[scenario_id].build_prompt(ENVS[framework], "openapi", "none", agent=False)
+def build_messages(scenario_id: str, framework: str, safety_prompt: str = "none") -> list:
+    """safety_prompt is BaxBench's own: none, generic, or specific (names the scenario's CWEs)."""
+    prompt = SCENARIOS[scenario_id].build_prompt(ENVS[framework], "openapi", safety_prompt, agent=False)
     return [{"role": "system", "content": _SYSTEM_PROMPT}, {"role": "user", "content": prompt}]
 
 

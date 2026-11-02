@@ -27,7 +27,7 @@ def run_task(arm_id, arm, client, scenario, framework, run, out_dir):
     path = out_dir / arm_id / f"{scenario}__{framework}__r{run}.json"
     if path.exists():
         return path, "skip"
-    messages = bax.build_messages(scenario, framework)
+    messages = bax.build_messages(scenario, framework, arm.get("safety_prompt", "none"))
     code_file = bax.ENVS[framework].code_filename or "app.py"
 
     def run_tests(code):
