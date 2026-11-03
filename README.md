@@ -4,6 +4,8 @@
 
 **Live dashboard:** https://uditanshutomar.github.io/fireworks-secure-backend/ui/
 
+**Demo video (59 s):** [docs/video/teachotron_59s.mp4](docs/video/teachotron_59s.mp4) · [extended cut (100 s)](docs/video/teachotron_demo.mp4)
+
 AI can write a web backend in seconds. Nobody checks whether it can be hacked. Teach'O'tron does: every app a model writes goes into a sealed Docker sandbox, where [BaxBench](https://github.com/logic-star-ai/baxbench)'s real exploits (SQL injection, password theft, path traversal, zip bombs) and its functional tests run against it. An app counts as safe only if every test passes and no attack works.
 
 Then it uses the sandbox as a teacher. We keep only the big model's apps that survived every attack, and show three of them to the small model, NVIDIA Nemotron Lightning, in its prompt. No fine-tuning.
