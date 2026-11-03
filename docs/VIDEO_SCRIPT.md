@@ -4,35 +4,31 @@ One speaker, voice over screen recording. Plain words, short sentences, one idea
 
 **Record:** QuickTime > New Screen Recording, built-in mic, quiet room. Browser full screen at 100% zoom on `ui/index.html` from `main`. Terminal: large font, dark theme. Read the voice lines slowly; pause one beat between shots. Do one take per shot, then cut them together (iMovie is fine). Export 1080p MP4.
 
-## Shot 1. The hook (0:00 to 0:10)
+Follows the form's three demo points: the problem, the tech stack, the benchmark.
 
-**Screen:** title card: "Teach'O'tron. AI writes the backend. Who attacks it?"
+## 1. The problem (0:00 to 0:15)
 
-> AI can write your backend in seconds. But nobody checks whether it can be hacked. Teach'O'tron does, and then it uses what it learns to teach a cheap model to write safer code.
+**Screen:** title card "Teach'O'tron", then the dashboard top.
 
-## Shot 2. The sandbox loop (0:10 to 0:35)
+> AI can write the code behind a website in seconds. But nobody checks if hackers can break in. Even the best models leave about half their working apps open to known attacks, and cheap models are worse. So teams pay for expensive ones.
 
-**Screen:** terminal, run `python3 scripts/replay_run.py results/runs/A3/Login__Python-Flask__r1.json --delay 1.0`. Let it play.
+## 2. Tech stack, and what it made possible (0:15 to 0:40)
 
-> Here is how it works. A model writes an app, say a login service. We drop it into a sealed Docker sandbox and attack it: real SQL injection, real password theft, real file escapes. Plus the tests a user would run. If it fails, the model gets one line back: what broke. Never the attack code. It tries again. Only an app that works and survives every attack counts as safe.
+**Screen:** terminal, `python3 scripts/replay_run.py results/runs/A3/Login__Python-Flask__r1.json --delay 1.0` (big font, cleared screen).
 
-## Shot 3. The surprise (0:35 to 0:55)
+> Every app the AI writes goes into a locked Docker box. BaxBench attacks it like a real hacker: database break-ins, password theft, file escapes. Fireworks runs both models serverless, so we could test hundreds of apps on two models in one afternoon without owning a GPU. NVIDIA's Nemotron Lightning is the small, cheap model we set out to improve.
 
-**Screen:** dashboard, headline tiles, then the "All setups" table. Point at the small-model rows.
+## 3. Benchmark: baseline, techniques, results (0:40 to 1:30)
 
-> We tested a big model, DeepSeek, and a small one, NVIDIA Nemotron, which is six times cheaper per token. Surprise: for every dollar, the small model gave us 154 safe apps. The big one gave 372. Cheap tokens are not cheap safe code. Even retrying in the sandbox made the small model a worse deal.
+**Screen:** dashboard "What $1 buys" panel (press Replay), then the headline tiles.
 
-## Shot 4. Teach'O'tron (0:55 to 1:15)
-
-**Screen:** README hero table on GitHub (three rows), or the live dashboard. Point at Nemotron as is, then Teach'O'tron, then DeepSeek.
-
-> So we turned the sandbox into a teacher. We kept only the big model's apps that survived every attack, and showed three of them to the small model. No training. We also cut it off before it rambles. Same Nemotron: safe apps went from 12 in 100 to 33. And for every dollar, 722 safe apps. That's almost twice the big model, at less than half the wait.
-
-## Shot 5. The close (1:15 to 1:30)
-
-**Screen:** live dashboard URL, then the repo link on a plain card.
-
-> Attack every app in a sandbox. Keep what survives. Teach the cheap model with it. That's Teach'O'tron, built on Fireworks with NVIDIA Nemotron, and it's open source. Thanks.
+> Baseline: on 12 test apps it had never seen, Nemotron as is wrote 13 safe apps out of 100, and $1 bought 154. The big model got 372.
+>
+> We tried three techniques. One: letting it retry after failing. That was the worst deal, 83 per dollar. Two: telling it to be careful. That made it worse. Three, which worked: we kept only the big model's apps that survived every attack and showed three to Nemotron as examples. And we cut it off before it rambles.
+>
+> Same model, no retraining: 33 safe apps out of 100, and 722 for a dollar. That's almost twice the big model, in half the time.
+>
+> Attack every app. Keep what survives. Teach the cheap model with it. That's Teach'O'tron.
 
 ## If a judge asks
 
