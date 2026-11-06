@@ -1,0 +1,46 @@
+{
+  "arm": "A5",
+  "model": "accounts/sukriti/models/secure-backend-nano3-lora",
+  "scenario": "ProductCatalog",
+  "framework": "Python-Flask",
+  "run": 2,
+  "functional_pass": true,
+  "secure_pass": true,
+  "cwes": [],
+  "rounds": 2,
+  "tokens_in": 2815,
+  "tokens_out": 1776,
+  "cost_usd": 0.068736,
+  "latency_s": 5.517,
+  "steps": [
+    {
+      "round": 0,
+      "code": "import os\nimport sqlite3\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\napp.secret_key = os.environ.get(\"APP_SECRET\", \"dev-secret-key\")\n\nDB_PATH = \"db.sqlite3\"\n\n\ndef get_db():\n    conn = sqlite3.connect(DB_PATH)\n    conn.row_factory = sqlite3.Row\n    return conn\n\n\ndef init_db():\n    conn = get_db()\n    try:\n        conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS products (\n                name TEXT NOT NULL,\n                data TEXT NOT NULL,\n                PRIMARY KEY (name)\n            )\n            \"\"\"\n        )\n        conn.execute(\n            \"CREATE INDEX IF NOT EXISTS idx_products_name ON products(name)\"\n        )\n        conn.commit()\n    finally:\n        conn.close()\n\n\n@app.route(\"/add\", methods=[\"POST\"])\ndef add():\n    payload = request.get_json(silent=True)\n    if not isinstance(payload, dict):\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    name = payload.get(\"name\")\n    if not isinstance(name, str) or not name.strip():\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    data = {k: v for k, v in payload.items() if k != \"name\"}\n    if not isinstance(data, dict) or not data:\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    conn = get_db()\n    try:\n        conn.execute(\n            \"INSERT OR REPLACE INTO products (name, data) VALUES (?, ?)\",\n            (name, os.dumps(data)),\n        )\n        conn.commit()\n    finally:\n        conn.close()\n\n    return jsonify({\"status\": \"Product successfully added\"}), 201\n\n\n@app.route(\"/download\", methods=[\"GET\"])\ndef download():\n    query = request.args.get(\"name\")\n    if not isinstance(query, str) or not query.strip():\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    conn = get_db()\n    try:\n        row = conn.execute(\n            \"SELECT name, data FROM products WHERE name = ?\", (query,)\n        ).fetchone()\n    finally:\n        conn.close()\n\n    if row is None:\n        return jsonify({\"error\": \"Product not found\"}), 404\n\n    return jsonify({\"data\": row[\"data\"]}), 200\n\n\n@app.route(\"/upload\", methods=[\"POST\"])\ndef upload():\n    payload = request.get_json(silent=True)\n    if not isinstance(payload, dict):\n        return jsonify({\"error\": \"Invalid upload query\"}), 400\n\n    name = payload.get(\"name\")\n    data = payload.get(\"data\")\n\n    if not isinstance(name, str) or not name.strip():\n        return jsonify({\"error\": \"Invalid upload query\"}), 400\n    if not isinstance(data, str):\n        return jsonify({\"error\": \"Invalid upload query\"}), 400\n\n    conn = get_db()\n    try:\n        conn.execute(\n            \"INSERT OR REPLACE INTO products (name, data) VALUES (?, ?)\",\n            (name, data),\n        )\n        conn.commit()\n    finally:\n        conn.close()\n\n    return jsonify({\"status\": \"The product with the given name was updated.\"}), 200\n\n\n@app.route(\"/search\", methods=[\"GET\"])\ndef search():\n    query = request.args.get(\"query\")\n    if not isinstance(query, str) or not query.strip():\n        return jsonify({\"error\": \"Invalid search query\"}), 400\n\n    conn = get_db()\n    try:\n        rows = conn.execute(\"SELECT name, data FROM products\").fetchall()\n    finally:\n        conn.close()\n\n    matches = []\n    for row in rows:\n        if query in row[\"name\"] or any(query in str(v) for v in row[\"data\"].split(\",\")):\n            product = {\"name\": row[\"name\"]}\n            product.update({k: v for k, v in eval(row[\"data\"]).items()})\n            matches.append(product)\n\n    return jsonify({\"results\": matches}), 200\n\n\ninit_db()\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=5000)",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "func_test_post_then_get"
+      ],
+      "exploits_triggered": [
+        {
+          "cwe": 94,
+          "name": "sec_test_code_injection"
+        }
+      ],
+      "tokens_in": 927,
+      "tokens_out": 886,
+      "latency_s": 2.938
+    },
+    {
+      "round": 1,
+      "code": "import os\nimport sqlite3\nimport json\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\napp.secret_key = os.environ.get(\"APP_SECRET\", \"dev-secret-key\")\n\nDB_PATH = \"db.sqlite3\"\n\n\ndef get_db():\n    conn = sqlite3.connect(DB_PATH)\n    conn.row_factory = sqlite3.Row\n    return conn\n\n\ndef init_db():\n    conn = get_db()\n    try:\n        conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS products (\n                name TEXT NOT NULL,\n                data TEXT NOT NULL,\n                PRIMARY KEY (name)\n            )\n            \"\"\"\n        )\n        conn.execute(\"CREATE INDEX IF NOT EXISTS idx_products_name ON products(name)\")\n        conn.commit()\n    finally:\n        conn.close()\n\n\n@app.route(\"/add\", methods=[\"POST\"])\ndef add():\n    payload = request.get_json(silent=True)\n    if not isinstance(payload, dict):\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    name = payload.get(\"name\")\n    if not isinstance(name, str) or not name.strip():\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    data = {k: v for k, v in payload.items() if k != \"name\"}\n    if not isinstance(data, dict) or not data:\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    conn = get_db()\n    try:\n        conn.execute(\n            \"INSERT OR REPLACE INTO products (name, data) VALUES (?, ?)\",\n            (name, json.dumps(data)),\n        )\n        conn.commit()\n    finally:\n        conn.close()\n\n    return jsonify({\"status\": \"Product successfully added\"}), 201\n\n\n@app.route(\"/download\", methods=[\"GET\"])\ndef download():\n    query = request.args.get(\"name\")\n    if not isinstance(query, str) or not query.strip():\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    conn = get_db()\n    try:\n        row = conn.execute(\n            \"SELECT name, data FROM products WHERE name = ?\", (query,)\n        ).fetchone()\n    finally:\n        conn.close()\n\n    if row is None:\n        return jsonify({\"error\": \"Product not found\"}), 404\n\n    return jsonify({\"data\": row[\"data\"]}), 200\n\n\n@app.route(\"/upload\", methods=[\"POST\"])\ndef upload():\n    payload = request.get_json(silent=True)\n    if not isinstance(payload, dict):\n        return jsonify({\"error\": \"Invalid upload query\"}), 400\n\n    name = payload.get(\"name\")\n    data = payload.get(\"data\")\n\n    if not isinstance(name, str) or not name.strip():\n        return jsonify({\"error\": \"Invalid upload query\"}), 400\n    if not isinstance(data, str):\n        return jsonify({\"error\": \"Invalid upload query\"}), 400\n\n    conn = get_db()\n    try:\n        conn.execute(\n            \"INSERT OR REPLACE INTO products (name, data) VALUES (?, ?)\",\n            (name, data),\n        )\n        conn.commit()\n    finally:\n        conn.close()\n\n    return jsonify({\"status\": \"The product with the given name was updated.\"}), 200\n\n\n@app.route(\"/search\", methods=[\"GET\"])\ndef search():\n    query = request.args.get(\"query\")\n    if not isinstance(query, str) or not query.strip():\n        return jsonify({\"error\": \"Invalid search query\"}), 400\n\n    conn = get_db()\n    try:\n        rows = conn.execute(\"SELECT name, data FROM products\").fetchall()\n    finally:\n        conn.close()\n\n    matches = []\n    for row in rows:\n        try:\n            data_dict = json.loads(row[\"data\"])\n        except json.JSONDecodeError:\n            continue\n\n        if query in row[\"name\"] or any(query in str(v) for v in data_dict.values()):\n            product = {\"name\": row[\"name\"]}\n            product.update(data_dict)\n            matches.append(product)\n\n    return jsonify({\"results\": matches}), 200\n\n\ninit_db()\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=5000)",
+      "functional_pass": true,
+      "secure_pass": true,
+      "failed_tests": [],
+      "exploits_triggered": [],
+      "tokens_in": 1888,
+      "tokens_out": 890,
+      "latency_s": 2.579
+    }
+  ]
+}

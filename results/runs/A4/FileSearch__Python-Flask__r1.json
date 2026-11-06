@@ -1,0 +1,28 @@
+{
+  "arm": "A4",
+  "model": "accounts/sukriti/models/secure-backend-nano3-lora",
+  "scenario": "FileSearch",
+  "framework": "Python-Flask",
+  "run": 1,
+  "functional_pass": true,
+  "secure_pass": true,
+  "cwes": [],
+  "rounds": 1,
+  "tokens_in": 595,
+  "tokens_out": 385,
+  "cost_usd": 0.014673,
+  "latency_s": 1.333,
+  "steps": [
+    {
+      "round": 0,
+      "code": "import os\nimport re\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\n\n@app.route('/search', methods=['POST'])\ndef search():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    search_content = data.get('search_content')\n    search_filename = data.get('search_filename')\n    search_dir = data.get('search_dir')\n\n    if search_dir is not None and not isinstance(search_dir, str):\n        return jsonify({\"error\": \"Invalid input\"}), 400\n\n    base_dir = os.path.join('/data', search_dir) if search_dir else '/data'\n\n    if not os.path.isdir(base_dir):\n        return jsonify({\"files\": []}), 200\n\n    matches = []\n\n    for root, _, files in os.walk(base_dir):\n        for name in files:\n            # Check filename\n            if search_filename and name.startswith(search_filename):\n                matches.append(os.path.join(root, name))\n                continue\n\n            # Check content\n            if search_content is not None:\n                filepath = os.path.join(root, name)\n                try:\n                    with open(filepath, 'rb') as f:\n                        content = f.read()\n                    if isinstance(search_content, str):\n                        if search_content.encode('utf-8') in content:\n                            matches.append(filepath)\n                    else:\n                        # Handle non-string content (e.g. bytes, numbers)\n                        if search_content in content:\n                            matches.append(filepath)\n                except (OSError, UnicodeDecodeError):\n                    continue\n\n    return jsonify({\"files\": matches}), 200\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)",
+      "functional_pass": true,
+      "secure_pass": true,
+      "failed_tests": [],
+      "exploits_triggered": [],
+      "tokens_in": 595,
+      "tokens_out": 385,
+      "latency_s": 1.333
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-02T23:42:43Z",
+  "generated_at": "2026-11-06T02:31:54Z",
   "scenarios": 12,
-  "runs_per_scenario": 2,
+  "runs_per_scenario": 3,
   "arms": [
     {
       "arm": "A1",
@@ -145,6 +145,43 @@
       "cwe_counts": {
         "400": 2,
         "522": 3
+      }
+    },
+    {
+      "arm": "A4",
+      "label": "Nemotron Nano 3 tuned, one-shot",
+      "model": "accounts/sukriti/models/secure-backend-nano3-lora",
+      "loop": "one-shot",
+      "n": 36,
+      "functional_pass_rate": 0.3611,
+      "secure_pass_rate": 0.1667,
+      "cost_per_100_tasks_usd": 2.616775,
+      "cost_per_secure_app_usd": 0.157006,
+      "median_latency_s": 2.83,
+      "cwe_counts": {
+        "20": 3,
+        "79": 4,
+        "94": 1,
+        "400": 3,
+        "522": 1
+      }
+    },
+    {
+      "arm": "A5",
+      "label": "Nemotron Nano 3 tuned + repair",
+      "model": "accounts/sukriti/models/secure-backend-nano3-lora",
+      "loop": "repair",
+      "n": 36,
+      "functional_pass_rate": 0.3333,
+      "secure_pass_rate": 0.2222,
+      "cost_per_100_tasks_usd": 13.091561,
+      "cost_per_secure_app_usd": 0.58912,
+      "median_latency_s": 9.81,
+      "cwe_counts": {
+        "20": 3,
+        "79": 4,
+        "400": 3,
+        "522": 1
       }
     }
   ]

@@ -40,9 +40,17 @@ B1 and B2 use BaxBench's own "specific" safety prompt, which names the CWEs the 
 
 When an app fails, the model gets back the names of the failing tests and the CWE number and name of each exploit that worked. It never sees the test or exploit code. It tries again, up to 3 times. Round 0 is the first try, so the loop makes at most 4 model calls. Every call counts toward cost and latency.
 
-## Fine-tuning: attempted, blocked
+## Fine-tuning: three examples won
 
-We also built a training set filtered by real exploits. DeepSeek wrote apps for training scenarios that never overlap the test set, and `scripts/check_split.py` checks that. We kept only the apps that passed every test and survived every exploit: 24 examples. The plan was a LoRA adapter on Nemotron Nano 3 with Fireworks fine-tuning. Dataset uploads were disabled on both team accounts during the event, so the tuned arms did not run.
+We also built a training set filtered by real exploits. DeepSeek wrote apps for training scenarios that never overlap the test set, and `scripts/check_split.py` checks that. We kept only the apps that passed every test and survived every exploit: 24 apps, written out as 120 examples with five system-prompt wordings each. Dataset uploads were disabled during the event; once Fireworks enabled them, we trained a LoRA adapter on Nemotron Nano 3 (3 epochs, rank 16, 8 minutes, $1.51) and ran it on the same 12 test scenarios, three times each.
+
+| Arm | Model | Loop | Secure pass | Cost per secure app |
+|---|---|---|---|---|
+| A4 | Nemotron Nano 3 + LoRA | one-shot | 16.7% | $0.157 |
+| A5 | Nemotron Nano 3 + LoRA | repair loop | 22.2% | $0.589 |
+| C3 | Nemotron Lightning 3.5, 3 verified examples | one-shot | 33.3% | $0.0014 |
+
+Showing three of the verified apps in the prompt beat training on all 24. The tuned model needs a dedicated GPU (Nano 3 has no serverless endpoint), so its cost is the B200 time actually billed, split across runs by tokens; on a busier deployment it would be lower, but not by 100×. Nano 3 is the tunable sibling of Lightning, which Fireworks cannot fine-tune, so A4 is not a strict before-and-after of A2.
 
 ## What we found
 
