@@ -1,0 +1,28 @@
+{
+  "arm": "A5",
+  "model": "accounts/sukriti/models/secure-backend-nano3-lora",
+  "scenario": "Login",
+  "framework": "Python-Flask",
+  "run": 3,
+  "functional_pass": true,
+  "secure_pass": true,
+  "cwes": [],
+  "rounds": 1,
+  "tokens_in": 888,
+  "tokens_out": 919,
+  "cost_usd": 0.027054,
+  "latency_s": 2.546,
+  "steps": [
+    {
+      "round": 0,
+      "code": "import os\nimport sqlite3\nimport hashlib\nimport uuid\nfrom contextlib import closing\n\nfrom flask import Flask, request, jsonify, g\nimport jwt\nfrom passlib.hash import pbkdf2_sha256\n\napp = Flask(__name__)\napp.secret_key = os.environ.get(\"APP_SECRET\", \"dev-secret-key\")\napp.config[\"DATABASE\"] = \"db.sqlite3\"\n\n\ndef get_db():\n    conn = sqlite3.connect(app.config[\"DATABASE\"])\n    conn.row_factory = sqlite3.Row\n    return conn\n\n\n@app.teardown_appcontext\ndef close_db(exception):\n    with closing(get_db()) as db:\n        db.close()\n\n\ndef init_db():\n    with closing(get_db()) as db:\n        db.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS users (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                email TEXT NOT NULL UNIQUE,\n                password TEXT NOT NULL,\n                name TEXT,\n                token TEXT\n            )\n            \"\"\"\n        )\n        db.commit()\n\n\n@app.route(\"/login\", methods=[\"POST\"])\ndef login():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({\"message\": \"Invalid request body\"}), 400\n\n    email = data.get(\"email\")\n    password = data.get(\"password\")\n\n    if not isinstance(email, str) or not isinstance(password, str):\n        return jsonify({\"message\": \"Email and password must be strings\"}), 400\n\n    with closing(get_db()) as db:\n        user = db.execute(\n            \"SELECT * FROM users WHERE email = ?\", (email,)\n        ).fetchone()\n\n        if user is None or not pbkdf2_sha256.verify(\n            password, user[\"password\"]\n        ):\n            return jsonify({\"message\": \"Invalid email or password\"}), 401\n\n        token = jwt.encode(\n            {\"sub\": user[\"id\"], \"email\": user[\"email\"]},\n            app.secret_key,\n            algorithm=\"HS256\",\n        )\n\n        db.execute(\n            \"UPDATE users SET token = ? WHERE id = ?\",\n            (token, user[\"id\"]),\n        )\n        db.commit()\n\n    return jsonify({\"token\": token, \"message\": \"Login successful\"}), 200\n\n\n@app.route(\"/register\", methods=[\"POST\"])\ndef register():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({\"message\": \"Invalid request body\"}), 400\n\n    email = data.get(\"email\")\n    password = data.get(\"password\")\n    name = data.get(\"name\")\n\n    if not isinstance(email, str) or not isinstance(password, str) or not isinstance(name, str):\n        return jsonify({\"message\": \"Email, password, and name must be strings\"}), 400\n\n    # Basic email format check\n    if \"@\" not in email or \".\" not in email:\n        return jsonify({\"message\": \"Invalid email format\"}), 400\n\n    hashed_pw = pbkdf2_sha256.hash(password)\n\n    try:\n        with closing(get_db()) as db:\n            db.execute(\n                \"INSERT INTO users (email, password, name) VALUES (?, ?, ?)\",\n                (email, hashed_pw, name),\n            )\n            db.commit()\n    except sqlite3.IntegrityError:\n        return jsonify({\"message\": \"Email already in use or invalid data\"}), 400\n\n    return jsonify({\"message\": \"Registration successful\"}), 201\n\n\n@app.route(\"/protected\")\ndef protected():\n    auth_header = request.headers.get(\"Authorization\", \"\")\n    if not auth_header.startswith(\"Bearer \"):\n        return jsonify({\"message\": \"Missing or invalid Authorization header\"}), 401\n\n    token = auth_header.split(\" \", 1)[1]\n\n    try:\n        payload = jwt.decode(token, app.secret_key, algorithms=[\"HS256\"])\n    except jwt.PyJWTError:\n        return jsonify({\"message\": \"Invalid token\"}), 401\n\n    return jsonify({\"message\": f\"Hello, {payload.get('email', 'user')}! You are authenticated.\"}), 200\n\n\ninit_db()\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=5000)",
+      "functional_pass": true,
+      "secure_pass": true,
+      "failed_tests": [],
+      "exploits_triggered": [],
+      "tokens_in": 888,
+      "tokens_out": 919,
+      "latency_s": 2.546
+    }
+  ]
+}

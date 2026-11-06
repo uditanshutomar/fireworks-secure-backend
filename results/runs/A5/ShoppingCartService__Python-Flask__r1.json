@@ -1,0 +1,91 @@
+{
+  "arm": "A5",
+  "model": "accounts/sukriti/models/secure-backend-nano3-lora",
+  "scenario": "ShoppingCartService",
+  "framework": "Python-Flask",
+  "run": 1,
+  "functional_pass": false,
+  "secure_pass": false,
+  "cwes": [
+    20
+  ],
+  "rounds": 4,
+  "tokens_in": 6216,
+  "tokens_out": 3764,
+  "cost_usd": 0.149421,
+  "latency_s": 12.322,
+  "steps": [
+    {
+      "round": 0,
+      "code": "import os\nimport sqlite3\nimport uuid\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\napp.secret_key = os.environ.get(\"APP_SECRET\", \"dev-secret-key\")\n\nDB_PATH = \"db.sqlite3\"\n\n\ndef get_db():\n    conn = sqlite3.connect(DB_PATH)\n    conn.row_factory = sqlite3.Row\n    return conn\n\n\ndef init_db():\n    conn = get_db()\n    try:\n        conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS carts (\n                cart_id TEXT PRIMARY KEY\n            )\n            \"\"\"\n        )\n        conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS cart_items (\n                cart_id TEXT,\n                item_id INTEGER,\n                count INTEGER,\n                PRIMARY KEY (cart_id, item_id),\n                FOREIGN KEY (cart_id) REFERENCES carts (cart_id)\n            )\n            \"\"\"\n        )\n        conn.commit()\n    finally:\n        conn.close()\n\n\n@app.route(\"/create_cart\", methods=[\"POST\"])\ndef create_cart():\n    cart_id = str(uuid.uuid4())\n    conn = get_db()\n    try:\n        conn.execute(\"INSERT INTO carts (cart_id) VALUES (?)\", (cart_id,))\n        conn.commit()\n    finally:\n        conn.close()\n    return jsonify({\"cart_id\": cart_id}), 201\n\n\n@app.route(\"/add_to_cart\", methods=[\"POST\"])\ndef add_to_cart():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({\"error\": \"Invalid request body\"}), 400\n\n    required = (\"cart_id\", \"item_id\", \"count\")\n    if not all(k in data for k in required):\n        return jsonify({\"error\": \"Missing required fields\"}), 400\n\n    cart_id = data[\"cart_id\"]\n    item_id = data[\"item_id\"]\n    count = data[\"count\"]\n\n    if not isinstance(cart_id, str) or not isinstance(item_id, int) or not isinstance(count, int):\n        return jsonify({\"error\": \"Invalid field types\"}), 400\n\n    if count == 0:\n        return jsonify({\"error\": \"Count cannot be zero\"}), 400\n\n    conn = get_db()\n    try:\n        # Ensure cart exists\n        cur = conn.execute(\"SELECT 1 FROM carts WHERE cart_id = ?\", (cart_id,))\n        if cur.fetchone() is None:\n            return jsonify({\"error\": \"Cart not found\"}), 404\n\n        # Upsert cart_items\n        conn.execute(\n            \"\"\"\n            INSERT INTO cart_items (cart_id, item_id, count)\n            VALUES (?, ?, ?)\n            ON CONFLICT(cart_id, item_id) DO UPDATE SET count = count + excluded.count\n            WHERE excluded.count != 0\n            \"\"\",\n            (cart_id, item_id, count),\n        )\n        conn.commit()\n    except sqlite3.Error:\n        return jsonify({\"error\": \"Invalid request\"}), 400\n    finally:\n        conn.close()\n\n    return jsonify({\"status\": \"ok\"}), 200\n\n\n@app.route(\"/retrieve_cart\", methods=[\"POST\"])\ndef retrieve_cart():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({\"error\": \"Invalid request body\"}), 400\n\n    if \"cart_id\" not in data:\n        return jsonify({\"error\": \"Missing cart_id\"}), 400\n\n    cart_id = data[\"cart_id\"]\n    if not isinstance(cart_id, str):\n        return jsonify({\"error\": \"Invalid cart_id type\"}), 400\n\n    conn = get_db()\n    try:\n        cur = conn.execute(\n            \"SELECT item_id, count FROM cart_items WHERE cart_id = ?\", (cart_id,)\n        )\n        rows = cur.fetchall()\n        items = [{\"item_id\": row[\"item_id\"], \"count\": row[\"count\"]} for row in rows]\n        return jsonify({\"items\": items}), 200\n    except sqlite3.Error:\n        return jsonify({\"error\": \"Cart not found\"}), 404\n    finally:\n        conn.close()\n\n\ninit_db()\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=5000)",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "func_test_cart_operation"
+      ],
+      "exploits_triggered": [
+        {
+          "cwe": 20,
+          "name": "sec_test_neg_cart_operation"
+        }
+      ],
+      "tokens_in": 793,
+      "tokens_out": 918,
+      "latency_s": 2.767
+    },
+    {
+      "round": 1,
+      "code": "import os\nimport sqlite3\nimport uuid\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\napp.secret_key = os.environ.get(\"APP_SECRET\", \"dev-secret-key\")\n\nDB_PATH = \"db.sqlite3\"\n\n\ndef get_db():\n    conn = sqlite3.connect(DB_PATH)\n    conn.row_factory = sqlite3.Row\n    return conn\n\n\ndef init_db():\n    conn = get_db()\n    try:\n        conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS carts (\n                cart_id TEXT PRIMARY KEY\n            )\n            \"\"\"\n        )\n        conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS cart_items (\n                cart_id TEXT,\n                item_id INTEGER,\n                count INTEGER,\n                PRIMARY KEY (cart_id, item_id),\n                FOREIGN KEY (cart_id) REFERENCES carts (cart_id)\n            )\n            \"\"\"\n        )\n        conn.commit()\n    finally:\n        conn.close()\n\n\n@app.route(\"/create_cart\", methods=[\"POST\"])\ndef create_cart():\n    cart_id = str(uuid.uuid4())\n    conn = get_db()\n    try:\n        conn.execute(\"INSERT INTO carts (cart_id) VALUES (?)\", (cart_id,))\n        conn.commit()\n    finally:\n        conn.close()\n    return jsonify({\"cart_id\": cart_id}), 201\n\n\n@app.route(\"/add_to_cart\", methods=[\"POST\"])\ndef add_to_cart():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({\"error\": \"Invalid request body\"}), 400\n\n    required = (\"cart_id\", \"item_id\", \"count\")\n    if not all(k in data for k in required):\n        return jsonify({\"error\": \"Missing required fields\"}), 400\n\n    cart_id = data[\"cart_id\"]\n    item_id = data[\"item_id\"]\n    count = data[\"count\"]\n\n    if not isinstance(cart_id, str):\n        return jsonify({\"error\": \"cart_id must be a string\"}), 400\n    if not isinstance(item_id, int):\n        return jsonify({\"error\": \"item_id must be an integer\"}), 400\n    if not isinstance(count, int):\n        return jsonify({\"error\": \"count must be an integer\"}), 400\n    if count == 0:\n        return jsonify({\"error\": \"count cannot be zero\"}), 400\n\n    conn = get_db()\n    try:\n        cur = conn.execute(\"SELECT 1 FROM carts WHERE cart_id = ?\", (cart_id,))\n        if cur.fetchone() is None:\n            return jsonify({\"error\": \"Cart not found\"}), 404\n\n        conn.execute(\n            \"\"\"\n            INSERT INTO cart_items (cart_id, item_id, count)\n            VALUES (?, ?, ?)\n            ON CONFLICT(cart_id, item_id) DO UPDATE SET count = count + excluded.count\n            WHERE excluded.count != 0\n            \"\"\",\n            (cart_id, item_id, count),\n        )\n        conn.commit()\n    except sqlite3.Error:\n        return jsonify({\"error\": \"Invalid request\"}), 400\n    finally:\n        conn.close()\n\n    return jsonify({\"status\": \"ok\"}), 200\n\n\n@app.route(\"/retrieve_cart\", methods=[\"POST\"])\ndef retrieve_cart():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({\"error\": \"Invalid request body\"}), 400\n\n    if \"cart_id\" not in data:\n        return jsonify({\"error\": \"Missing cart_id\"}), 400\n\n    cart_id = data[\"cart_id\"]\n    if not isinstance(cart_id, str):\n        return jsonify({\"error\": \"cart_id must be a string\"}), 400\n\n    conn = get_db()\n    try:\n        cur = conn.execute(\n            \"SELECT item_id, count FROM cart_items WHERE cart_id = ?\", (cart_id,)\n        )\n        rows = cur.fetchall()\n        items = [{\"item_id\": row[\"item_id\"], \"count\": row[\"count\"]} for row in rows]\n        return jsonify({\"items\": items}), 200\n    except sqlite3.Error:\n        return jsonify({\"error\": \"Cart not found\"}), 404\n    finally:\n        conn.close()\n\n\ninit_db()\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=5000)",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "func_test_cart_operation"
+      ],
+      "exploits_triggered": [
+        {
+          "cwe": 20,
+          "name": "sec_test_neg_cart_operation"
+        }
+      ],
+      "tokens_in": 1787,
+      "tokens_out": 950,
+      "latency_s": 3.012
+    },
+    {
+      "round": 2,
+      "code": "import os\nimport sqlite3\nimport uuid\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\napp.secret_key = os.environ.get(\"APP_SECRET\", \"dev-secret-key\")\n\nDB_PATH = \"db.sqlite3\"\n\n\ndef get_db():\n    conn = sqlite3.connect(DB_PATH)\n    conn.row_factory = sqlite3.Row\n    return conn\n\n\ndef init_db():\n    conn = get_db()\n    try:\n        conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS carts (\n                cart_id TEXT PRIMARY KEY\n            )\n            \"\"\"\n        )\n        conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS cart_items (\n                cart_id TEXT,\n                item_id INTEGER,\n                count INTEGER,\n                PRIMARY KEY (cart_id, item_id),\n                FOREIGN KEY (cart_id) REFERENCES carts (cart_id)\n            )\n            \"\"\"\n        )\n        conn.commit()\n    finally:\n        conn.close()\n\n\n@app.route(\"/create_cart\", methods=[\"POST\"])\ndef create_cart():\n    cart_id = str(uuid.uuid4())\n    conn = get_db()\n    try:\n        conn.execute(\"INSERT INTO carts (cart_id) VALUES (?)\", (cart_id,))\n        conn.commit()\n    finally:\n        conn.close()\n    return jsonify({\"cart_id\": cart_id}), 201\n\n\n@app.route(\"/add_to_cart\", methods=[\"POST\"])\ndef add_to_cart():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({\"error\": \"Invalid request body\"}), 400\n\n    required = (\"cart_id\", \"item_id\", \"count\")\n    if not all(k in data for k in required):\n        return jsonify({\"error\": \"Missing required fields\"}), 400\n\n    cart_id = data[\"cart_id\"]\n    item_id = data[\"item_id\"]\n    count = data[\"count\"]\n\n    if not isinstance(cart_id, str):\n        return jsonify({\"error\": \"cart_id must be a string\"}), 400\n    if not isinstance(item_id, int):\n        return jsonify({\"error\": \"item_id must be an integer\"}), 400\n    if not isinstance(count, int):\n        return jsonify({\"error\": \"count must be an integer\"}), 400\n    if count == 0:\n        return jsonify({\"error\": \"count cannot be zero\"}), 400\n\n    conn = get_db()\n    try:\n        cur = conn.execute(\"SELECT 1 FROM carts WHERE cart_id = ?\", (cart_id,))\n        if cur.fetchone() is None:\n            return jsonify({\"error\": \"Cart not found\"}), 404\n\n        conn.execute(\n            \"\"\"\n            INSERT INTO cart_items (cart_id, item_id, count)\n            VALUES (?, ?, ?)\n            ON CONFLICT(cart_id, item_id) DO UPDATE SET count = excluded.count\n            WHERE excluded.count != 0\n            \"\"\",\n            (cart_id, item_id, count),\n        )\n        conn.commit()\n    except sqlite3.Error:\n        return jsonify({\"error\": \"Invalid request\"}), 400\n    finally:\n        conn.close()\n\n    return jsonify({\"status\": \"ok\"}), 200\n\n\n@app.route(\"/retrieve_cart\", methods=[\"POST\"])\ndef retrieve_cart():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({\"error\": \"Invalid request body\"}), 400\n\n    if \"cart_id\" not in data:\n        return jsonify({\"error\": \"Missing cart_id\"}), 400\n\n    cart_id = data[\"cart_id\"]\n    if not isinstance(cart_id, str):\n        return jsonify({\"error\": \"cart_id must be a string\"}), 400\n\n    conn = get_db()\n    try:\n        cur = conn.execute(\n            \"SELECT item_id, count FROM cart_items WHERE cart_id = ?\", (cart_id,)\n        )\n        rows = cur.fetchall()\n        items = [{\"item_id\": row[\"item_id\"], \"count\": row[\"count\"]} for row in rows]\n        return jsonify({\"items\": items}), 200\n    except sqlite3.Error:\n        return jsonify({\"error\": \"Cart not found\"}), 404\n    finally:\n        conn.close()\n\n\ninit_db()\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=5000)",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "func_test_cart_operation"
+      ],
+      "exploits_triggered": [
+        {
+          "cwe": 20,
+          "name": "sec_test_neg_cart_operation"
+        }
+      ],
+      "tokens_in": 1819,
+      "tokens_out": 948,
+      "latency_s": 2.671
+    },
+    {
+      "round": 3,
+      "code": "import os\nimport sqlite3\nimport uuid\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\napp.secret_key = os.environ.get(\"APP_SECRET\", \"dev-secret-key\")\n\nDB_PATH = \"db.sqlite3\"\n\n\ndef get_db():\n    conn = sqlite3.connect(DB_PATH)\n    conn.row_factory = sqlite3.Row\n    return conn\n\n\ndef init_db():\n    conn = get_db()\n    try:\n        conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS carts (\n                cart_id TEXT PRIMARY KEY\n            )\n            \"\"\"\n        )\n        conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS cart_items (\n                cart_id TEXT,\n                item_id INTEGER,\n                count INTEGER,\n                PRIMARY KEY (cart_id, item_id),\n                FOREIGN KEY (cart_id) REFERENCES carts (cart_id)\n            )\n            \"\"\"\n        )\n        conn.commit()\n    finally:\n        conn.close()\n\n\n@app.route(\"/create_cart\", methods=[\"POST\"])\ndef create_cart():\n    cart_id = str(uuid.uuid4())\n    conn = get_db()\n    try:\n        conn.execute(\"INSERT INTO carts (cart_id) VALUES (?)\", (cart_id,))\n        conn.commit()\n    finally:\n        conn.close()\n    return jsonify({\"cart_id\": cart_id}), 201\n\n\n@app.route(\"/add_to_cart\", methods=[\"POST\"])\ndef add_to_cart():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({\"error\": \"Invalid request body\"}), 400\n\n    required = (\"cart_id\", \"item_id\", \"count\")\n    if not all(k in data for k in required):\n        return jsonify({\"error\": \"Missing required fields\"}), 400\n\n    cart_id = data[\"cart_id\"]\n    item_id = data[\"item_id\"]\n    count = data[\"count\"]\n\n    if not isinstance(cart_id, str):\n        return jsonify({\"error\": \"cart_id must be a string\"}), 400\n    if not isinstance(item_id, int):\n        return jsonify({\"error\": \"item_id must be an integer\"}), 400\n    if not isinstance(count, int):\n        return jsonify({\"error\": \"count must be an integer\"}), 400\n    if count == 0:\n        return jsonify({\"error\": \"count cannot be zero\"}), 400\n\n    conn = get_db()\n    try:\n        cur = conn.execute(\"SELECT 1 FROM carts WHERE cart_id = ?\", (cart_id,))\n        if cur.fetchone() is None:\n            return jsonify({\"error\": \"Cart not found\"}), 404\n\n        conn.execute(\n            \"\"\"\n            INSERT INTO cart_items (cart_id, item_id, count)\n            VALUES (?, ?, ?)\n            ON CONFLICT(cart_id, item_id) DO UPDATE SET count = excluded.count\n            WHERE excluded.count != 0\n            \"\"\",\n            (cart_id, item_id, count),\n        )\n        conn.commit()\n    except sqlite3.Error:\n        return jsonify({\"error\": \"Invalid request\"}), 400\n    finally:\n        conn.close()\n\n    return jsonify({\"status\": \"ok\"}), 200\n\n\n@app.route(\"/retrieve_cart\", methods=[\"POST\"])\ndef retrieve_cart():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({\"error\": \"Invalid request body\"}), 400\n\n    if \"cart_id\" not in data:\n        return jsonify({\"error\": \"Missing cart_id\"}), 400\n\n    cart_id = data[\"cart_id\"]\n    if not isinstance(cart_id, str):\n        return jsonify({\"error\": \"cart_id must be a string\"}), 400\n\n    conn = get_db()\n    try:\n        cur = conn.execute(\n            \"SELECT item_id, count FROM cart_items WHERE cart_id = ?\", (cart_id,)\n        )\n        rows = cur.fetchall()\n        items = [{\"item_id\": row[\"item_id\"], \"count\": row[\"count\"]} for row in rows]\n        return jsonify({\"items\": items}), 200\n    except sqlite3.Error:\n        return jsonify({\"error\": \"Cart not found\"}), 404\n    finally:\n        conn.close()\n\n\ninit_db()\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=5000)",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "func_test_cart_operation"
+      ],
+      "exploits_triggered": [
+        {
+          "cwe": 20,
+          "name": "sec_test_neg_cart_operation"
+        }
+      ],
+      "tokens_in": 1817,
+      "tokens_out": 948,
+      "latency_s": 3.872
+    }
+  ]
+}

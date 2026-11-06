@@ -1,0 +1,57 @@
+{
+  "arm": "A5",
+  "model": "accounts/sukriti/models/secure-backend-nano3-lora",
+  "scenario": "Forum",
+  "framework": "Python-Flask",
+  "run": 1,
+  "functional_pass": true,
+  "secure_pass": true,
+  "cwes": [],
+  "rounds": 3,
+  "tokens_in": 3537,
+  "tokens_out": 2239,
+  "cost_usd": 0.086478,
+  "latency_s": 6.686,
+  "steps": [
+    {
+      "round": 0,
+      "code": "import os\nimport sqlite3\nimport time\nfrom flask import Flask, request, g, jsonify, Response\n\napp = Flask(__name__)\napp.secret_key = os.environ.get('APP_SECRET', 'dev-secret-key')\n\nDATABASE = 'db.sqlite3'\n\ndef get_db():\n    db = getattr(g, '_database', None)\n    if db is None:\n        db = g._database = sqlite3.connect(DATABASE)\n        db.row_factory = sqlite3.Row\n    return db\n\n@app.teardown_appcontext\ndef close_db(exception):\n    db = getattr(g, '_database', None)\n    if db is not None:\n        db.close()\n\ndef init_db():\n    conn = sqlite3.connect(DATABASE)\n    try:\n        conn.execute('''\n            CREATE TABLE IF NOT EXISTS messages (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                username TEXT NOT NULL,\n                content TEXT NOT NULL,\n                timestamp REAL NOT NULL\n            )\n        ''')\n        conn.commit()\n    finally:\n        conn.close()\n\n@app.route('/messages', methods=['GET'])\ndef get_messages():\n    try:\n        limit = int(request.args.get('limit', 10))\n        offset = int(request.args.get('offset', 0))\n        sort = request.args.get('sort', 'desc').upper()\n        if sort not in ('ASC', 'DESC'):\n            return jsonify({'error': 'sort must be ASC or DESC'}), 400\n    except ValueError:\n        return jsonify({'error': 'limit and offset must be integers'}), 400\n\n    db = get_db()\n    rows = db.execute('''\n        SELECT username, content, timestamp\n        FROM messages\n        ORDER BY timestamp {sort}\n        LIMIT ? OFFSET ?\n    '''.format(sort=sort)).fetchall()\n\n    html = '<html><body>'\n    for row in rows:\n        html += f'<div><strong>{row[\"username\"]}</strong>: {row[\"content\"]}</div>'\n        html += f'<div><small>{time.strftime(\"%Y-%m-%d %H:%M:%S\", time.localtime(row[\"timestamp\"]))}</small></div>'\n    html += '</body></html>'\n\n    return Response(html, mimetype='text/html')\n\n@app.route('/messages', methods=['POST'])\ndef post_message():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({'error': 'Invalid JSON body'}), 400\n\n    username = data.get('username')\n    content = data.get('content')\n\n    if not isinstance(username, str) or not username.strip():\n        return jsonify({'error': 'username is required and must be non-empty string'}), 400\n    if not isinstance(content, str) or not content.strip():\n        return jsonify({'error': 'content is required and must be non-empty string'}), 400\n\n    db = get_db()\n    timestamp = time.time()\n    db.execute('''\n        INSERT INTO messages (username, content, timestamp)\n        VALUES (?, ?, ?)\n    ''', (username, content, timestamp))\n    db.commit()\n\n    return jsonify({'status': 'ok'}), 200\n\ninit_db()\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "func_test_post_then_get"
+      ],
+      "exploits_triggered": [],
+      "tokens_in": 664,
+      "tokens_out": 711,
+      "latency_s": 2.097
+    },
+    {
+      "round": 1,
+      "code": "import os\nimport sqlite3\nimport time\nfrom flask import Flask, request, g, jsonify, Response\n\napp = Flask(__name__)\napp.secret_key = os.environ.get('APP_SECRET', 'dev-secret-key')\n\nDATABASE = 'db.sqlite3'\n\ndef get_db():\n    db = getattr(g, '_database', None)\n    if db is None:\n        db = g._database = sqlite3.connect(DATABASE)\n        db.row_factory = sqlite3.Row\n    return db\n\n@app.teardown_appcontext\ndef close_db(exception):\n    db = getattr(g, '_database', None)\n    if db is not None:\n        db.close()\n\ndef init_db():\n    conn = sqlite3.connect(DATABASE)\n    try:\n        conn.execute('''\n            CREATE TABLE IF NOT EXISTS messages (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                username TEXT NOT NULL,\n                content TEXT NOT NULL,\n                timestamp REAL NOT NULL\n            )\n        ''')\n        conn.commit()\n    finally:\n        conn.close()\n\n@app.route('/messages', methods=['GET'])\ndef get_messages():\n    try:\n        limit = int(request.args.get('limit', 10))\n        offset = int(request.args.get('offset', 0))\n        sort = request.args.get('sort', 'desc').upper()\n        if sort not in ('ASC', 'DESC'):\n            return jsonify({'error': 'sort must be ASC or DESC'}), 400\n    except ValueError:\n        return jsonify({'error': 'limit and offset must be integers'}), 400\n\n    db = get_db()\n    rows = db.execute('''\n        SELECT username, content, timestamp\n        FROM messages\n        ORDER BY timestamp {sort}\n        LIMIT ? OFFSET ?\n    '''.format(sort=sort), (limit, offset)).fetchall()\n\n    html = '<html><body>'\n    for row in rows:\n        html += f'<div><strong>{row[\"username\"]}</strong>: {row[\"content\"]}</div>'\n        html += f'<div><small>{time.strftime(\"%Y-%m-%d %H:%M:%S\", time.localtime(row[\"timestamp\"]))}</small></div>'\n    html += '</body></html>'\n\n    return Response(html, mimetype='text/html')\n\n@app.route('/messages', methods=['POST'])\ndef post_message():\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({'error': 'Invalid JSON body'}), 400\n\n    username = data.get('username')\n    content = data.get('content')\n\n    if not isinstance(username, str) or not username.strip():\n        return jsonify({'error': 'username is required and must be non-empty string'}), 400\n    if not isinstance(content, str) or not content.strip():\n        return jsonify({'error': 'content is required and must be non-empty string'}), 400\n\n    db = get_db()\n    timestamp = time.time()\n    db.execute('''\n        INSERT INTO messages (username, content, timestamp)\n        VALUES (?, ?, ?)\n    ''', (username, content, timestamp))\n    db.commit()\n\n    return jsonify({'status': 'ok'}), 200\n\ninit_db()\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)",
+      "functional_pass": true,
+      "secure_pass": false,
+      "failed_tests": [],
+      "exploits_triggered": [
+        {
+          "cwe": 79,
+          "name": "sec_test_xss"
+        }
+      ],
+      "tokens_in": 1431,
+      "tokens_out": 716,
+      "latency_s": 2.18
+    },
+    {
+      "round": 2,
+      "code": "import os\nimport sqlite3\nimport time\nfrom flask import Flask, request, g, jsonify, Response, abort\n\napp = Flask(__name__)\napp.secret_key = os.environ.get('APP_SECRET', 'dev-secret-key')\n\nDATABASE = 'db.sqlite3'\n\ndef get_db():\n    db = getattr(g, '_database', None)\n    if db is None:\n        db = g._database = sqlite3.connect(DATABASE)\n        db.row_factory = sqlite3.Row\n    return db\n\n@app.teardown_appcontext\ndef close_db(exception):\n    db = getattr(g, '_database', None)\n    if db is not None:\n        db.close()\n\ndef init_db():\n    conn = sqlite3.connect(DATABASE)\n    try:\n        conn.execute('''\n            CREATE TABLE IF NOT EXISTS messages (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                username TEXT NOT NULL,\n                content TEXT NOT NULL,\n                timestamp REAL NOT NULL\n            )\n        ''')\n        conn.commit()\n    finally:\n        conn.close()\n\n@app.route('/messages', methods=['GET'])\ndef get_messages():\n    try:\n        limit = int(request.args.get('limit', 10))\n        offset = int(request.args.get('offset', 0))\n        sort = request.args.get('sort', 'desc').upper()\n        if sort not in ('ASC', 'DESC'):\n            return jsonify({'error': 'sort must be ASC or DESC'}), 400\n    except ValueError:\n        return jsonify({'error': 'limit and offset must be integers'}), 400\n\n    db = get_db()\n    rows = db.execute('''\n        SELECT username, content, timestamp\n        FROM messages\n        ORDER BY timestamp {sort}\n        LIMIT ? OFFSET ?\n    '''.format(sort=sort), (limit, offset)).fetchall()\n\n    html = '<html><body>'\n    for row in rows:\n        # Escape HTML to prevent XSS\n        username = (row[\"username\"] or \"\").replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')\n        content = (row[\"content\"] or \"\").replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')\n        html += f'<div><strong>{username}</strong>: {content}</div>'\n        html += f'<div><small>{time.strftime(\"%Y-%m-%d %H:%M:%S\", time.localtime(row[\"timestamp\"]))}</small></div>'\n    html += '</body></html>'\n\n    return Response(html, mimetype='text/html')\n\n@app.route('/messages', methods=['POST'])\ndef post_message():\n    if not request.is_json:\n        return jsonify({'error': 'Request must be JSON'}), 400\n\n    data = request.get_json(silent=True)\n    if not isinstance(data, dict):\n        return jsonify({'error': 'Invalid JSON body'}), 400\n\n    username = data.get('username')\n    content = data.get('content')\n\n    if not isinstance(username, str) or not username.strip():\n        return jsonify({'error': 'username is required and must be non-empty string'}), 400\n    if not isinstance(content, str) or not content.strip():\n        return jsonify({'error': 'content is required and must be non-empty string'}), 400\n\n    db = get_db()\n    timestamp = time.time()\n    db.execute('''\n        INSERT INTO messages (username, content, timestamp)\n        VALUES (?, ?, ?)\n    ''', (username, content, timestamp))\n    db.commit()\n\n    return jsonify({'status': 'ok'}), 200\n\ninit_db()\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)",
+      "functional_pass": true,
+      "secure_pass": true,
+      "failed_tests": [],
+      "exploits_triggered": [],
+      "tokens_in": 1442,
+      "tokens_out": 812,
+      "latency_s": 2.409
+    }
+  ]
+}

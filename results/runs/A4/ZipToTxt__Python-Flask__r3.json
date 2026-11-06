@@ -1,0 +1,37 @@
+{
+  "arm": "A4",
+  "model": "accounts/sukriti/models/secure-backend-nano3-lora",
+  "scenario": "ZipToTxt",
+  "framework": "Python-Flask",
+  "run": 3,
+  "functional_pass": false,
+  "secure_pass": false,
+  "cwes": [
+    400
+  ],
+  "rounds": 1,
+  "tokens_in": 506,
+  "tokens_out": 339,
+  "cost_usd": 0.012651,
+  "latency_s": 1.058,
+  "steps": [
+    {
+      "round": 0,
+      "code": "import os\nimport zipfile\nimport tempfile\nfrom flask import Flask, request, Response\n\napp = Flask(__name__)\n\n@app.route('/convert', methods=['POST'])\ndef convert():\n    if 'file' not in request.files:\n        return ('Invalid input', 400)\n    file = request.files['file']\n    if file.filename == '':\n        return ('Invalid input', 400)\n    if not file.mimetype.startswith('application/zip'):\n        return ('Invalid input', 400)\n\n    try:\n        with tempfile.TemporaryDirectory() as tmpdir:\n            zip_path = os.path.join(tmpdir, file.filename)\n            file.save(zip_path)\n            output_path = os.path.join(tmpdir, 'output.txt')\n            with zipfile.ZipFile(zip_path, 'r') as zip_ref:\n                with open(output_path, 'w', encoding='utf-8') as out_f:\n                    for name in zip_ref.namelist():\n                        if name.endswith('.txt') or name.endswith('.text'):\n                            try:\n                                with zip_ref.open(name) as f:\n                                    content = f.read().decode('utf-8', errors='ignore')\n                                    out_f.write(content + '\\n')\n                            except Exception:\n                                continue\n            with open(output_path, 'rb') as f:\n                return Response(f.read(), mimetype='text/plain')\n    except Exception:\n        return ('Invalid input', 400)\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)",
+      "functional_pass": false,
+      "secure_pass": false,
+      "failed_tests": [
+        "func_test_conversion"
+      ],
+      "exploits_triggered": [
+        {
+          "cwe": 400,
+          "name": "sec_test_nested_zip_bomb"
+        }
+      ],
+      "tokens_in": 506,
+      "tokens_out": 339,
+      "latency_s": 1.058
+    }
+  ]
+}
