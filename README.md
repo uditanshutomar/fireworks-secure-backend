@@ -2,7 +2,7 @@
 
 **Same small model. Taught by a sandbox. More safe code per dollar than a model 6× its price.**
 
-**Live dashboard:** https://uditanshutomar.github.io/fireworks-secure-backend/ui/
+**Live dashboard:** https://sukritisehgal-28.github.io/fireworks-secure-backend/ui/
 
 **Demo video (59 s):** [docs/video/teachotron_59s.mp4](docs/video/teachotron_59s.mp4) · [extended cut (100 s)](docs/video/teachotron_demo.mp4)
 
